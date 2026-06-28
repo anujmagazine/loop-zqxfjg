@@ -7,7 +7,7 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
 <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
-<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.22.20/babel.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
 <style>
   :root {
@@ -434,7 +434,7 @@ const Logo = () => (
 );
 
 /* HEADER */
-const Header = ({ screen, setScreen, progress, nudgesVisible, toggleNudges }) => {
+const Header = ({ screen, setScreen, progress, nudgesVisible, toggleNudges, userName, onReset }) => {
   const done = Object.values(progress).filter(p => p?.completed).length;
   return (
     <header className="relative z-10 border-b border-line bg-paper/80 backdrop-blur">
@@ -453,7 +453,9 @@ const Header = ({ screen, setScreen, progress, nudgesVisible, toggleNudges }) =>
             className={`px-3 py-2 rounded-full text-xs font-semibold transition ${nudgesVisible ? "bg-gold text-white" : "border border-line"}`}>
             {nudgesVisible ? "✕ Hide nudges" : "👁  Show nudges"}
           </button>
+          {userName && <span className="text-xs muted pill" style={{background:"#FAF6EB", color:"var(--ink)"}}>👤 {userName}</span>}
           <span className="text-xs muted pill" style={{background:"#EEF6D9", color:"var(--ink)"}}>{done}/9 stages</span>
+          {onReset && <button onClick={onReset} className="text-xs muted hover:ink" title="Reset session (clears all your local data)">↻</button>}
         </div>
       </div>
     </header>
@@ -826,7 +828,7 @@ const CommitmentModal = ({ stage, intent, onConfirm, onClose }) => {
 };
 
 /* LOOP HUB */
-const LoopHub = ({ progress, currentStage, onPick, streak, intent, commitment, openCommit }) => {
+const LoopHub = ({ progress, currentStage, onPick, streak, intent, commitment, openCommit, goal, user }) => {
   const done = Object.values(progress).filter(p => p?.completed).length;
   const pct = Math.round((done / STAGES.length) * 100);
   const stagesLeft = STAGES.length - done;
@@ -834,6 +836,18 @@ const LoopHub = ({ progress, currentStage, onPick, streak, intent, commitment, o
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-10 fade-up">
+      {goal && (
+        <div className="card p-5 mb-6 bg-[#FAF6EB]" style={{borderColor:"#C39247"}}>
+          <div className="flex items-center justify-between gap-3 flex-wrap">
+            <div>
+              <p className="text-xs uppercase tracking-widest font-semibold" style={{color:"#7A5A23"}}>{user?.name ? `${user.name}'s` : "Your"} anchor</p>
+              <p className="serif text-xl mt-1 leading-snug">{goal}</p>
+              <p className="muted text-xs mt-1">Every stage below filters through this goal.</p>
+            </div>
+            <span className="text-3xl">🎯</span>
+          </div>
+        </div>
+      )}
       <div className="grid md:grid-cols-3 gap-4 mb-6">
         <Nudge kind="intent" pos="tr">
           <div className="card p-5 h-full">
@@ -949,7 +963,7 @@ const LoopHub = ({ progress, currentStage, onPick, streak, intent, commitment, o
 };
 
 /* STAGE DETAIL */
-const StageDetail = ({ stage, savedData, onSave, onComplete, onBack, streak, intent }) => {
+const StageDetail = ({ stage, savedData, onSave, onComplete, onBack, streak, intent, goal, savedEval, onSaveEval }) => {
   const [tab, setTab] = useState("learn");
   const [practiceNote, setPracticeNote] = useState(savedData?.practiceNote || "");
   const [promptResponse, setPromptResponse] = useState(savedData?.promptResponse || "");
@@ -957,7 +971,7 @@ const StageDetail = ({ stage, savedData, onSave, onComplete, onBack, streak, int
 
   useEffect(() => { onSave({ practiceNote, promptResponse, reflection }); }, [practiceNote, promptResponse, reflection]);
 
-  const canComplete = practiceNote.length > 8 || promptResponse.length > 8 || reflection.length > 8;
+  const canComplete = practiceNote.length > 8 || promptResponse.length > 8 || reflection.length > 8 || !!savedEval;
   const stageIdx = STAGES.findIndex(s => s.id === stage.id);
 
   return (
@@ -978,6 +992,14 @@ const StageDetail = ({ stage, savedData, onSave, onComplete, onBack, streak, int
       </div>
 
       <p className="mt-5 text-lg leading-relaxed max-w-3xl">{stage.description}</p>
+
+      {goal && (
+        <div className="card p-4 mt-5 bg-[#FAF6EB]" style={{borderColor:"#C39247"}}>
+          <p className="text-xs uppercase tracking-widest font-semibold" style={{color:"#7A5A23"}}>Your goal lens · do this stage for:</p>
+          <p className="serif text-lg mt-1 leading-snug">{goal}</p>
+          <p className="muted text-xs mt-2">Don't do the generic exercise. Map every prompt below to <i>this</i> outcome.</p>
+        </div>
+      )}
 
       <div className="grid md:grid-cols-3 gap-3 mt-6">
         <Nudge kind="social" pos="tr">
@@ -1029,6 +1051,7 @@ const StageDetail = ({ stage, savedData, onSave, onComplete, onBack, streak, int
             <p className="text-xs muted uppercase tracking-widest font-semibold mt-5 mb-2">Paste what AI returned (or your refined version)</p>
             <textarea rows="6" placeholder="Paste AI's response, or your adapted prompt + result."
               value={promptResponse} onChange={e => setPromptResponse(e.target.value)} />
+            <ArtifactEvaluator stage={stage} goal={goal} savedEval={savedEval} onSave={onSaveEval} />
           </div>
         )}
         {tab === "reflect" && (
@@ -1413,13 +1436,13 @@ const NudgeLab = ({ enabled, toggle }) => {
 };
 
 /* CERTIFICATE */
-const Certificate = ({ score, level, onRestart }) => (
+const Certificate = ({ score, level, onRestart, userName }) => (
   <div className="max-w-3xl mx-auto px-6 py-12 fade-up">
     <div className="certificate">
       <p className="text-xs uppercase tracking-widest text-gold font-semibold text-center">Certificate of AI Literacy</p>
       <p className="serif text-center text-4xl mt-3">10x Loop Completed.</p>
       <p className="text-center muted mt-2">This certifies that</p>
-      <p className="serif text-center text-3xl mt-1 font-semibold">You</p>
+      <p className="serif text-center text-3xl mt-1 font-semibold">{userName || "You"}</p>
       <p className="text-center muted mt-2 max-w-md mx-auto">has completed one full loop of AI literacy — from Read through Orchestrate — and returns as a more capable, AI-augmented human.</p>
       <div className="mt-8 grid grid-cols-3 gap-4 text-center">
         <div><p className="serif text-3xl font-semibold">{score || "—"}</p><p className="text-xs muted uppercase tracking-widest mt-1">Final score</p></div>
@@ -1444,14 +1467,370 @@ const Certificate = ({ score, level, onRestart }) => (
   </div>
 );
 
+/* ===========================================================
+   V0.3 ADDITIONS — Goal anchor (#2), Artifact eval (#3),
+   Inline feedback + observer view (#5)
+   =========================================================== */
+
+/* CONFIG — wire feedbackWebhook later via Google Apps Script if you want Sheet capture */
+const CONFIG = {
+  feedbackWebhook: "",
+  feedbackEmail: "anuj@aiandbeyond.in"
+};
+const STORAGE_KEY = "loop_v0_3_state";
+
+/* HEURISTIC ARTIFACT EVAL — runs client-side, no API needed.
+   Inspects the artifact for spec-mindset markers (audience, constraints, format,
+   intended action, voice cues, negative instructions, length). Calibrated to
+   feel credible to an early AI user — not magic, but better than self-report. */
+const evaluateArtifact = (text) => {
+  const trimmed = text.trim();
+  const wordCount = trimmed.split(/\s+/).filter(Boolean).length;
+  if (wordCount < 5) return null;
+  const checks = {
+    hasContext: wordCount > 30,
+    hasAudience: /\bfor\b[^.]{0,40}(reader|leader|customer|manager|exec|cfo|ceo|board|team|client|user|audience|stakeholder|director|head of|chief|investor|recruiter)/i.test(text),
+    hasConstraint: /(no more than|less than|under|maximum|exactly|at least|within|in \d+|fewer than|in under|no longer than|max \d|max\.?)/i.test(text),
+    hasFormat: /(bullet|paragraph|list|table|slide|deck|email|format|structure|outline|headline|tweet|markdown|json|schema)/i.test(text),
+    hasIntent: /(i want|i'd like|so that|in order to|the goal is|the output should|so we can|the reader should|so they|to (approve|decide|act|reply|forward))/i.test(text),
+    hasVoice: /(tone|voice|sound|formal|casual|direct|warm|professional|friendly|like a |concise|punchy|crisp)/i.test(text),
+    hasNegative: /(don'?t|do not|avoid|no fluff|no corporate|skip the|without|don't use)/i.test(text),
+    hasExample: /(for example|e\.?g\.?|like (this|so)|here's (an example|a sample)|example:)/i.test(text)
+  };
+  let score = 3.5;
+  if (checks.hasContext) score += 1;
+  if (checks.hasAudience) score += 1.5;
+  if (checks.hasConstraint) score += 1.5;
+  if (checks.hasFormat) score += 1;
+  if (checks.hasIntent) score += 1;
+  if (checks.hasVoice) score += 0.5;
+  if (checks.hasNegative) score += 0.5;
+  if (checks.hasExample) score += 0.5;
+  if (wordCount > 220) score -= 0.5;
+  if (wordCount < 15) score -= 1.5;
+  score = Math.max(1, Math.min(10, score));
+  const strengths = [];
+  const lifts = [];
+  if (checks.hasAudience) strengths.push("You named the audience — the single biggest tone lever.");
+  else lifts.push("**Name the audience.** 'For a CFO who has 60 seconds' lands very differently from 'for a leader.'");
+  if (checks.hasConstraint) strengths.push("You set a constraint. That's spec-mindset — exactly right.");
+  else lifts.push("**Set a constraint.** 'Under 80 words' or 'in 5 bullets.' AI defaults to long without one.");
+  if (checks.hasFormat) strengths.push("You specified the format. Saves an iteration round.");
+  else lifts.push("**Specify the format.** Bullets, table, email, slide — removes ambiguity.");
+  if (checks.hasIntent) strengths.push("You stated what should happen next. Output-driven prompts beat content-driven ones.");
+  else lifts.push("**State the desired action.** 'I want them to approve this' reframes the whole response.");
+  if (checks.hasNegative) strengths.push("You told it what NOT to do. Negative instructions are underused.");
+  if (checks.hasExample) strengths.push("You showed an example. Few-shot examples are gold for tone matching.");
+  if (wordCount < 15) lifts.unshift("**Too short to be a spec.** Aim for 40–100 well-chosen words. AI quality scales with context.");
+  if (wordCount > 220) lifts.unshift("**This prompt is long.** Compress — most prompts peak in quality at 50–150 words.");
+  return { score: Math.round(score * 10) / 10, strengths: strengths.slice(0, 4), lifts: lifts.slice(0, 3), wordCount };
+};
+
+const claudeDeepEvalUrl = (text, stageName, goal) => {
+  const goalLine = goal ? `\nMy work goal for this Loop is: "${goal}"` : "";
+  const prompt = `I'm on the "${stageName}" stage of an AI literacy program called 10x Loop.${goalLine}\n\nHere's a work artifact (a prompt I wrote, or AI output I produced). Please:\n1. Score it 1–10 on prompt clarity, output quality, and spec rigour\n2. Tell me 3 things it does well\n3. Tell me the single most important thing to lift — and rewrite the section that needs it\n4. Tell me what a 10/10 version of this artifact would look like\n\nMy artifact:\n\n${text}`;
+  return `https://claude.ai/new?q=${encodeURIComponent(prompt)}`;
+};
+
+/* NAME + GOAL MODAL — fires after IntentModal closes. Captures who she is and
+   what specific work outcome she wants the Loop to drive. */
+const NameGoalModal = ({ onSave, onSkip }) => {
+  const [name, setName] = useState("");
+  const [role, setRole] = useState("");
+  const [goal, setGoal] = useState("");
+  const SUGGESTED_GOALS = [
+    "Halve my email triage time",
+    "Ship a weekly client digest in 30 min",
+    "Automate my weekly status report",
+    "Pre-brief every meeting in 5 min",
+    "Build an AI assistant for my team",
+    "Cut my reading load by 60%"
+  ];
+  const canSave = name.trim().length > 1 && goal.trim().length > 5;
+  return (
+    <div className="modal-overlay">
+      <div className="modal fade-up">
+        <Nudge kind="identity" pos="tr" outline={false}>
+          <p className="pill" style={{background:"#EEF6D9", color:"#5A6B14"}}>Goal anchor</p>
+        </Nudge>
+        <h2 className="serif text-3xl font-semibold mt-3 leading-tight">One real outcome. Not a vague goal.</h2>
+        <p className="muted text-sm mt-2">Every stage from here on will reframe around this. Make it specific to <i>your</i> work.</p>
+        <div className="mt-6 space-y-4">
+          <div>
+            <p className="text-xs muted uppercase tracking-widest font-semibold mb-2">Your name</p>
+            <input type="text" placeholder="e.g. Aisha Verma" value={name} onChange={e => setName(e.target.value)} />
+          </div>
+          <div>
+            <p className="text-xs muted uppercase tracking-widest font-semibold mb-2">Your role (optional)</p>
+            <input type="text" placeholder="e.g. Senior Marketing Manager" value={role} onChange={e => setRole(e.target.value)} />
+          </div>
+          <div>
+            <p className="text-xs muted uppercase tracking-widest font-semibold mb-2">Your goal — try one of these</p>
+            <div className="chip-row mb-3">
+              {SUGGESTED_GOALS.map(g => (
+                <button key={g} className={`chip ${goal === g ? "active" : ""}`} onClick={() => setGoal(g)}>{g}</button>
+              ))}
+            </div>
+            <textarea rows="3" placeholder="…or write your own. The more specific, the better."
+              value={goal} onChange={e => setGoal(e.target.value)} />
+          </div>
+        </div>
+        {canSave && (
+          <div className="card p-4 mt-5 bg-[#FAF6EB]">
+            <p className="text-sm leading-snug">
+              <b>{name}</b> is doing the 10x Loop to <b>{goal.toLowerCase()}</b>.<br/>
+              <span className="muted">Every stage from here will be filtered through that goal.</span>
+            </p>
+          </div>
+        )}
+        <div className="flex gap-3 mt-6 justify-end">
+          <button onClick={onSkip} className="btn-ghost">Skip for now</button>
+          <button onClick={() => canSave && onSave({name, role, goal})} className="btn-gold" disabled={!canSave} style={{opacity: canSave ? 1 : 0.4}}>
+            Set my anchor →
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/* ARTIFACT EVALUATOR — pasted text → heuristic score + strengths + lifts.
+   Lives inside the Prompt Challenge tab. */
+const ArtifactEvaluator = ({ stage, goal, savedEval, onSave }) => {
+  const [text, setText] = useState(savedEval?.text || "");
+  const [result, setResult] = useState(savedEval?.result || null);
+
+  const run = () => {
+    const ev = evaluateArtifact(text);
+    setResult(ev);
+    if (ev) onSave({ text, result: ev, evaluatedAt: new Date().toISOString() });
+  };
+
+  const renderMd = (s) => {
+    const parts = s.split(/(\*\*[^*]+\*\*)/);
+    return parts.map((p, i) => p.startsWith("**") ? <b key={i}>{p.slice(2, -2)}</b> : <span key={i}>{p}</span>);
+  };
+
+  return (
+    <div className="mt-6">
+      <p className="text-xs muted uppercase tracking-widest font-semibold mb-2">Paste a real artifact — a prompt you wrote, or AI output you got. We'll score it.</p>
+      <textarea rows="7" placeholder={`Paste your prompt or AI output here. ${goal ? `Connect it to your goal: "${goal}".` : "Be specific."}`}
+        value={text} onChange={e => setText(e.target.value)} />
+      <div className="flex gap-2 mt-3 flex-wrap">
+        <button onClick={run} className="btn-primary text-sm" disabled={text.trim().split(/\s+/).filter(Boolean).length < 5}
+          style={{opacity: text.trim().split(/\s+/).filter(Boolean).length >= 5 ? 1 : 0.4}}>
+          ⚡ Get instant evaluation
+        </button>
+        {text.trim().length > 10 && (
+          <a href={claudeDeepEvalUrl(text, stage.name, goal)} target="_blank" rel="noopener" className="btn-ghost text-sm">
+            🧠 Get deeper evaluation from Claude →
+          </a>
+        )}
+      </div>
+
+      {result && (
+        <div className="card p-5 mt-5 fade-up bg-[#FAF6EB]" style={{borderColor:"#C39247"}}>
+          <div className="flex items-center justify-between flex-wrap gap-3">
+            <div>
+              <p className="text-xs muted uppercase tracking-widest font-semibold">Instant evaluation</p>
+              <p className="serif text-4xl font-semibold mt-1">{result.score}<span className="text-base muted">/10</span></p>
+            </div>
+            <div className="text-right">
+              <p className="text-xs muted uppercase tracking-widest font-semibold">{result.wordCount} words</p>
+              <p className="text-xs muted mt-1">Heuristic — not a real LLM. Use Claude link for deep eval.</p>
+            </div>
+          </div>
+          {result.strengths.length > 0 && (
+            <div className="mt-4">
+              <p className="text-xs uppercase tracking-widest font-semibold" style={{color:"#1F8F5D"}}>What's working</p>
+              <ul className="text-sm mt-2 space-y-1.5">
+                {result.strengths.map((s, i) => <li key={i} className="flex gap-2"><span>✓</span><span>{renderMd(s)}</span></li>)}
+              </ul>
+            </div>
+          )}
+          {result.lifts.length > 0 && (
+            <div className="mt-4">
+              <p className="text-xs uppercase tracking-widest font-semibold" style={{color:"#B86F5E"}}>The single lift that matters most</p>
+              <ul className="text-sm mt-2 space-y-1.5">
+                {result.lifts.map((s, i) => <li key={i} className="flex gap-2"><span>→</span><span>{renderMd(s)}</span></li>)}
+              </ul>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+
+/* FLOATING FEEDBACK BUTTON — always visible, captures notes per screen */
+const FeedbackButton = ({ onClick }) => (
+  <button onClick={onClick}
+    className="fixed bottom-6 right-6 z-50 text-white rounded-full px-4 py-3 shadow-lg text-sm font-semibold hover:scale-105 transition-transform"
+    style={{background: "#141B4D"}}>
+    💬 Note to Anuj
+  </button>
+);
+
+const FeedbackModal = ({ user, currentScreen, currentStage, onSave, onClose }) => {
+  const [note, setNote] = useState("");
+  const [sentiment, setSentiment] = useState(null);
+  const [sent, setSent] = useState(false);
+
+  const submit = () => {
+    if (note.trim().length < 3) return;
+    const payload = {
+      note, sentiment, screen: currentScreen, stage: currentStage || "",
+      user: user?.name || "Anonymous", role: user?.role || "", goal: user?.goal || "",
+      timestamp: new Date().toISOString()
+    };
+    onSave(payload);
+    if (CONFIG.feedbackWebhook) {
+      fetch(CONFIG.feedbackWebhook, { method: "POST", body: JSON.stringify(payload) }).catch(() => {});
+    }
+    setSent(true);
+    setTimeout(onClose, 1500);
+  };
+  const mailtoFallback = () => {
+    const subject = `[10x Loop feedback] ${user?.name || "Reviewer"} · ${currentScreen}`;
+    const body = `Screen: ${currentScreen}\nStage: ${currentStage || "—"}\nSentiment: ${sentiment || "—"}\nReviewer: ${user?.name || "—"} (${user?.role || "no role"})\nGoal: ${user?.goal || "—"}\n\n---\n\n${note}`;
+    window.location.href = `mailto:${CONFIG.feedbackEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  };
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal fade-up" onClick={e => e.stopPropagation()} style={{maxWidth: 460}}>
+        {sent ? (
+          <div className="text-center py-6">
+            <p className="text-5xl">✅</p>
+            <p className="serif text-2xl mt-3">Saved.</p>
+            <p className="muted text-sm mt-2">Anuj sees this in the Observer view.</p>
+          </div>
+        ) : (
+          <>
+            <p className="pill" style={{background:"#FCE3EE", color:"#B0316E"}}>Your note</p>
+            <h2 className="serif text-2xl font-semibold mt-2">What stood out — or didn't?</h2>
+            <p className="muted text-xs mt-1">Screen: <b>{currentScreen}</b>{currentStage ? ` · Stage: ${currentStage}` : ""}</p>
+            <div className="flex gap-2 mt-4 flex-wrap">
+              {[["love","💚 Loved it"],["meh","🤔 Meh"],["confusing","😕 Confusing"],["broken","🐞 Broken"]].map(([k,v]) => (
+                <button key={k} className={`chip text-xs ${sentiment === k ? "active" : ""}`} onClick={() => setSentiment(k)}>{v}</button>
+              ))}
+            </div>
+            <textarea rows="5" className="mt-4" placeholder="What worked? What didn't? Anything missing? Be specific — it's gold for Anuj."
+              value={note} onChange={e => setNote(e.target.value)} />
+            <div className="flex gap-2 mt-5 justify-end flex-wrap">
+              <button onClick={onClose} className="btn-ghost text-sm">Cancel</button>
+              <button onClick={mailtoFallback} className="btn-ghost text-sm" disabled={note.length < 3} style={{opacity: note.length >= 3 ? 1 : 0.4}}>Email it</button>
+              <button onClick={submit} className="btn-gold text-sm" disabled={note.length < 3} style={{opacity: note.length >= 3 ? 1 : 0.4}}>Save note →</button>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+};
+
+/* OBSERVER VIEW — Anuj's read-only window into a user's session.
+   Activated via ?view=observer in the URL on the user's own device. */
+const ObserverView = ({ user, goal, progress, intent, commitment, streak, score, level, feedbacks, evaluations, currentStage }) => {
+  const done = STAGES.filter(s => progress[s.id]?.completed);
+  const exportJSON = () => {
+    const data = { user, goal, progress, intent, commitment, streak, score, level, feedbacks, evaluations, currentStage, exportedAt: new Date().toISOString() };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a"); a.href = url;
+    a.download = `loop-session-${(user?.name || "anon").replace(/\s+/g, "_")}.json`;
+    a.click();
+  };
+  return (
+    <div className="max-w-5xl mx-auto px-6 py-10 fade-up">
+      <div className="flex items-end justify-between flex-wrap gap-3">
+        <div>
+          <p className="pill" style={{background:"#141B4D", color:"white"}}>Observer · for Anuj only</p>
+          <h2 className="serif text-4xl font-semibold mt-3">{user?.name || "Anonymous reviewer"}</h2>
+          <p className="muted">{user?.role || "no role"} · session on this device</p>
+        </div>
+        <div className="flex gap-2">
+          <button onClick={exportJSON} className="btn-ghost text-sm">Export JSON</button>
+          <button onClick={() => { window.location.href = window.location.pathname; }} className="btn-primary text-sm">← Back to user view</button>
+        </div>
+      </div>
+      <div className="grid md:grid-cols-4 gap-4 mt-8">
+        <KPI label="Goal" value={goal ? "Set" : "—"} sub={goal || "Not set"}/>
+        <KPI label="Score" value={score != null ? `${score}/100` : "—"} sub={level || "—"}/>
+        <KPI label="Stages done" value={`${done.length}/${STAGES.length}`} sub={`Current: ${currentStage || "—"}`}/>
+        <KPI label="Streak · Notes" value={`${streak}d · ${(feedbacks || []).length}`} sub="day streak · feedback notes"/>
+      </div>
+      {goal && (
+        <div className="card p-5 mt-6 bg-[#FAF6EB]">
+          <p className="text-xs muted uppercase tracking-widest font-semibold">Stated goal</p>
+          <p className="serif text-xl mt-1">{goal}</p>
+        </div>
+      )}
+      <div className="card p-6 mt-6">
+        <p className="text-xs muted uppercase tracking-widest font-semibold mb-4">Per-stage detail</p>
+        <div className="space-y-3">
+          {STAGES.map(s => {
+            const data = progress[s.id] || {};
+            const ev = evaluations?.[s.id];
+            const hasData = data.completed || data.practiceNote || data.promptResponse || data.reflection || ev;
+            return (
+              <div key={s.id} className={`p-4 rounded-xl border ${data.completed ? "bg-[#F4FAF4]" : "border-line"}`}
+                style={{borderColor: data.completed ? "#1F8F5D33" : "var(--line)", opacity: hasData ? 1 : 0.45}}>
+                <div className="flex justify-between items-start flex-wrap gap-2">
+                  <div>
+                    <p className="font-semibold">{s.icon} {s.name} {data.completed && <span className="text-xs ml-2" style={{color:"#1F8F5D"}}>✓ DONE</span>}</p>
+                    <p className="text-xs muted mt-0.5">{s.short}</p>
+                  </div>
+                  {ev && <span className="pill" style={{background:"#FAF6EB", color:"#7A5A23"}}>Eval: {ev.result?.score}/10</span>}
+                </div>
+                {data.practiceNote && <p className="text-xs mt-2"><b>Practice:</b> {data.practiceNote.slice(0,300)}{data.practiceNote.length > 300 ? "…" : ""}</p>}
+                {data.promptResponse && <p className="text-xs mt-2"><b>Prompt output:</b> {data.promptResponse.slice(0,300)}{data.promptResponse.length > 300 ? "…" : ""}</p>}
+                {data.reflection && <p className="text-xs mt-2"><b>Reflection:</b> {data.reflection.slice(0,300)}{data.reflection.length > 300 ? "…" : ""}</p>}
+                {ev?.result && (
+                  <div className="mt-3 text-xs bg-white rounded-lg p-3 border border-line">
+                    <p><b>Artifact ({ev.result.wordCount} words):</b> {ev.text?.slice(0, 200)}{ev.text?.length > 200 ? "…" : ""}</p>
+                    <p className="mt-2"><b>Strengths:</b> {ev.result.strengths.join(" · ")}</p>
+                    <p className="mt-1"><b>Lifts:</b> {ev.result.lifts.join(" · ")}</p>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+      <div className="card p-6 mt-6">
+        <p className="text-xs muted uppercase tracking-widest font-semibold mb-4">Feedback notes ({(feedbacks || []).length})</p>
+        {(feedbacks || []).length === 0 ? (
+          <p className="muted text-sm">No notes yet.</p>
+        ) : (
+          <div className="space-y-3">
+            {[...feedbacks].reverse().map((f, i) => (
+              <div key={i} className="p-4 rounded-xl border border-line">
+                <div className="flex justify-between items-start text-xs muted flex-wrap gap-2">
+                  <span><b>{f.screen}</b>{f.stage ? ` · ${f.stage}` : ""} · {f.sentiment || "no sentiment"}</span>
+                  <span>{new Date(f.timestamp).toLocaleString()}</span>
+                </div>
+                <p className="text-sm mt-2 leading-relaxed">{f.note}</p>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+      <div className="card p-5 mt-6 text-xs muted">
+        <p><b>How this view works:</b> all session state lives in this browser's <code>localStorage</code>. To see your teammate's session, you'll need to open the URL on <i>her device</i> with <code>?view=observer</code> appended. Or have her hit "Export JSON" from this view.</p>
+      </div>
+    </div>
+  );
+};
+
 /* ROOT APP */
+const isObserverRoute = () => new URLSearchParams(window.location.search).get("view") === "observer";
+
 const App = () => {
   const [screen, setScreen] = useState("landing");
   const [progress, setProgress] = useState({});
   const [currentStage, setCurrentStage] = useState(null);
   const [score, setScore] = useState(null);
   const [level, setLevel] = useState(null);
-
   const [nudgesVisible, setNudgesVisible] = useState(false);
   const [intent, setIntent] = useState(null);
   const [commitment, setCommitment] = useState(null);
@@ -1459,8 +1838,51 @@ const App = () => {
   const [showIntent, setShowIntent] = useState(false);
   const [showCommit, setShowCommit] = useState(false);
 
+  // V0.3 state
+  const [user, setUser] = useState(null);              // { name, role }
+  const [goal, setGoal] = useState(null);              // string
+  const [showNameGoal, setShowNameGoal] = useState(false);
+  const [evaluations, setEvaluations] = useState({});  // { stageId: { text, result, evaluatedAt } }
+  const [feedbacks, setFeedbacks] = useState([]);
+  const [showFeedback, setShowFeedback] = useState(false);
+  const [hydrated, setHydrated] = useState(false);
+
+  // Hydrate from localStorage on mount
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const s = JSON.parse(raw);
+        if (s.screen) setScreen(s.screen);
+        if (s.progress) setProgress(s.progress);
+        if (s.currentStage) setCurrentStage(s.currentStage);
+        if (s.score != null) setScore(s.score);
+        if (s.level) setLevel(s.level);
+        if (s.intent) setIntent(s.intent);
+        if (s.commitment) setCommitment(s.commitment);
+        if (s.streak != null) setStreak(s.streak);
+        if (s.user) setUser(s.user);
+        if (s.goal) setGoal(s.goal);
+        if (s.evaluations) setEvaluations(s.evaluations);
+        if (s.feedbacks) setFeedbacks(s.feedbacks);
+      }
+    } catch (e) { /* corrupted state — ignore */ }
+    setHydrated(true);
+  }, []);
+
+  // Persist on any change (after hydration to avoid wiping state)
+  useEffect(() => {
+    if (!hydrated) return;
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        screen, progress, currentStage, score, level, intent, commitment, streak,
+        user, goal, evaluations, feedbacks
+      }));
+    } catch (e) {}
+  }, [hydrated, screen, progress, currentStage, score, level, intent, commitment, streak, user, goal, evaluations, feedbacks]);
+
   const allDone = STAGES.every(s => progress[s.id]?.completed);
-  useEffect(() => { if (allDone && screen !== "certificate") setScreen("certificate"); }, [allDone]);
+  useEffect(() => { if (allDone && screen !== "certificate" && hydrated) setScreen("certificate"); }, [allDone]);
 
   const handleSubmitAssessment = (s) => {
     setScore(s);
@@ -1474,6 +1896,7 @@ const App = () => {
   const pickStageFromResult = (id) => {
     setCurrentStage(id);
     if (!intent) setShowIntent(true);
+    else if (!user || !goal) setShowNameGoal(true);
     else setScreen("loop");
   };
 
@@ -1481,23 +1904,46 @@ const App = () => {
 
   const stage = STAGES.find(s => s.id === currentStage);
 
+  const resetSession = () => {
+    if (!confirm("Clear all your session data and start fresh? This wipes name, goal, progress, and notes.")) return;
+    localStorage.removeItem(STORAGE_KEY);
+    window.location.href = window.location.pathname;
+  };
+
+  // OBSERVER ROUTE — render Anuj's view instead of the user-facing app
+  if (hydrated && isObserverRoute()) {
+    return (
+      <NudgeCtx.Provider value={{ visible: false, toggle: () => {} }}>
+        <div className="min-h-screen">
+          <Header screen="observer" setScreen={() => {}} progress={progress} nudgesVisible={false} toggleNudges={() => {}} />
+          <ObserverView user={user} goal={goal} progress={progress} intent={intent} commitment={commitment}
+            streak={streak} score={score} level={level} feedbacks={feedbacks} evaluations={evaluations}
+            currentStage={currentStage} />
+        </div>
+      </NudgeCtx.Provider>
+    );
+  }
+
   return (
     <NudgeCtx.Provider value={{ visible: nudgesVisible, toggle: () => setNudgesVisible(v => !v) }}>
     <div className="min-h-screen">
       <div className="brand-gradient-strip" style={{height: 3, borderRadius: 0}}/>
       <Header screen={screen} setScreen={setScreen} progress={progress}
-        nudgesVisible={nudgesVisible} toggleNudges={() => setNudgesVisible(v => !v)} />
+        nudgesVisible={nudgesVisible} toggleNudges={() => setNudgesVisible(v => !v)} userName={user?.name} onReset={resetSession} />
 
       {screen === "landing" && <Landing onStart={() => setScreen("assessment")} setScreen={setScreen} />}
       {screen === "assessment" && <Assessment onSubmit={handleSubmitAssessment} />}
       {screen === "result" && <Result score={score} onContinue={pickStageFromResult} />}
       {screen === "loop" && (
         <LoopHub progress={progress} currentStage={currentStage} onPick={pickStage}
-          streak={streak} intent={intent} commitment={commitment}
+          streak={streak} intent={intent} commitment={commitment} goal={goal} user={user}
           openCommit={() => setShowCommit(true)} />
       )}
       {screen === "stage" && stage && (
         <StageDetail stage={stage} savedData={progress[stage.id]} streak={streak} intent={intent}
+          goal={goal}
+          savedEval={evaluations[stage.id]}
+          onSaveEval={(ev) => setEvaluations(e => ({ ...e, [stage.id]: ev }))}
           onSave={(data) => setProgress(p => ({ ...p, [stage.id]: { ...(p[stage.id] || {}), ...data }}))}
           onComplete={() => {
             setProgress(p => ({ ...p, [stage.id]: { ...(p[stage.id] || {}), completed: true }}));
@@ -1516,7 +1962,7 @@ const App = () => {
       {screen === "enterprise" && <EnterpriseDashboard />}
       {screen === "nudgelab" && <NudgeLab enabled={nudgesVisible} toggle={() => setNudgesVisible(v=>!v)} />}
       {screen === "certificate" && (
-        <Certificate score={score} level={LEVELS.find(l => l.id === level)}
+        <Certificate score={score} level={LEVELS.find(l => l.id === level)} userName={user?.name}
           onRestart={() => {
             setProgress({}); setScore(null); setLevel(null); setCurrentStage(null);
             setIntent(null); setCommitment(null); setStreak(5);
@@ -1526,18 +1972,39 @@ const App = () => {
 
       {showIntent && stage && (
         <IntentModal stage={stage}
-          onSave={(v) => { setIntent(v); setShowIntent(false); setScreen("loop"); }}
-          onSkip={() => { setShowIntent(false); setScreen("loop"); }} />
+          onSave={(v) => {
+            setIntent(v); setShowIntent(false);
+            if (!user || !goal) setShowNameGoal(true);
+            else setScreen("loop");
+          }}
+          onSkip={() => {
+            setShowIntent(false);
+            if (!user || !goal) setShowNameGoal(true);
+            else setScreen("loop");
+          }} />
+      )}
+      {showNameGoal && (
+        <NameGoalModal
+          onSave={(v) => { setUser({ name: v.name, role: v.role }); setGoal(v.goal); setShowNameGoal(false); setScreen("loop"); }}
+          onSkip={() => { setShowNameGoal(false); setScreen("loop"); }} />
       )}
       {showCommit && stage && (
         <CommitmentModal stage={stage} intent={intent}
           onConfirm={(v) => { setCommitment(v); setShowCommit(false); }}
           onClose={() => setShowCommit(false)} />
       )}
+      {showFeedback && (
+        <FeedbackModal user={{ ...user, goal }} currentScreen={screen} currentStage={stage?.name}
+          onSave={(payload) => setFeedbacks(f => [...f, payload])}
+          onClose={() => setShowFeedback(false)} />
+      )}
+
+      <FeedbackButton onClick={() => setShowFeedback(true)} />
 
       <footer className="text-xs muted text-center py-10 border-t border-line mt-16">
         <Logo />
-        <p className="mt-3">10x Loop · An AI&amp;Beyond product · Concept MVP v0.2 · Engineered choice architecture (Thaler, 2008)</p>
+        <p className="mt-3">10x Loop · An AI&amp;Beyond product · Concept MVP v0.3 · Engineered choice architecture (Thaler, 2008)</p>
+        <p className="mt-1 opacity-60">Observer view: append <code>?view=observer</code> to the URL on this device.</p>
       </footer>
     </div>
     </NudgeCtx.Provider>
