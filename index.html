@@ -3,275 +3,167 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>10x Loop — The AI Adoption Companion</title>
+<title>10x Loop — Your AI practice companion</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
 <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
 <script src="https://unpkg.com/@babel/standalone@7.22.20/babel.min.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
 <style>
   :root {
-    /* AI&Beyond brand palette */
-    --ink: #141b4d;             /* Space Cadet — primary */
-    --ink-soft: #11171f;        /* Black */
-    --paper: #FFFFFF;
-    --paper-card: #FFFFFF;
-    --paper-tint: #F7F8FA;      /* very soft platinum */
-    --platinum: #d9d9d7;
-    --green: #94c90d;           /* Yellow Green — primary accent */
-    --green-soft: #c8e26b;
-    --green-tint: #EEF6D9;
-    --blue: #4198d3;            /* Celestial Blue */
-    --blue-soft: #A8D0EB;
-    --blue-tint: #E5F1FA;
-    --mint: #53bc86;
-    --mint-soft: #A9DEC3;
-    --mint-tint: #E1F4EB;
-    --line: #E6E6E4;
-    --muted: #6B7280;
-    --warn: #B86F5E;
-    --good: #53bc86;
-
-    /* legacy aliases — kept so old class names still resolve */
-    --gold: #94c90d;
-    --gold-soft: #c8e26b;
-    --teal: #4198d3;
-    --teal-soft: #E5F1FA;
+    --ink: #141b4d;          /* Space Cadet */
+    --ink-soft: #3a4070;
+    --accent: #94c90d;       /* Yellow Green */
+    --accent-dark: #6f9a06;
+    --accent-tint: #f3f9e2;
+    --blue: #4198d3;         /* Celestial Blue */
+    --blue-tint: #e8f2fa;
+    --mint: #53bc86;         /* Mint */
+    --mint-tint: #e9f7f0;
+    --paper: #fbfcf9;
+    --card: #ffffff;
+    --line: #e5e7e1;         /* Platinum */
+    --muted: #6b7280;
+    --warn: #c05e3d;
   }
-  html, body { background: var(--paper); color: var(--ink); font-family: 'Roboto', system-ui, -apple-system, sans-serif; }
-  .serif { font-family: 'Gilroy', 'Manrope', system-ui, sans-serif; font-weight: 700; letter-spacing: -0.015em; }
+  html, body { background: var(--paper); color: var(--ink); font-family: 'Roboto', system-ui, sans-serif; }
+  .head { font-family: 'Poppins', 'Roboto', sans-serif; }
   .ink { color: var(--ink); }
   .muted { color: var(--muted); }
-  .bg-paper { background: var(--paper); }
-  .bg-card { background: var(--paper-card); }
-  .bg-ink { background: var(--ink); }
-  .bg-gold { background: var(--green); }
-  .bg-teal { background: var(--blue); }
-  .border-line { border-color: var(--line); }
-  .text-gold { color: var(--green); }
-  .text-teal { color: var(--blue); }
-  .text-warn { color: var(--warn); }
-  .text-good { color: var(--good); }
-  .text-mint { color: var(--mint); }
-  .ring-gold { box-shadow: 0 0 0 3px rgba(148,201,13,0.30); }
+  .accent { color: var(--accent-dark); }
 
-  /* ===== BRAND GRADIENT — the signature ===== */
-  .brand-gradient {
-    background: linear-gradient(90deg, #141b4d 0%, #4198d3 38%, #53bc86 70%, #94c90d 100%);
-  }
-  .brand-gradient-soft {
-    background: linear-gradient(135deg, rgba(20,27,77,0.06) 0%, rgba(65,152,211,0.08) 38%, rgba(83,188,134,0.08) 70%, rgba(148,201,13,0.12) 100%);
-  }
+  .brand-strip { height: 4px; background: linear-gradient(90deg, #141b4d 0%, #4198d3 40%, #53bc86 70%, #94c90d 100%); }
   .brand-gradient-text {
-    background: linear-gradient(90deg, #141b4d 0%, #4198d3 38%, #53bc86 70%, #94c90d 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    -webkit-text-fill-color: transparent;
-    background-size: 200% 100%;
-    animation: gradShift 14s ease infinite;
-  }
-  @keyframes gradShift { 0% {background-position: 0% 50%;} 50% {background-position: 100% 50%;} 100% {background-position: 0% 50%;} }
-  .brand-gradient-strip {
-    height: 4px; width: 100%;
-    background: linear-gradient(90deg, #141b4d 0%, #4198d3 38%, #53bc86 70%, #94c90d 100%);
-    border-radius: 4px;
+    background: linear-gradient(90deg, #4198d3 0%, #53bc86 55%, #94c90d 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
   }
 
-  .grain::before {
-    content: ""; position: fixed; inset: 0; pointer-events: none; opacity: 0.018;
-    background-image: radial-gradient(#141b4d 1px, transparent 1px); background-size: 4px 4px; z-index: 0;
-  }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 16px; }
+  .btn-primary { background: var(--ink); color: white; border-radius: 999px; padding: 13px 26px; font-weight: 600; font-family: 'Poppins', sans-serif; transition: transform .15s ease, box-shadow .2s ease; }
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(20,27,77,0.25); }
+  .btn-accent { background: var(--accent); color: var(--ink); border-radius: 999px; padding: 13px 26px; font-weight: 700; font-family: 'Poppins', sans-serif; transition: transform .15s ease, box-shadow .2s ease; }
+  .btn-accent:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(148,201,13,0.4); }
+  .btn-ghost { background: transparent; color: var(--ink); border: 1.5px solid var(--line); border-radius: 999px; padding: 11px 20px; font-weight: 500; }
+  .btn-ghost:hover { background: var(--accent-tint); border-color: var(--accent); }
+
+  .pill { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 999px; font-size: 11px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; font-family: 'Poppins', sans-serif; }
+
+  textarea, input[type=text] { background: var(--card); border: 1.5px solid var(--line); border-radius: 12px; padding: 13px 15px; font-family: 'Roboto', sans-serif; width: 100%; font-size: 15px; }
+  textarea:focus, input:focus { outline: none; border-color: var(--blue); }
+
+  .progress-bar { height: 10px; background: #eef0ea; border-radius: 999px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--blue) 0%, var(--mint) 55%, var(--accent) 100%); transition: width 0.6s ease; border-radius: 999px; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  .fade-up { animation: fadeUp 0.45s ease-out both; }
 
   @keyframes pulseGlow {
     0%, 100% { filter: drop-shadow(0 0 0 rgba(148,201,13,0)); }
-    50% { filter: drop-shadow(0 0 14px rgba(148,201,13,0.65)); }
+    50% { filter: drop-shadow(0 0 12px rgba(148,201,13,0.75)); }
   }
   .stage-active { animation: pulseGlow 2.6s ease-in-out infinite; }
-
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  .fade-up { animation: fadeUp 0.5s ease-out both; }
-
   .arc-loop { stroke-dasharray: 6 8; animation: dash 30s linear infinite; }
   @keyframes dash { to { stroke-dashoffset: -200; } }
 
-  .card { background: var(--paper-card); border: 1px solid var(--line); border-radius: 14px; }
-  .btn-primary { background: var(--ink); color: white; border-radius: 999px; padding: 12px 22px; font-weight: 600; transition: transform .15s ease, background .2s ease; }
-  .btn-primary:hover { background: #000; transform: translateY(-1px); }
-  .btn-gold {
-    background: linear-gradient(90deg, #4198d3 0%, #53bc86 55%, #94c90d 100%);
-    background-size: 180% 100%;
-    background-position: 0% 50%;
-    color: white;
-    border-radius: 999px;
-    padding: 12px 22px;
-    font-weight: 700;
-    transition: transform .15s ease, background-position .4s ease, box-shadow .2s ease;
-    box-shadow: 0 4px 14px rgba(65,152,211,0.20);
-  }
-  .btn-gold:hover { background-position: 100% 50%; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(83,188,134,0.30); }
-  .btn-ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); border-radius: 999px; padding: 10px 18px; font-weight: 500; }
-  .btn-ghost:hover { background: var(--paper-tint); }
+  .modal-overlay { position: fixed; inset: 0; background: rgba(20,27,77,0.55); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 24px; animation: fadeUp .25s ease-out both; }
+  .modal { background: var(--card); border-radius: 20px; padding: 32px; max-width: 560px; width: 100%; max-height: 90vh; overflow-y: auto; box-shadow: 0 24px 70px rgba(20,27,77,0.35); }
 
-  .pill { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; }
-
-  .tab { padding: 10px 14px; border-radius: 999px; font-weight: 500; font-size: 14px; color: var(--muted); cursor: pointer; }
-  .tab.active { background: var(--ink); color: white; }
-
-  textarea, input[type=text] { background: var(--paper-card); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; font-family: inherit; width: 100%; font-size: 14px; }
-  textarea:focus, input:focus { outline: none; border-color: var(--ink); }
-
-  .certificate {
-    background: linear-gradient(135deg, #FFFFFF 0%, #F7FBF4 50%, #EEF6D9 100%);
-    border-radius: 18px;
-    padding: 48px;
-    position: relative;
-    box-shadow: 0 18px 50px rgba(20,27,77,0.10);
-  }
-  .certificate::before {
-    content: ""; position: absolute; top: 0; left: 0; right: 0; height: 6px;
-    background: linear-gradient(90deg, #141b4d 0%, #4198d3 38%, #53bc86 70%, #94c90d 100%);
-    border-radius: 18px 18px 0 0;
-  }
-  .certificate::after {
-    content: ""; position: absolute; bottom: 0; left: 0; right: 0; height: 6px;
-    background: linear-gradient(90deg, #94c90d 0%, #53bc86 30%, #4198d3 62%, #141b4d 100%);
-    border-radius: 0 0 18px 18px;
-  }
-
-  .progress-bar { height: 8px; background: #EEF0F4; border-radius: 999px; overflow: hidden; }
-  .progress-fill { height: 100%; background: linear-gradient(90deg, #141b4d 0%, #4198d3 38%, #53bc86 70%, #94c90d 100%); transition: width 0.6s ease; }
-
-  .heat-cell { width: 14px; height: 14px; border-radius: 3px; background: #EEF0F4; }
-
-  /* ===== NUDGE LAB STYLES ===== */
-  .nudge-tag {
-    display: inline-flex; align-items: center; gap: 4px;
-    font-size: 9.5px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
-    padding: 3px 7px; border-radius: 5px; color: white;
-    white-space: nowrap; line-height: 1;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.18);
-  }
-  .nudge-floating {
-    position: absolute; top: -10px; right: -10px; z-index: 20;
-    animation: nudgeFlash 0.6s ease-out both;
-  }
-  .nudge-floating.bl { top: auto; right: auto; bottom: -10px; left: -10px; }
-  .nudge-floating.br { top: auto; bottom: -10px; right: -10px; }
-  @keyframes nudgeFlash {
-    from { opacity: 0; transform: translateY(-4px) scale(0.92); }
-    to { opacity: 1; transform: translateY(0) scale(1); }
-  }
-  .nudge-default   { background: #94c90d; }
-  .nudge-social    { background: #4198d3; }
-  .nudge-loss      { background: #B86F5E; }
-  .nudge-intent    { background: #5B5BD6; }
-  .nudge-commit    { background: #53bc86; }
-  .nudge-gradient  { background: #1F6F75; }
-  .nudge-feedback  { background: #D45D8C; }
-  .nudge-salience  { background: #141b4d; }
-  .nudge-identity  { background: #7B6BAF; }
-  .nudge-fresh     { background: #2E8F5D; }
-  .nudge-sludge    { background: #6B7280; }
-
-  .nudge-wrap { position: relative; }
-  .nudge-wrap.outline { outline: 1.5px dashed rgba(65,152,211,0.55); outline-offset: 6px; border-radius: 10px; }
-
-  /* modal */
-  .modal-overlay {
-    position: fixed; inset: 0; background: rgba(20,27,77,0.55); z-index: 100;
-    display: flex; align-items: center; justify-content: center; padding: 24px;
-    animation: fadeUp 0.25s ease-out both;
-  }
-  .modal {
-    background: var(--paper-card); border-radius: 18px; padding: 32px; max-width: 560px; width: 100%;
-    max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(20,27,77,0.25);
-  }
-  .chip-row { display: flex; flex-wrap: wrap; gap: 8px; }
-  .chip {
-    padding: 8px 14px; border-radius: 999px; border: 1px solid var(--line); font-size: 13px;
-    background: white; cursor: pointer; transition: all .15s ease;
-  }
-  .chip:hover { border-color: var(--ink); }
+  .chip { padding: 9px 16px; border-radius: 999px; border: 1.5px solid var(--line); font-size: 13.5px; background: white; cursor: pointer; transition: all .15s ease; }
+  .chip:hover { border-color: var(--blue); }
   .chip.active { background: var(--ink); color: white; border-color: var(--ink); }
 
-  .check-row { display: flex; align-items: flex-start; gap: 10px; padding: 12px; border: 1px solid var(--line); border-radius: 10px; cursor: pointer; }
-  .check-row:hover { background: var(--paper-tint); }
-  .check-row input { margin-top: 3px; }
+  .certificate { background: linear-gradient(135deg, #f3f9e2 0%, #ffffff 45%, #e8f2fa 100%); border: 2.5px solid var(--ink); border-radius: 20px; padding: 48px; position: relative; }
+  .certificate::before, .certificate::after { content: ""; position: absolute; width: 70px; height: 70px; border: 2.5px solid var(--accent); }
+  .certificate::before { top: 14px; left: 14px; border-right: none; border-bottom: none; }
+  .certificate::after { bottom: 14px; right: 14px; border-left: none; border-top: none; }
+
+  /* Nudge overlay (demo mode only) */
+  .nudge-tag { display: inline-flex; align-items: center; font-size: 9.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; padding: 3px 8px; border-radius: 5px; color: white; white-space: nowrap; line-height: 1.4; box-shadow: 0 1px 3px rgba(0,0,0,.18); font-family: 'Poppins', sans-serif; }
+  .nudge-floating { position: absolute; top: -10px; right: -10px; z-index: 20; }
+  .nudge-default { background:#c8971d } .nudge-social { background:#4198d3 } .nudge-loss { background:#c05e3d }
+  .nudge-intent { background:#7b6baf } .nudge-commit { background:#1f8f5d } .nudge-gradient { background:#2b7a8c }
+  .nudge-feedback { background:#d45d8c } .nudge-salience { background:#94a90d } .nudge-identity { background:#5b5bd6 } .nudge-fresh { background:#53bc86 }
+  .nudge-wrap { position: relative; }
+  .nudge-wrap.outline { outline: 1.5px dashed rgba(148,201,13,.7); outline-offset: 5px; border-radius: 12px; }
 </style>
 </head>
-<body class="grain">
+<body>
 <div id="root"></div>
 
 <script type="text/babel" data-presets="env,react">
 
-const { useState, useMemo, useEffect, useContext, createContext } = React;
+const { useState, useEffect, useContext, createContext } = React;
 
+/* ========================= CONFIG ========================= */
+const CONFIG = { feedbackEmail: "anuj@aiandbeyond.in" };
+const isDemo = () => new URLSearchParams(window.location.search).get("mode") === "demo";
+const STORAGE_KEY = "loop_v0_4_state" + (isDemo() ? "_demo" : "");
+const isObserver = () => new URLSearchParams(window.location.search).get("view") === "observer";
+const todayISO = () => new Date().toISOString().slice(0, 10);
+
+/* ========================= STAGE CONTENT ========================= */
 const STAGES = [
-  { id: "human", name: "Human", short: "Where you start", icon: "👤", color: "#6B7280",
-    description: "The starting point. You understand your current AI maturity, your confidence, fears, goals, and work context — before you change anything.",
-    learn: "Before AI literacy comes self-literacy. This stage is about you, not the tool: your current workflow, your strengths, where AI can free up your time, and where you would rather stay hands-on. The goal isn't to use AI everywhere — it's to use AI deliberately.",
-    practice: "List five tasks you did this week. Mark each as energising, draining, repetitive, or judgement-heavy. The repetitive and draining ones are your highest-value AI candidates. The judgement-heavy ones are where you stay in the driver's seat.",
-    prompt: "I'm a [role] at a [industry] company. Here are 5 things I did this week: [list]. Help me see which ones are most AI-augmentable and which I should keep doing myself.",
+  { id: "human", name: "Human", short: "Where you start", icon: "👤", color: "#6b7280", minutes: 15,
+    description: "Understand your current AI maturity, confidence, and work context — before you change anything.",
+    learn: "Before AI literacy comes self-literacy. This stage is about you, not the tool: your workflow, your strengths, where AI can free your time, and where you'd rather stay hands-on. The goal isn't to use AI everywhere — it's to use AI deliberately.",
+    practice: "List five tasks you did this week. Mark each as energising, draining, repetitive, or judgement-heavy. The repetitive and draining ones are your highest-value AI candidates.",
+    prompt: "I'm a [role] at a [industry] company. Here are 5 things I did this week: [list]. Help me see which are most AI-augmentable and which I should keep doing myself.",
     reflect: "Which of your daily tasks are you least willing to hand to AI — and what's the real reason?" },
-  { id: "read", name: "Read", short: "AI as your reader", icon: "📖", color: "#4F6B8F",
-    description: "Using AI to read, summarise, search, compare, and extract meaning from information — at speeds and scales a human cannot.",
-    learn: "AI's first superpower is comprehension at scale. It can read a 50-page contract, summarise a 90-minute meeting, compare two policy documents, or extract every action item from a thread — in seconds. The skill is asking the right question of the right document.",
-    practice: "Take a long document from your week (report, transcript, email thread). Ask AI to (a) summarise it in 5 bullets, (b) extract every decision and owner, (c) tell you what's missing or unclear.",
+  { id: "read", name: "Read", short: "AI as your reader", icon: "📖", color: "#4198d3", minutes: 15,
+    description: "Use AI to read, summarise, compare, and extract meaning from information — at speeds a human cannot.",
+    learn: "AI's first superpower is comprehension at scale. It can read a 50-page contract, summarise a 90-minute meeting, or extract every action item from a thread — in seconds. The skill is asking the right question of the right document.",
+    practice: "Take a long document from your week. Ask AI to (a) summarise it in 5 bullets, (b) extract every decision and owner, (c) tell you what's missing or unclear.",
     prompt: "Summarise this document for a senior leader who has 60 seconds. Lead with the decision, not the background. Then list any unanswered questions.",
     reflect: "Where did the AI summary surprise you — by including something you'd have skipped, or skipping something you'd have included?" },
-  { id: "write", name: "Write", short: "AI as your co-writer", icon: "✍️", color: "#7B6BAF",
-    description: "Using AI to draft, refine, and rewrite emails, reports, articles, proposals, presentations, notes, and business communication.",
-    learn: "Writing with AI isn't about generating from scratch — it's about co-drafting. You bring the context, judgement, and voice. AI brings speed, structure, and variation. The best writers don't ask AI to write for them; they ask AI to help them write better.",
-    practice: "Pick an email or message you've been putting off. Draft it yourself in 2 minutes. Then ask AI to (a) tighten it to half the length, (b) rewrite it in three different tones, (c) flag what a reader might misunderstand.",
-    prompt: "Here's my draft email. Don't rewrite it. Critique it like a chief of staff: where is it unclear, too long, or buries the ask? Then suggest the single edit that matters most.",
+  { id: "write", name: "Write", short: "AI as your co-writer", icon: "✍️", color: "#7b6baf", minutes: 15,
+    description: "Draft, refine, and rewrite emails, reports, proposals, and business communication with AI.",
+    learn: "Writing with AI isn't generating from scratch — it's co-drafting. You bring context, judgement, and voice. AI brings speed, structure, and variation. The best writers don't ask AI to write for them; they ask AI to help them write better.",
+    practice: "Pick an email you've been putting off. Draft it yourself in 2 minutes. Then ask AI to (a) halve its length, (b) rewrite it in three tones, (c) flag what a reader might misunderstand.",
+    prompt: "Here's my draft email. Don't rewrite it. Critique it like a chief of staff: where is it unclear, too long, or burying the ask? Then suggest the single edit that matters most.",
     reflect: "When AI rewrites your work, do you feel more like an editor or a fraud? Where's the line for you?" },
-  { id: "draw", name: "Draw", short: "AI as your designer", icon: "🎨", color: "#B86F5E",
-    description: "Using AI to create visuals, diagrams, images, infographics, storyboards, and multimodal explanations.",
-    learn: "Visual thinking is now accessible to non-designers. Ask AI to turn an idea into a diagram, a slide layout, a flowchart, an infographic, or a storyboard. You don't need design skills — you need the ability to describe what you want a viewer to feel and understand.",
-    practice: "Take one complex idea from your work (a process, a strategy, a customer journey). Ask AI to propose three ways to visualise it. Pick the best one and refine it until a stranger could read it in 10 seconds.",
-    prompt: "Turn this into a one-slide visual that a board member would understand in 10 seconds: [paste idea]. Describe the layout, the icons, the labels, and the colour logic.",
+  { id: "draw", name: "Draw", short: "AI as your designer", icon: "🎨", color: "#c05e3d", minutes: 15,
+    description: "Create visuals, diagrams, infographics, and multimodal explanations — without design skills.",
+    learn: "Visual thinking is now accessible to non-designers. Ask AI to turn an idea into a diagram, slide layout, or storyboard. You don't need design skills — you need to describe what a viewer should feel and understand.",
+    practice: "Take one complex idea from your work. Ask AI to propose three ways to visualise it. Pick the best and refine until a stranger could read it in 10 seconds.",
+    prompt: "Turn this into a one-slide visual a board member would understand in 10 seconds: [paste idea]. Describe the layout, icons, labels, and colour logic.",
     reflect: "When you explained something visually instead of in text, what did you discover that was hidden?" },
-  { id: "add", name: "Add", short: "AI adds value, everywhere", icon: "➕", color: "#94c90d",
-    description: "Using AI to add productivity, creativity, analysis, speed, and quality to everyday work — not as a tool you reach for, but as a layer.",
-    learn: "This is the shift from 'should I use AI here?' to 'why wouldn't I use AI here?'. AI becomes an invisible team member that adds value to almost every task: pre-meeting prep, post-meeting summaries, email triage, decisions, slide reviews, second opinions, speed.",
-    practice: "For one full workday, ask AI to add value to every meaningful task. At the end, log: where did it save time, where did it slow you down, where did it improve quality, and where did it produce something you would not have made alone?",
+  { id: "add", name: "Add", short: "AI adds value everywhere", icon: "➕", color: "#c8971d", minutes: 20,
+    description: "Make AI a layer that adds productivity, speed, and quality to everyday work — not a tool you occasionally reach for.",
+    learn: "This is the shift from 'should I use AI here?' to 'why wouldn't I?'. AI becomes an invisible team member: pre-meeting prep, post-meeting summaries, email triage, second opinions, speed.",
+    practice: "For one full workday, ask AI to add value to every meaningful task. Log: where it saved time, where it slowed you down, where it improved quality.",
     prompt: "I'm about to walk into a meeting on [topic] with [audience]. Brief me in 3 bullets: what to listen for, what to push on, and what to avoid saying.",
-    reflect: "Which task surprised you by becoming dramatically faster — or dramatically slower — when you added AI to it?" },
-  { id: "think", name: "Think", short: "AI as your thinking partner", icon: "🧠", color: "#1F6F75",
-    description: "Using AI as a thinking partner for ideation, critique, debate, reasoning, scenario planning, and decision support.",
-    learn: "AI is also a sparring partner that doesn't get tired, doesn't have political stakes, and will hold a position you disagree with. Use it to pressure-test decisions, generate alternatives, find your blind spots, and force yourself to articulate what you actually believe.",
-    practice: "Take a decision you're sitting on. Ask AI to play three roles: (a) your harshest sceptic, (b) the person most affected by this decision, (c) someone who would make the opposite choice. Listen to all three before deciding.",
-    prompt: "I'm leaning toward [decision] for [reason]. Argue the strongest case against it. Don't be polite — find the holes. Then tell me what evidence would make you change your mind.",
-    reflect: "When AI disagreed with you, did you defend your position or change your mind? What does that say about how confident you actually were?" },
-  { id: "make", name: "Make", short: "AI as your maker", icon: "🛠️", color: "#3F5F6B",
-    description: "Using AI to create working outputs — simple apps, bots, automations, workflows, knowledge bases, and prototypes.",
-    learn: "Making with AI means building things — small apps, automations, bots, prototypes — that you couldn't build before. The skill isn't coding; it's specifying. If you can describe what you want clearly, AI can often build a working first version in minutes.",
-    practice: "Identify one repeating task in your work — a weekly report, a follow-up sequence, a data check. Ask AI to build a working tool that does it. Even if it's rough, ship it for yourself this week.",
-    prompt: "Build me a working prototype of [tool]. It needs to do [function] for [user]. I'm not a developer — give me code I can paste and run, and tell me exactly where to paste it.",
-    reflect: "What did you build that you didn't think you could? And what would you build next if you had no constraints?" },
-  { id: "orchestrate", name: "Orchestrate", short: "AI across your work", icon: "🎼", color: "#141b4d",
-    description: "Using AI across tools, workflows, agents, teams, and systems. The shift from asking AI to tasking AI.",
-    learn: "Orchestration is the final shift: from asking AI to do one task, to tasking AI across multiple tools, agents, and workflows. You stop prompting and start directing — chaining together search, analysis, drafting, review, and delivery in repeatable systems. This is where individual productivity becomes team workflow.",
-    practice: "Pick a workflow that involves 3+ steps and 2+ tools (e.g., research → draft → review → send). Redesign it so AI handles the handoffs. Document the new workflow so a teammate can use it too.",
-    prompt: "Map this 5-step workflow for me. Identify where AI can take a handoff between humans, and where humans must stay in the loop. Tell me where it will break first.",
-    reflect: "Where in your work did the unit of effort change — from doing the task, to designing the system that does the task?" },
-  { id: "tenx", name: "10x Human", short: "The augmented you", icon: "✨", color: "#53bc86",
-    description: "You return to the start of the loop as a more capable human. The loop now begins again at a higher level.",
-    learn: "You've completed one full loop. You don't just use AI — you've redesigned how you work around it. The loop now restarts at a higher level: your next Read isn't reading documents, it's reading patterns across teams. Your next Write isn't drafting emails, it's drafting strategy. Climb again.",
-    practice: "Pick one of the earlier stages and redo it at a 10x level. What does Read look like for a department head? What does Make look like for an entire function? Choose one and try it.",
+    reflect: "Which task surprised you by becoming dramatically faster — or slower — when you added AI?" },
+  { id: "think", name: "Think", short: "AI as your thinking partner", icon: "🧠", color: "#2b7a8c", minutes: 20,
+    description: "Use AI for ideation, critique, debate, scenario planning, and decision support.",
+    learn: "AI is a sparring partner that doesn't get tired and has no political stakes. Use it to pressure-test decisions, generate alternatives, find blind spots, and force yourself to articulate what you actually believe.",
+    practice: "Take a decision you're sitting on. Ask AI to play three roles: your harshest sceptic, the person most affected, and someone who'd choose the opposite. Listen to all three.",
+    prompt: "I'm leaning toward [decision] for [reason]. Argue the strongest case against it. Don't be polite — find the holes. Then tell me what evidence would change your mind.",
+    reflect: "When AI disagreed with you, did you defend or change your mind? What does that say about your confidence?" },
+  { id: "make", name: "Make", short: "AI as your maker", icon: "🛠️", color: "#3f5f6b", minutes: 25,
+    description: "Build working things — apps, bots, automations, prototypes — that you couldn't build before.",
+    learn: "Making with AI means building things you couldn't before. The skill isn't coding; it's specifying. If you can describe what you want clearly, AI can often build a working first version in minutes.",
+    practice: "Identify one repeating task — a weekly report, a follow-up sequence, a data check. Ask AI to build a working tool that does it. Ship it for yourself this week, even rough.",
+    prompt: "Build me a working prototype of [tool]. It needs to do [function] for [user]. I'm not a developer — give me code I can paste and run, and tell me exactly where.",
+    reflect: "What did you build that you didn't think you could? What would you build next with no constraints?" },
+  { id: "orchestrate", name: "Orchestrate", short: "AI across your work", icon: "🎼", color: "#141b4d", minutes: 25,
+    description: "Chain AI across tools, workflows, and systems. The shift from asking AI to tasking AI.",
+    learn: "Orchestration is the final shift: from asking AI to do one task, to directing AI across multiple tools and workflows — chaining search, analysis, drafting, review, and delivery into repeatable systems.",
+    practice: "Pick a workflow with 3+ steps and 2+ tools. Redesign it so AI handles the handoffs. Document it so a teammate could use it too.",
+    prompt: "Map this 5-step workflow. Identify where AI can take a handoff between humans, and where humans must stay in the loop. Tell me where it will break first.",
+    reflect: "Where did the unit of effort change — from doing the task, to designing the system that does it?" },
+  { id: "tenx", name: "10x Human", short: "The augmented you", icon: "✨", color: "#94c90d", minutes: 15,
+    description: "You return to the start as a more capable human. The loop begins again — at a higher level.",
+    learn: "You've completed one full loop. The loop now restarts higher: your next Read isn't documents, it's patterns across teams. Your next Write isn't emails, it's strategy. Climb again.",
+    practice: "Pick an earlier stage and redo it at 10x level. What does Read look like for a department head? What does Make look like for a whole function?",
     prompt: "I've completed one full 10x Loop. My next horizon is [domain]. What does the next loop look like — for me, my team, and my organisation?",
     reflect: "Six months ago, what would today's version of you have looked like? What's the next horizon?" }
 ];
 
 const LEVELS = [
-  { id: "novice", name: "Novice", range: [0, 25], color: "#9CA3AF", desc: "AI-curious, light usage. Starts at Read." },
-  { id: "explorer", name: "Explorer", range: [26, 50], color: "#4F6B8F", desc: "Tries tools regularly, lacks structure. Starts at Write or Draw." },
-  { id: "practitioner", name: "Practitioner", range: [51, 75], color: "#1F6F75", desc: "Daily AI user, ready to deepen judgement. Starts at Think or Make." },
-  { id: "orchestrator", name: "Orchestrator", range: [76, 100], color: "#94c90d", desc: "Wires AI across workflows. Starts at Orchestrate, then loops again." }
+  { id: "novice", name: "Novice", range: [0, 25], color: "#6b7280", desc: "AI-curious, light usage." },
+  { id: "explorer", name: "Explorer", range: [26, 50], color: "#4198d3", desc: "Uses tools regularly, needs structure." },
+  { id: "practitioner", name: "Practitioner", range: [51, 75], color: "#2b7a8c", desc: "Daily AI user, deepening judgement." },
+  { id: "orchestrator", name: "Orchestrator", range: [76, 100], color: "#6f9a06", desc: "Wires AI across workflows." }
 ];
 
 const ASSESSMENT = [
@@ -280,131 +172,33 @@ const ASSESSMENT = [
       { label: "Never or rarely", score: 0 },
       { label: "A few times a week", score: 8 },
       { label: "Most workdays", score: 16 },
-      { label: "Multiple times every day", score: 22 }
+      { label: "Multiple times every day", score: 24 }
     ] },
-  { q: "Which of these have you used AI for? (pick all that apply)", type: "multi",
+  { q: "What have you used AI for? Pick all that apply.", type: "multi",
     options: [
-      { label: "Reading / summarising", score: 2 },
-      { label: "Writing / drafting", score: 2 },
-      { label: "Creating visuals or slides", score: 3 },
-      { label: "Thinking through decisions", score: 4 },
-      { label: "Building or automating something", score: 5 },
-      { label: "Orchestrating across tools", score: 6 }
+      { label: "Reading / summarising", score: 3 },
+      { label: "Writing / drafting", score: 3 },
+      { label: "Creating visuals or slides", score: 4 },
+      { label: "Thinking through decisions", score: 5 },
+      { label: "Building or automating something", score: 6 },
+      { label: "Orchestrating across tools", score: 7 }
     ] },
-  { q: "How confident are you at writing effective AI prompts?", type: "single",
+  { q: "How confident are you at writing effective prompts?", type: "single",
     options: [
       { label: "Not at all — I copy and hope", score: 0 },
-      { label: "Somewhat — I tweak until it works", score: 5 },
-      { label: "Confident — I structure prompts deliberately", score: 12 },
-      { label: "Highly confident — I prompt for outcomes, not outputs", score: 18 }
+      { label: "Somewhat — I tweak until it works", score: 7 },
+      { label: "Confident — I structure prompts deliberately", score: 15 },
+      { label: "Highly — I prompt for outcomes, not outputs", score: 22 }
     ] },
-  { q: "Have you ever built an automation, agent, or workflow using AI?", type: "single",
+  { q: "Have you built an automation, agent, or workflow with AI?", type: "single",
     options: [
-      { label: "No, not yet", score: 0 },
-      { label: "Tried once or twice", score: 5 },
-      { label: "Yes — I've shipped at least one I use weekly", score: 12 },
-      { label: "Yes — multiple, including for my team", score: 18 }
-    ] },
-  { q: "What's your biggest barrier to using AI more?", type: "single",
-    options: [
-      { label: "I don't know where to start", score: 0 },
-      { label: "I'm not sure when AI helps vs. when it slows me down", score: 4 },
-      { label: "Quality / trust of output", score: 6 },
-      { label: "Workflow integration with my team's tools", score: 8 }
-    ] },
-  { q: "Your role:", type: "single",
-    options: [
-      { label: "Individual contributor", score: 2 },
-      { label: "Team lead / Manager", score: 4 },
-      { label: "Senior leader / Department head", score: 5 },
-      { label: "Executive / C-suite", score: 6 }
+      { label: "Not yet", score: 0 },
+      { label: "Tried once or twice", score: 8 },
+      { label: "Shipped at least one I use weekly", score: 16 },
+      { label: "Multiple — including for my team", score: 26 }
     ] }
 ];
 
-/* NUDGE REGISTRY — Thaler */
-const NUDGE_REGISTRY = [
-  { kind: "default", name: "Defaults", thaler: "Thaler & Sunstein, 2008",
-    title: "Auto-enrol the user into the next stage",
-    desc: "Users follow whatever path requires no decision. After the assessment we don't ask 'do you want to start?' — we set a start time and a stage, and let the user opt out.",
-    where: "After Result · Stage transitions",
-    lift: "+22 to +60 pp in behaviour-change studies (organ donation, retirement)",
-    fired: 4 },
-  { kind: "social", name: "Social proof", thaler: "Cialdini · Thaler",
-    title: "Show what peers are doing",
-    desc: "People mirror others, especially similar others. Showing 'X% of your function completed this stage' or 'Aisha in your team finished yesterday' creates safe permission to act.",
-    where: "Landing · Result · Stage page · Dashboard",
-    lift: "+8 to +28% completion in workplace L&D studies",
-    fired: 12 },
-  { kind: "loss", name: "Loss aversion", thaler: "Kahneman & Tversky · Thaler",
-    title: "Frame inaction as loss, not gain",
-    desc: "Losses feel ~2x as painful as equivalent gains. 'Don't break your 12-day streak' beats 'Earn a longer streak.' Streaks turn AI practice from an opt-in habit into an at-risk asset.",
-    where: "Loop hub · My Progress · Reminder emails",
-    lift: "Duolingo: streaks lift DAU by ~40%",
-    fired: 7 },
-  { kind: "intent", name: "Implementation intentions", thaler: "Gollwitzer",
-    title: "Make users name when & where",
-    desc: "'If it's Tuesday at 4pm and I'm at my desk, then I'll do my Write stage.' This single prompt 2–3x's the chance of follow-through across health, exercise, and learning research.",
-    where: "After Result · Before each stage",
-    lift: "+91% follow-through in vaccination uptake (Milkman et al.)",
-    fired: 3 },
-  { kind: "commit", name: "Commitment device", thaler: "Thaler · Ariely",
-    title: "Lock in a future-self promise",
-    desc: "Public commitments and self-binding (telling your manager, putting it in a calendar) reduce drop-off. The cost of breaking the promise is reputational, not just internal.",
-    where: "After Implementation Intention · Stage start",
-    lift: "+30 to +50% on quit-smoking and savings programs (Save More Tomorrow)",
-    fired: 2 },
-  { kind: "gradient", name: "Goal-gradient effect",  thaler: "Kivetz et al.",
-    title: "Show how close the user is",
-    desc: "People accelerate as they near a goal. Show '1 task left' instead of '3/4 done.' Always render the next milestone in concrete distance, not abstract percentage.",
-    where: "Loop hub · Stage page · Dashboard",
-    lift: "+18% completion velocity in loyalty-card studies",
-    fired: 9 },
-  { kind: "feedback", name: "Immediate feedback", thaler: "Thaler · Sunstein",
-    title: "Make consequences visible right away",
-    desc: "Most habits fail because feedback is too delayed. Score updates, level-ups, and badges fire instantly on completion — so the brain attaches reward to action.",
-    where: "After every completion",
-    lift: "Foundational — every successful behaviour-change product uses this",
-    fired: 6 },
-  { kind: "salience", name: "Salience", thaler: "Thaler · Sunstein",
-    title: "One obvious next action per screen",
-    desc: "Most products bury the right action in a sea of options. 10x Loop always has one glowing primary CTA per screen — the one we want the user to take. Sludge audit on every flow.",
-    where: "Every screen",
-    lift: "Form-completion studies: +20 to +40%",
-    fired: 24 },
-  { kind: "identity", name: "Identity priming", thaler: "Berger · Aaker",
-    title: "Frame the user as the kind of person who does this",
-    desc: "'You're becoming a 10x human' is identity. 'Complete task 3' is procedure. Identity framing changes self-concept and behaviour follows. Used sparingly so it doesn't go saccharine.",
-    where: "Stage header · Certificate",
-    lift: "Voter turnout: +13% (Bryan et al.)",
-    fired: 5 },
-  { kind: "fresh", name: "Fresh-start effect", thaler: "Dai, Milkman, Riis",
-    title: "Anchor restarts to time landmarks",
-    desc: "Mondays, month-firsts, birthdays, and post-event moments are when people are most open to behavioural change. Schedule big nudges and re-engagements to those moments.",
-    where: "Onboarding · Drop-off recovery · Manager dashboards",
-    lift: "+15 to +30% engagement on goal-setting platforms",
-    fired: 1 }
-];
-
-const KIND_MAP = Object.fromEntries(NUDGE_REGISTRY.map(n => [n.kind, n]));
-
-/* NUDGE CONTEXT */
-const NudgeCtx = createContext({ visible: false, toggle: () => {} });
-
-const Nudge = ({ kind, label, children, pos = "tr", outline = true, inline = false }) => {
-  const { visible } = useContext(NudgeCtx);
-  if (!visible) return children;
-  const Tag = inline ? "span" : "div";
-  return (
-    <Tag className={`nudge-wrap ${outline ? "outline" : ""}`} style={{display: inline ? "inline-block" : "block"}}>
-      {children}
-      <span className={`nudge-tag nudge-${kind} nudge-floating ${pos === "bl" ? "bl" : pos === "br" ? "br" : ""}`}>
-        {label || KIND_MAP[kind]?.name}
-      </span>
-    </Tag>
-  );
-};
-
-/* HELPERS */
 const calcLevel = (score) => LEVELS.find(l => score >= l.range[0] && score <= l.range[1]) || LEVELS[0];
 const recommendStage = (score) => {
   if (score <= 15) return "read";
@@ -416,1073 +210,7 @@ const recommendStage = (score) => {
   return "orchestrate";
 };
 
-const Logo = () => (
-  <div className="flex items-center gap-2">
-    <svg width="28" height="28" viewBox="0 0 32 32" fill="none">
-      <defs>
-        <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#141b4d"/>
-          <stop offset="50%" stopColor="#4198d3"/>
-          <stop offset="100%" stopColor="#94c90d"/>
-        </linearGradient>
-      </defs>
-      <path d="M6 22 C 6 12, 14 6, 22 10 C 30 14, 28 26, 18 26 C 10 26, 4 22, 10 16" stroke="url(#logoGrad)" strokeWidth="2.6" fill="none" strokeLinecap="round"/>
-      <circle cx="22" cy="10" r="2.8" fill="#94c90d"/>
-    </svg>
-    <span className="serif text-lg font-semibold tracking-tight">10x Loop</span>
-  </div>
-);
-
-/* HEADER */
-const Header = ({ screen, setScreen, progress, nudgesVisible, toggleNudges, userName, onReset }) => {
-  const done = Object.values(progress).filter(p => p?.completed).length;
-  return (
-    <header className="relative z-10 border-b border-line bg-paper/80 backdrop-blur">
-      <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between flex-wrap gap-3">
-        <button onClick={() => setScreen("landing")} className="cursor-pointer"><Logo /></button>
-        <nav className="flex items-center gap-1 text-sm flex-wrap">
-          {[["loop","The Loop"],["individual","My Progress"],["enterprise","Enterprise"],["nudgelab","Nudge Lab"]].map(([id,label]) => (
-            <button key={id} onClick={() => setScreen(id)}
-              className={`px-3 py-2 rounded-full transition text-sm ${screen === id ? "bg-ink text-white" : "hover:bg-[#EEF6D9] ink"}`}>
-              {label}
-            </button>
-          ))}
-        </nav>
-        <div className="flex items-center gap-3">
-          <button onClick={toggleNudges}
-            className={`px-3 py-2 rounded-full text-xs font-semibold transition ${nudgesVisible ? "bg-gold text-white" : "border border-line"}`}>
-            {nudgesVisible ? "✕ Hide nudges" : "👁  Show nudges"}
-          </button>
-          {userName && <span className="text-xs muted pill" style={{background:"#FAF6EB", color:"var(--ink)"}}>👤 {userName}</span>}
-          <span className="text-xs muted pill" style={{background:"#EEF6D9", color:"var(--ink)"}}>{done}/9 stages</span>
-          {onReset && <button onClick={onReset} className="text-xs muted hover:ink" title="Reset session (clears all your local data)">↻</button>}
-        </div>
-      </div>
-    </header>
-  );
-};
-
-/* LANDING */
-const Landing = ({ onStart, setScreen }) => (
-  <div className="relative max-w-6xl mx-auto px-6 pt-16 pb-24">
-    <Nudge kind="social" pos="tr">
-      <div className="card p-3 mb-6 inline-flex items-center gap-3 text-sm">
-        <span className="flex -space-x-2">
-          {["#141b4d","#4198d3","#53bc86","#94c90d","#7B6BAF"].map((c,i)=>(
-            <span key={i} className="w-7 h-7 rounded-full border-2 border-white" style={{background:c}}/>
-          ))}
-        </span>
-        <span><b>1,247 employees</b> are mid-Loop this week · 73% completed their next stage.</span>
-      </div>
-    </Nudge>
-    <div className="grid md:grid-cols-2 gap-12 items-center fade-up">
-      <div>
-        <span className="pill" style={{background:"#EEF6D9", color:"#3F5805"}}>An AI&amp;Beyond product</span>
-        <h1 className="serif text-5xl md:text-6xl font-semibold leading-[1.05] mt-5 tracking-tight">
-          From AI awareness<br/>to AI <em className="brand-gradient-text not-italic">adoption</em>.
-        </h1>
-        <p className="mt-6 text-lg muted leading-relaxed max-w-md">
-          10x Loop is the structured journey that turns curious employees into AI-augmented ones — measured, nudged, and certified.
-        </p>
-        <Nudge kind="salience" pos="br">
-          <div className="mt-8 flex flex-wrap gap-3">
-            <button onClick={onStart} className="btn-primary">Take the baseline assessment →</button>
-            <button onClick={() => setScreen("loop")} className="btn-ghost">Preview the Loop</button>
-          </div>
-        </Nudge>
-        <div className="mt-10 grid grid-cols-3 gap-6 text-sm">
-          <Stat n="45+" l="Enterprise bootcamps run"/>
-          <Stat n="9" l="Stages of literacy"/>
-          <Stat n="60d" l="Pilot to first signal"/>
-        </div>
-      </div>
-      <div className="card p-8">
-        <p className="text-xs muted uppercase tracking-widest font-semibold mb-3">The loop</p>
-        <LoopVisual stages={STAGES} progress={{}} currentStage="read" compact />
-        <p className="text-sm muted mt-4 leading-relaxed">
-          Climb from <span className="ink font-medium">Human</span> through Read, Write, Draw, Add, Think, Make and Orchestrate — to return as a <span className="text-gold font-semibold">10x Human</span>. Then loop again, at a higher level.
-        </p>
-      </div>
-    </div>
-
-    <div className="mt-24">
-      <p className="text-xs muted uppercase tracking-widest font-semibold">Why most AI rollouts stall</p>
-      <div className="grid md:grid-cols-3 gap-5 mt-4">
-        {[
-          ["The Literacy Gap","Employees know AI exists but don't understand where it helps, where it fails, and how to apply it safely to daily work."],
-          ["The Adoption Gap","Workshops create excitement; old workflows return on Monday. Many add AI as a layer without removing anything — 'shadow work'."],
-          ["The ROI Gap","Spend goes up. Tools multiply. Measurable productivity and competitive advantage stay flat."]
-        ].map(([t,d]) => (
-          <div key={t} className="card p-6">
-            <p className="serif text-xl font-semibold">{t}</p>
-            <p className="muted text-sm mt-2 leading-relaxed">{d}</p>
-          </div>
-        ))}
-      </div>
-    </div>
-
-    <Nudge kind="identity" pos="tr">
-      <div className="mt-16 card p-8 bg-ink text-white">
-        <div className="grid md:grid-cols-2 gap-8 items-center">
-          <div>
-            <p className="text-xs uppercase tracking-widest text-gold font-semibold">Enterprise promise</p>
-            <p className="serif text-3xl mt-2 leading-tight">10x Loop converts AI awareness into AI adoption, and adoption into measurable productivity.</p>
-          </div>
-          <ul className="text-sm space-y-3 opacity-90">
-            {["A measurable AI literacy journey for every employee",
-              "Function-wise maturity visibility for L&D and CXOs",
-              "Common language for AI capability building",
-              "A bridge between AI investment and AI ROI"].map((t,i) => (
-              <li key={i} className="flex gap-3"><span className="text-gold">✦</span><span>{t}</span></li>
-            ))}
-          </ul>
-        </div>
-      </div>
-    </Nudge>
-  </div>
-);
-
-const Stat = ({n, l}) => (
-  <div>
-    <p className="serif text-3xl font-semibold">{n}</p>
-    <p className="muted text-xs mt-1 uppercase tracking-wider">{l}</p>
-  </div>
-);
-
-/* LOOP VISUAL */
-const LoopVisual = ({ stages, progress, currentStage, onSelect, compact=false }) => {
-  const W = 760, H = compact ? 200 : 260;
-  const padX = 40, padY = compact ? 40 : 60;
-  const points = stages.map((s, i) => {
-    const t = i / (stages.length - 1);
-    const x = padX + t * (W - padX*2);
-    const y = H - padY - (t * (H - padY*2)) + Math.sin(t * Math.PI) * 14;
-    return { ...s, x, y, i };
-  });
-  const path = points.map((p, i) => (i === 0 ? `M ${p.x} ${p.y}` : `L ${p.x} ${p.y}`)).join(" ");
-  const first = points[0], last = points[points.length-1];
-  const arc = `M ${last.x} ${last.y} C ${last.x+10} ${-30}, ${first.x-10} ${-30}, ${first.x} ${first.y}`;
-
-  return (
-    <div className="w-full overflow-x-auto">
-      <svg viewBox={`0 -60 ${W} ${H+60}`} className="w-full" style={{minHeight: compact ? 180 : 240}}>
-        <defs>
-          <linearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#141b4d"/>
-            <stop offset="38%" stopColor="#4198d3"/>
-            <stop offset="70%" stopColor="#53bc86"/>
-            <stop offset="100%" stopColor="#94c90d"/>
-          </linearGradient>
-        </defs>
-        <path d={path} stroke="#D9DCE3" strokeWidth="2.2" fill="none" />
-        <path d={arc} className="arc-loop" stroke="url(#brandGrad)" strokeWidth="2.6" fill="none" />
-        <polygon points={`${first.x-5},${first.y-12} ${first.x+5},${first.y-12} ${first.x},${first.y-2}`} fill="#94c90d"/>
-        {points.map((p) => {
-          const done = !!progress[p.id]?.completed;
-          const active = currentStage === p.id;
-          return (
-            <g key={p.id} onClick={() => onSelect && onSelect(p.id)} style={{cursor: onSelect ? "pointer" : "default"}}>
-              <circle cx={p.x} cy={p.y} r={active ? 22 : 18}
-                fill={done ? p.color : "#fff"}
-                stroke={active ? p.color : "#D9DCE3"}
-                strokeWidth={active ? 3 : 1.6}
-                className={active ? "stage-active" : ""}/>
-              <text x={p.x} y={p.y+5} textAnchor="middle" fontSize="16" fill={done ? "white" : "#141b4d"}>{p.icon}</text>
-              {!compact && (
-                <text x={p.x} y={p.y + 38} textAnchor="middle" fontSize="11" fill="#141b4d" fontWeight={active ? 700 : 500}>{p.name}</text>
-              )}
-              {done && <circle cx={p.x+14} cy={p.y-14} r="6" fill="#22A06B" stroke="white" strokeWidth="1.5"/>}
-            </g>
-          );
-        })}
-        <text x={W/2} y={-32} textAnchor="middle" fontSize="11" fill="#53bc86" fontWeight="700" letterSpacing="2">THE LOOP CONTINUES</text>
-      </svg>
-    </div>
-  );
-};
-
-/* ASSESSMENT */
-const Assessment = ({ onSubmit }) => {
-  const [answers, setAnswers] = useState({});
-  const [step, setStep] = useState(0);
-
-  const submit = () => {
-    let score = 0;
-    ASSESSMENT.forEach((q, i) => {
-      const a = answers[i];
-      if (q.type === "single" && a != null) score += q.options[a].score;
-      if (q.type === "multi" && Array.isArray(a)) a.forEach(idx => score += q.options[idx].score);
-    });
-    score = Math.min(100, Math.round(score));
-    onSubmit(score);
-  };
-
-  const q = ASSESSMENT[step];
-  const total = ASSESSMENT.length;
-  const answered = (q.type === "single" ? answers[step] != null : (answers[step] && answers[step].length > 0));
-
-  return (
-    <div className="max-w-2xl mx-auto px-6 py-12 fade-up">
-      <Nudge kind="fresh" pos="tr" outline={false}>
-        <div className="text-xs muted mb-2 italic">It's a strong moment to start — fresh week, fresh literacy.</div>
-      </Nudge>
-      <div className="flex justify-between items-center text-xs muted mb-3">
-        <span>Baseline AI literacy assessment</span>
-        <span>Question {step+1} of {total}</span>
-      </div>
-      <div className="progress-bar mb-8"><div className="progress-fill" style={{width: `${((step)/total)*100}%`}}/></div>
-      <div className="card p-8">
-        <p className="serif text-2xl mb-6 leading-snug">{q.q}</p>
-        <div className="space-y-3">
-          {q.options.map((opt, oi) => {
-            const selected = q.type === "single" ? answers[step] === oi : (answers[step] || []).includes(oi);
-            return (
-              <button key={oi}
-                onClick={() => {
-                  if (q.type === "single") setAnswers(a => ({...a, [step]: oi}));
-                  else setAnswers(a => {
-                    const arr = a[step] || [];
-                    return { ...a, [step]: arr.includes(oi) ? arr.filter(x => x !== oi) : [...arr, oi] };
-                  });
-                }}
-                className={`w-full text-left p-4 rounded-xl border transition ${selected ? "border-[#141b4d] bg-[#EEF6D9]" : "border-line hover:border-[#141b4d]"}`}>
-                <span className="text-sm">{opt.label}</span>
-              </button>
-            );
-          })}
-        </div>
-        {q.type === "multi" && <p className="text-xs muted mt-3">You can select more than one.</p>}
-        <div className="flex justify-between mt-8">
-          <button onClick={() => setStep(s => Math.max(0, s-1))} className="btn-ghost" disabled={step === 0} style={{opacity: step === 0 ? 0.4 : 1}}>← Back</button>
-          {step < total - 1
-            ? <button onClick={() => setStep(s => s+1)} className="btn-primary" disabled={!answered} style={{opacity: answered ? 1 : 0.5}}>Continue →</button>
-            : <button onClick={submit} className="btn-gold" disabled={!answered} style={{opacity: answered ? 1 : 0.5}}>See my result →</button>}
-        </div>
-      </div>
-    </div>
-  );
-};
-
-/* RESULT */
-const Result = ({ score, onContinue }) => {
-  const level = calcLevel(score);
-  const rec = recommendStage(score);
-  const stage = STAGES.find(s => s.id === rec);
-
-  return (
-    <div className="max-w-3xl mx-auto px-6 py-12 fade-up">
-      <Nudge kind="feedback" pos="tr" outline={false}>
-        <p className="pill" style={{background:"#EEF6D9", color:"#3F5805"}}>Your baseline</p>
-      </Nudge>
-      <h2 className="serif text-4xl font-semibold mt-4">You're at the <span style={{color: level.color}}>{level.name}</span> level.</h2>
-      <p className="muted mt-2">{level.desc}</p>
-
-      <div className="card p-8 mt-8">
-        <div className="flex items-end gap-4">
-          <p className="serif text-6xl font-semibold">{score}</p>
-          <p className="muted mb-2">/ 100 AI Literacy Score</p>
-        </div>
-        <div className="progress-bar mt-4"><div className="progress-fill" style={{width: `${score}%`}}/></div>
-        <div className="flex justify-between text-xs muted mt-2">
-          {LEVELS.map(l => <span key={l.id} style={{fontWeight: l.id === level.id ? 700 : 400, color: l.id === level.id ? l.color : "var(--muted)"}}>{l.name}</span>)}
-        </div>
-      </div>
-
-      <Nudge kind="social" pos="tr" outline={false}>
-        <p className="mt-6 text-sm muted"><b>92% of {level.name}s</b> finish their first stage within 14 days. Most start the day they're assessed.</p>
-      </Nudge>
-
-      <Nudge kind="default" pos="tr">
-        <div className="card p-8 mt-6">
-          <p className="text-xs muted uppercase tracking-widest font-semibold">Recommended starting stage · auto-enrolled</p>
-          <div className="flex items-center gap-4 mt-3">
-            <div className="w-14 h-14 rounded-full flex items-center justify-center" style={{background: stage.color + "22"}}>
-              <span className="text-2xl">{stage.icon}</span>
-            </div>
-            <div>
-              <p className="serif text-2xl font-semibold">{stage.name}</p>
-              <p className="muted text-sm">{stage.short}</p>
-            </div>
-          </div>
-          <p className="text-sm mt-4 leading-relaxed">{stage.description}</p>
-        </div>
-      </Nudge>
-
-      <div className="flex gap-3 mt-8">
-        <button onClick={() => onContinue(rec)} className="btn-gold">Begin the Loop →</button>
-      </div>
-    </div>
-  );
-};
-
-/* IMPLEMENTATION INTENTION MODAL */
-const IntentModal = ({ stage, onSave, onSkip }) => {
-  const [when, setWhen] = useState("Tuesday 4:00 PM");
-  const [where, setWhere] = useState("at my desk, after standup");
-  const [deadline, setDeadline] = useState("by Friday");
-
-  return (
-    <div className="modal-overlay">
-      <div className="modal fade-up">
-        <Nudge kind="intent" pos="tr" outline={false}>
-          <p className="pill" style={{background:"#EFE9F7", color:"#5B4391"}}>Implementation intention</p>
-        </Nudge>
-        <h2 className="serif text-3xl font-semibold mt-3 leading-tight">When will you do <span style={{color: stage.color}}>{stage.name}</span>?</h2>
-        <p className="muted text-sm mt-2">Pick a specific time and place. Research shows this <b>2–3x's</b> the likelihood you'll actually do it. (Thaler / Gollwitzer.)</p>
-
-        <div className="mt-6">
-          <p className="text-xs muted uppercase tracking-widest font-semibold mb-2">When</p>
-          <div className="chip-row">
-            {["Today 4 PM","Tomorrow 10 AM","Tuesday 4:00 PM","Wednesday 9 AM","Thursday 4 PM","Friday 9 AM"].map(o => (
-              <button key={o} className={`chip ${when === o ? "active" : ""}`} onClick={() => setWhen(o)}>{o}</button>
-            ))}
-          </div>
-        </div>
-
-        <div className="mt-5">
-          <p className="text-xs muted uppercase tracking-widest font-semibold mb-2">Where</p>
-          <div className="chip-row">
-            {["at my desk, after standup","in a quiet corner","during my commute","over morning coffee","at the start of my deep-work block"].map(o => (
-              <button key={o} className={`chip ${where === o ? "active" : ""}`} onClick={() => setWhere(o)}>{o}</button>
-            ))}
-          </div>
-        </div>
-
-        <div className="mt-5">
-          <p className="text-xs muted uppercase tracking-widest font-semibold mb-2">Deadline for this stage</p>
-          <div className="chip-row">
-            {["by Friday","by next Monday","within 7 days","within 14 days"].map(o => (
-              <button key={o} className={`chip ${deadline === o ? "active" : ""}`} onClick={() => setDeadline(o)}>{o}</button>
-            ))}
-          </div>
-        </div>
-
-        <div className="card p-4 mt-6 bg-[#EEF6D9]">
-          <p className="text-sm leading-snug">
-            <b>If it's {when}</b> and I'm <b>{where}</b>,<br/>
-            <b>then I'll do my {stage.name} stage — {deadline}.</b>
-          </p>
-        </div>
-
-        <div className="flex gap-3 mt-6 justify-end">
-          <button onClick={onSkip} className="btn-ghost">Skip for now</button>
-          <button onClick={() => onSave({when, where, deadline})} className="btn-gold">Lock it in →</button>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-/* COMMITMENT MODAL */
-const CommitmentModal = ({ stage, intent, onConfirm, onClose }) => {
-  const [shareManager, setShareManager] = useState(true);
-  const [addCalendar, setAddCalendar] = useState(true);
-  const [shareTeam, setShareTeam] = useState(false);
-
-  return (
-    <div className="modal-overlay">
-      <div className="modal fade-up">
-        <Nudge kind="commit" pos="tr" outline={false}>
-          <p className="pill" style={{background:"#E2F4EA", color:"#1B7F4F"}}>Commitment device</p>
-        </Nudge>
-        <h2 className="serif text-3xl font-semibold mt-3 leading-tight">Make it official.</h2>
-        <p className="muted text-sm mt-2">Public commitments lift follow-through by ~40%. Pick how to lock this in.</p>
-
-        <div className="card p-4 mt-5 bg-[#EEF6D9]">
-          <p className="text-sm leading-relaxed">
-            I commit to completing the <b>{stage.name}</b> stage <b>{intent?.deadline || "by Friday"}</b>.
-          </p>
-        </div>
-
-        <div className="space-y-3 mt-5">
-          <label className="check-row">
-            <input type="checkbox" checked={shareManager} onChange={e=>setShareManager(e.target.checked)}/>
-            <span className="text-sm">
-              <b>Share with my manager</b> (Priya Sharma)
-              <span className="block muted text-xs mt-0.5">She'll see your progress this Friday. Skip if you'd rather keep it private.</span>
-            </span>
-          </label>
-          <label className="check-row">
-            <input type="checkbox" checked={addCalendar} onChange={e=>setAddCalendar(e.target.checked)}/>
-            <span className="text-sm">
-              <b>Add to my calendar</b>
-              <span className="block muted text-xs mt-0.5">{intent?.when || "Tuesday 4 PM"} · 25-minute block</span>
-            </span>
-          </label>
-          <label className="check-row">
-            <input type="checkbox" checked={shareTeam} onChange={e=>setShareTeam(e.target.checked)}/>
-            <span className="text-sm">
-              <b>Share with my team</b>
-              <span className="block muted text-xs mt-0.5">Opt-in. Others see your commitment in the team feed.</span>
-            </span>
-          </label>
-        </div>
-
-        <div className="flex gap-3 mt-6 justify-end">
-          <button onClick={onClose} className="btn-ghost">Not yet</button>
-          <button onClick={() => onConfirm({shareManager, addCalendar, shareTeam})} className="btn-gold">Commit →</button>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-/* LOOP HUB */
-const LoopHub = ({ progress, currentStage, onPick, streak, intent, commitment, openCommit, goal, user }) => {
-  const done = Object.values(progress).filter(p => p?.completed).length;
-  const pct = Math.round((done / STAGES.length) * 100);
-  const stagesLeft = STAGES.length - done;
-  const stage = STAGES.find(s => s.id === currentStage);
-
-  return (
-    <div className="max-w-6xl mx-auto px-6 py-10 fade-up">
-      {goal && (
-        <div className="card p-5 mb-6 bg-[#FAF6EB]" style={{borderColor:"#C39247"}}>
-          <div className="flex items-center justify-between gap-3 flex-wrap">
-            <div>
-              <p className="text-xs uppercase tracking-widest font-semibold" style={{color:"#7A5A23"}}>{user?.name ? `${user.name}'s` : "Your"} anchor</p>
-              <p className="serif text-xl mt-1 leading-snug">{goal}</p>
-              <p className="muted text-xs mt-1">Every stage below filters through this goal.</p>
-            </div>
-            <span className="text-3xl">🎯</span>
-          </div>
-        </div>
-      )}
-      <div className="grid md:grid-cols-3 gap-4 mb-6">
-        <Nudge kind="intent" pos="tr">
-          <div className="card p-5 h-full">
-            <p className="text-xs muted uppercase tracking-widest font-semibold">Your next session</p>
-            {intent ? (
-              <>
-                <p className="serif text-lg mt-1 leading-snug"><b>{intent.when}</b>, {intent.where}.</p>
-                <p className="muted text-xs mt-1">Finish {stage?.name || "this stage"} {intent.deadline}.</p>
-              </>
-            ) : (
-              <p className="muted text-sm mt-1">No session scheduled. Pick a time on your next stage.</p>
-            )}
-          </div>
-        </Nudge>
-
-        <Nudge kind="loss" pos="tr">
-          <div className="card p-5 h-full">
-            <p className="text-xs muted uppercase tracking-widest font-semibold">Streak</p>
-            <p className="serif text-3xl mt-1">🔥 {streak} <span className="text-sm muted">days</span></p>
-            {streak >= 5
-              ? <p className="text-xs mt-1 text-warn">Don't break it — your longest yet.</p>
-              : <p className="text-xs mt-1 muted">Two more days to a 7-day streak.</p>}
-          </div>
-        </Nudge>
-
-        <Nudge kind="gradient" pos="tr">
-          <div className="card p-5 h-full">
-            <p className="text-xs muted uppercase tracking-widest font-semibold">Loop progress</p>
-            <p className="serif text-3xl mt-1">{stagesLeft} <span className="text-sm muted">stages left</span></p>
-            <div className="progress-bar mt-2"><div className="progress-fill" style={{width: `${pct}%`}}/></div>
-          </div>
-        </Nudge>
-      </div>
-
-      {!commitment && stage && (
-        <Nudge kind="commit" pos="tr">
-          <div className="card p-5 mb-6 bg-[#F4FAF4]" style={{borderColor:"#1F8F5D33"}}>
-            <div className="flex justify-between items-center gap-3 flex-wrap">
-              <div>
-                <p className="text-xs uppercase tracking-widest font-semibold" style={{color:"#1B7F4F"}}>Commitment device</p>
-                <p className="serif text-lg mt-0.5">Lock in your {stage.name} commitment {intent?.deadline || "by Friday"}.</p>
-                <p className="muted text-sm">Tell your manager. People who do are 40% more likely to finish.</p>
-              </div>
-              <button onClick={openCommit} className="btn-gold text-sm">Commit →</button>
-            </div>
-          </div>
-        </Nudge>
-      )}
-      {commitment && (
-        <Nudge kind="commit" pos="tr">
-          <div className="card p-4 mb-6 bg-[#F4FAF4]" style={{borderColor:"#1F8F5D33"}}>
-            <p className="text-sm">
-              ✅ Committed: <b>{stage?.name}</b> {intent?.deadline || "by Friday"}.
-              {commitment.shareManager && " Manager (Priya) will see your progress."}
-              {commitment.addCalendar && " Calendar block set."}
-            </p>
-          </div>
-        </Nudge>
-      )}
-
-      <div className="grid md:grid-cols-3 gap-6 mb-6">
-        <Nudge kind="identity" pos="tr" outline={false}>
-          <div className="card p-6 md:col-span-2 h-full">
-            <p className="text-xs muted uppercase tracking-widest font-semibold">Your Loop</p>
-            <h2 className="serif text-3xl font-semibold mt-1">You're becoming a 10x human.</h2>
-            <p className="muted text-sm mt-2 max-w-md">Click any stage to enter it. Your current stage glows. Complete a stage to earn its badge and advance.</p>
-          </div>
-        </Nudge>
-        <Nudge kind="social" pos="tr">
-          <div className="card p-5 h-full">
-            <p className="text-xs muted uppercase tracking-widest font-semibold">In your team this week</p>
-            <ul className="mt-3 space-y-2 text-sm">
-              <li className="flex items-center gap-2"><span className="w-6 h-6 rounded-full bg-[#7B6BAF] text-white text-xs flex items-center justify-center font-semibold">AV</span><span>Aisha finished Write</span></li>
-              <li className="flex items-center gap-2"><span className="w-6 h-6 rounded-full bg-[#1F6F75] text-white text-xs flex items-center justify-center font-semibold">RM</span><span>Rohan completed Think</span></li>
-              <li className="flex items-center gap-2"><span className="w-6 h-6 rounded-full bg-[#94c90d] text-white text-xs flex items-center justify-center font-semibold">SK</span><span>Sara started Make</span></li>
-            </ul>
-            <p className="muted text-xs mt-3">Try Aisha's Write prompt →</p>
-          </div>
-        </Nudge>
-      </div>
-
-      <div className="card p-6">
-        <LoopVisual stages={STAGES} progress={progress} currentStage={currentStage} onSelect={onPick} />
-      </div>
-
-      <div className="grid md:grid-cols-3 gap-3 mt-6">
-        {STAGES.map(s => {
-          const done = progress[s.id]?.completed;
-          const active = currentStage === s.id;
-          return (
-            <button key={s.id} onClick={() => onPick(s.id)}
-              className={`card p-4 text-left transition hover:shadow-md ${active ? "ring-gold" : ""}`}
-              style={{borderColor: active ? s.color : "var(--line)"}}>
-              <div className="flex items-start gap-3">
-                <div className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" style={{background: done ? s.color : s.color+"22"}}>
-                  <span className="text-lg">{s.icon}</span>
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <p className="font-semibold">{s.name}</p>
-                    {done && <span className="pill" style={{background:"#E6F6EE", color:"#1B7F4F"}}>✓ Done</span>}
-                    {active && !done && <span className="pill" style={{background:"#EEF6D9", color:"#3F5805"}}>You are here</span>}
-                  </div>
-                  <p className="text-xs muted mt-0.5">{s.short}</p>
-                </div>
-              </div>
-            </button>
-          );
-        })}
-      </div>
-    </div>
-  );
-};
-
-/* STAGE DETAIL */
-const StageDetail = ({ stage, savedData, onSave, onComplete, onBack, streak, intent, goal, savedEval, onSaveEval }) => {
-  const [tab, setTab] = useState("learn");
-  const [practiceNote, setPracticeNote] = useState(savedData?.practiceNote || "");
-  const [promptResponse, setPromptResponse] = useState(savedData?.promptResponse || "");
-  const [reflection, setReflection] = useState(savedData?.reflection || "");
-
-  useEffect(() => { onSave({ practiceNote, promptResponse, reflection }); }, [practiceNote, promptResponse, reflection]);
-
-  const canComplete = practiceNote.length > 8 || promptResponse.length > 8 || reflection.length > 8 || !!savedEval;
-  const stageIdx = STAGES.findIndex(s => s.id === stage.id);
-
-  return (
-    <div className="max-w-4xl mx-auto px-6 py-10 fade-up">
-      <button onClick={onBack} className="text-sm muted hover:ink">← Back to the Loop</button>
-
-      <div className="mt-4 flex items-center gap-4">
-        <div className="w-16 h-16 rounded-full flex items-center justify-center" style={{background: stage.color + "22"}}>
-          <span className="text-3xl">{stage.icon}</span>
-        </div>
-        <div>
-          <p className="text-xs muted uppercase tracking-widest font-semibold" style={{color: stage.color}}>Stage {stageIdx+1} of {STAGES.length}</p>
-          <Nudge kind="identity" pos="tr" outline={false}>
-            <h2 className="serif text-4xl font-semibold">{stage.name}</h2>
-          </Nudge>
-          <p className="muted">{stage.short}</p>
-        </div>
-      </div>
-
-      <p className="mt-5 text-lg leading-relaxed max-w-3xl">{stage.description}</p>
-
-      {goal && (
-        <div className="card p-4 mt-5 bg-[#FAF6EB]" style={{borderColor:"#C39247"}}>
-          <p className="text-xs uppercase tracking-widest font-semibold" style={{color:"#7A5A23"}}>Your goal lens · do this stage for:</p>
-          <p className="serif text-lg mt-1 leading-snug">{goal}</p>
-          <p className="muted text-xs mt-2">Don't do the generic exercise. Map every prompt below to <i>this</i> outcome.</p>
-        </div>
-      )}
-
-      <div className="grid md:grid-cols-3 gap-3 mt-6">
-        <Nudge kind="social" pos="tr">
-          <div className="card p-4 text-sm h-full">
-            <p className="muted text-xs uppercase tracking-widest font-semibold mb-1">Peer signal</p>
-            <p>68% of <b>Marketing at Sample Co.</b> have completed {stage.name}. Aisha finished it yesterday.</p>
-          </div>
-        </Nudge>
-        <Nudge kind="intent" pos="tr">
-          <div className="card p-4 text-sm h-full">
-            <p className="muted text-xs uppercase tracking-widest font-semibold mb-1">Your plan</p>
-            <p>{intent ? <><b>{intent.when}</b>, {intent.where}.</> : "No session scheduled yet."}</p>
-          </div>
-        </Nudge>
-        <Nudge kind="loss" pos="tr">
-          <div className="card p-4 text-sm h-full">
-            <p className="muted text-xs uppercase tracking-widest font-semibold mb-1">Don't break the streak</p>
-            <p>🔥 {streak}-day streak. Finishing today keeps it alive.</p>
-          </div>
-        </Nudge>
-      </div>
-
-      <div className="flex gap-2 mt-8 flex-wrap">
-        {[["learn","📚 Learn"],["practice","🛠 Practice"],["prompt","💬 Prompt challenge"],["reflect","🪞 Reflect"]].map(([k,v]) => (
-          <button key={k} className={`tab ${tab === k ? "active" : ""}`} onClick={() => setTab(k)}>{v}</button>
-        ))}
-      </div>
-
-      <div className="card p-7 mt-4">
-        {tab === "learn" && (
-          <div className="fade-up">
-            <p className="text-xs muted uppercase tracking-widest font-semibold mb-3">Learning module · 4-min read</p>
-            <p className="serif text-xl leading-relaxed">{stage.learn}</p>
-          </div>
-        )}
-        {tab === "practice" && (
-          <div className="fade-up">
-            <p className="text-xs muted uppercase tracking-widest font-semibold mb-2">Workplace exercise · ~15 min</p>
-            <p className="text-base leading-relaxed mb-5">{stage.practice}</p>
-            <p className="text-xs muted uppercase tracking-widest font-semibold mb-2">Log what you did</p>
-            <textarea rows="6" placeholder="In a few lines: what task did you pick, what did you ask AI, what did you keep, what did you change?"
-              value={practiceNote} onChange={e => setPracticeNote(e.target.value)} />
-          </div>
-        )}
-        {tab === "prompt" && (
-          <div className="fade-up">
-            <p className="text-xs muted uppercase tracking-widest font-semibold mb-2">Try this prompt</p>
-            <div className="bg-[#EEF6D9] rounded-xl p-5 leading-relaxed text-sm font-mono">{stage.prompt}</div>
-            <p className="text-xs muted uppercase tracking-widest font-semibold mt-5 mb-2">Paste what AI returned (or your refined version)</p>
-            <textarea rows="6" placeholder="Paste AI's response, or your adapted prompt + result."
-              value={promptResponse} onChange={e => setPromptResponse(e.target.value)} />
-            <ArtifactEvaluator stage={stage} goal={goal} savedEval={savedEval} onSave={onSaveEval} />
-          </div>
-        )}
-        {tab === "reflect" && (
-          <div className="fade-up">
-            <p className="text-xs muted uppercase tracking-widest font-semibold mb-2">Reflection</p>
-            <p className="serif text-xl leading-relaxed mb-5">{stage.reflect}</p>
-            <textarea rows="6" placeholder="A few honest lines. This shapes your literacy more than the practice does."
-              value={reflection} onChange={e => setReflection(e.target.value)} />
-          </div>
-        )}
-      </div>
-
-      <div className="flex items-center justify-between mt-6 flex-wrap gap-3">
-        <Nudge kind="feedback" pos="tr" outline={false}>
-          <div className="text-xs muted">
-            {savedData?.completed ? "✓ Stage marked complete — badge earned" : (canComplete ? "Looking good — you can mark this complete." : "Add at least a few lines in any tab to mark complete.")}
-          </div>
-        </Nudge>
-        <div className="flex gap-3">
-          <button onClick={onBack} className="btn-ghost">Save &amp; exit</button>
-          {!savedData?.completed && (
-            <Nudge kind="salience" pos="tr">
-              <button onClick={onComplete} className="btn-gold" disabled={!canComplete} style={{opacity: canComplete ? 1 : 0.4}}>
-                Mark complete &amp; earn badge →
-              </button>
-            </Nudge>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-};
-
-/* INDIVIDUAL DASHBOARD */
-const IndividualDashboard = ({ progress, score, level, currentStage, streak, intent, commitment }) => {
-  const done = STAGES.filter(s => progress[s.id]?.completed);
-  const pct = Math.round((done.length / STAGES.length) * 100);
-  const levelObj = level ? LEVELS.find(l => l.id === level) : null;
-
-  const weeks = 12;
-  const cells = Array.from({length: weeks*7}, (_, i) => {
-    const week = Math.floor(i/7);
-    const recent = week > 7 ? 0.7 : 0.25;
-    const seed = (i * 9301 + 49297) % 233280 / 233280;
-    return seed < recent ? Math.floor(seed * 4) + 1 : 0;
-  });
-  const heatColors = ["#EEF0F4", "#D5E8B8", "#B8DC7A", "#94c90d", "#6BA000"];
-
-  return (
-    <div className="max-w-6xl mx-auto px-6 py-10 fade-up">
-      <p className="pill" style={{background:"#EEF6D9", color:"#3F5805"}}>Your progress</p>
-      <h2 className="serif text-4xl font-semibold mt-3">The Loop, your view.</h2>
-
-      <Nudge kind="loss" pos="tr">
-        <div className="card p-4 mt-6 bg-[#FCF1EC]" style={{borderColor:"#B86F5E33"}}>
-          <div className="flex items-center justify-between flex-wrap gap-3">
-            <p className="text-sm">
-              🔥 <b>{streak}-day streak.</b> Last activity: today.
-              {streak >= 5 ? <span className="text-warn"> You're 2 days from your longest streak ever — don't break it.</span> : ""}
-            </p>
-            <button className="btn-ghost text-xs">Set a reminder</button>
-          </div>
-        </div>
-      </Nudge>
-
-      <div className="grid md:grid-cols-4 gap-4 mt-6">
-        <Nudge kind="feedback" pos="tr"><KPI label="Literacy score" value={score != null ? `${score}/100` : "—"} sub={levelObj?.name || "Take baseline"} /></Nudge>
-        <Nudge kind="gradient" pos="tr"><KPI label="Stages complete" value={`${done.length}/${STAGES.length}`} sub={`${pct}% of loop`} /></Nudge>
-        <Nudge kind="identity" pos="tr"><KPI label="Current stage" value={STAGES.find(s=>s.id===currentStage)?.name || "—"} sub={STAGES.find(s=>s.id===currentStage)?.short || ""} /></Nudge>
-        <Nudge kind="loss" pos="tr"><KPI label="Streak" value={`${streak} days`} sub="Keep it going" /></Nudge>
-      </div>
-
-      <div className="grid md:grid-cols-3 gap-6 mt-8">
-        <div className="card p-6 md:col-span-2">
-          <p className="text-xs muted uppercase tracking-widest font-semibold">Activity, last 12 weeks</p>
-          <div className="grid mt-4" style={{gridTemplateColumns: `repeat(${weeks}, 1fr)`, gap: 4}}>
-            {Array.from({length: 7}).map((_, day) => (
-              <React.Fragment key={day}>
-                {Array.from({length: weeks}).map((_, w) => {
-                  const v = cells[w*7 + day];
-                  return <div key={w} className="heat-cell" style={{background: heatColors[v]}}/>;
-                })}
-              </React.Fragment>
-            ))}
-          </div>
-          <div className="flex items-center gap-2 mt-4 text-xs muted">
-            <span>Less</span>
-            {heatColors.map((c,i) => <span key={i} className="heat-cell" style={{background: c}}/>)}
-            <span>More</span>
-          </div>
-        </div>
-
-        <Nudge kind="social" pos="tr">
-          <div className="card p-6 h-full">
-            <p className="text-xs muted uppercase tracking-widest font-semibold">In your function</p>
-            <p className="serif text-3xl font-semibold mt-2">Top 23%</p>
-            <p className="text-sm muted mt-1">of Marketing at Sample Co. by literacy score.</p>
-            <p className="text-xs muted mt-3">You're ahead of 109 of 142 peers.</p>
-          </div>
-        </Nudge>
-      </div>
-
-      <Nudge kind="commit" pos="tr">
-        <div className="card p-6 mt-8">
-          <div className="flex items-center justify-between gap-3 flex-wrap">
-            <div>
-              <p className="text-xs muted uppercase tracking-widest font-semibold">Your commitments</p>
-              {commitment ? (
-                <p className="serif text-lg mt-1">Finish <b>{STAGES.find(s=>s.id===currentStage)?.name}</b> {intent?.deadline || "by Friday"} · {commitment.shareManager ? "Manager will see Fri" : "Private"}</p>
-              ) : (
-                <p className="serif text-lg mt-1">No active commitment. Lock in your next stage to boost follow-through.</p>
-              )}
-            </div>
-            <button className="btn-primary text-sm">Open team feed</button>
-          </div>
-        </div>
-      </Nudge>
-
-      <div className="card p-6 mt-8">
-        <p className="text-xs muted uppercase tracking-widest font-semibold mb-4">Badges earned</p>
-        <div className="flex flex-wrap gap-3">
-          {STAGES.map(s => {
-            const earned = progress[s.id]?.completed;
-            return (
-              <div key={s.id} className={`px-4 py-3 rounded-xl border ${earned ? "bg-[#EEF6D9] border-[#94c90d]" : "border-line"}`} style={{opacity: earned ? 1 : 0.5}}>
-                <div className="flex items-center gap-2">
-                  <span className="text-xl">{s.icon}</span>
-                  <div>
-                    <p className="text-sm font-semibold">{s.name}</p>
-                    <p className="text-xs muted">{earned ? "Earned" : "Locked"}</p>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const KPI = ({label, value, sub}) => (
-  <div className="card p-5 h-full">
-    <p className="text-xs muted uppercase tracking-widest font-semibold">{label}</p>
-    <p className="serif text-3xl font-semibold mt-1">{value}</p>
-    <p className="text-xs muted mt-1">{sub}</p>
-  </div>
-);
-
-/* ENTERPRISE DASHBOARD */
-const ENTERPRISE = {
-  name: "Sample Co.",
-  employees: 1247,
-  weeklyActive: 0.71,
-  distribution: [
-    { stage: "human", count: 89 }, { stage: "read", count: 214 }, { stage: "write", count: 268 },
-    { stage: "draw", count: 192 }, { stage: "add", count: 188 }, { stage: "think", count: 132 },
-    { stage: "make", count: 81 }, { stage: "orchestrate", count: 56 }, { stage: "tenx", count: 27 }
-  ],
-  functions: [
-    { name: "Marketing", staff: 142, avgScore: 64, top: "Write" },
-    { name: "Sales", staff: 218, avgScore: 51, top: "Read" },
-    { name: "Operations", staff: 312, avgScore: 47, top: "Add" },
-    { name: "Engineering", staff: 188, avgScore: 78, top: "Make" },
-    { name: "HR & L&D", staff: 64, avgScore: 58, top: "Write" },
-    { name: "Finance", staff: 96, avgScore: 43, top: "Read" },
-    { name: "Customer Support", staff: 227, avgScore: 55, top: "Think" }
-  ],
-  nudges: {
-    sent: 4328, acted: 2901,
-    byKind: [
-      { kind: "loss",    name: "Streak (loss aversion)", sent: 1218, acted: 1121, rate: 0.92 },
-      { kind: "commit",  name: "Manager-shared commitments", sent: 304, acted: 270, rate: 0.89 },
-      { kind: "social",  name: "Peer / function social proof", sent: 880, acted: 624, rate: 0.71 },
-      { kind: "fresh",   name: "Monday fresh-start nudges", sent: 612, acted: 392, rate: 0.64 },
-      { kind: "intent",  name: "Implementation intentions", sent: 711, acted: 412, rate: 0.58 },
-      { kind: "default", name: "Auto-enrol to next stage", sent: 603, acted: 82, rate: 0.14 }
-    ]
-  }
-};
-
-const EnterpriseDashboard = () => {
-  const max = Math.max(...ENTERPRISE.distribution.map(d => d.count));
-  const nudgeActRate = Math.round((ENTERPRISE.nudges.acted/ENTERPRISE.nudges.sent)*100);
-  return (
-    <div className="max-w-6xl mx-auto px-6 py-10 fade-up">
-      <div className="flex items-end justify-between flex-wrap gap-3">
-        <div>
-          <p className="pill" style={{background:"#EEF6D9", color:"#3F5805"}}>Enterprise view · sample data</p>
-          <h2 className="serif text-4xl font-semibold mt-3">{ENTERPRISE.name}</h2>
-          <p className="muted">{ENTERPRISE.employees.toLocaleString()} employees · 30-day view</p>
-        </div>
-        <div className="flex gap-3">
-          <button className="btn-ghost text-sm">Export PDF</button>
-          <button className="btn-primary text-sm">Open admin →</button>
-        </div>
-      </div>
-
-      <div className="grid md:grid-cols-4 gap-4 mt-8">
-        <KPI label="Weekly active users" value={`${Math.round(ENTERPRISE.weeklyActive*100)}%`} sub="vs. 38% pre-pilot" />
-        <KPI label="Avg. literacy score" value="58" sub="+19 pts in 60 days" />
-        <KPI label="Stages completed" value="3,841" sub="across all employees" />
-        <KPI label="Est. productivity lift" value="11.6%" sub="self-reported, validated" />
-      </div>
-
-      <Nudge kind="default" pos="tr">
-        <div className="card p-6 mt-8">
-          <div className="flex items-end justify-between flex-wrap gap-3">
-            <div>
-              <p className="text-xs muted uppercase tracking-widest font-semibold">Nudges this month · Thaler choice architecture</p>
-              <p className="serif text-3xl font-semibold mt-1">{ENTERPRISE.nudges.sent.toLocaleString()} sent · <span className="text-good">{ENTERPRISE.nudges.acted.toLocaleString()} acted on ({nudgeActRate}%)</span></p>
-              <p className="muted text-sm mt-1">Behavioural science is the engine of adoption — not content volume.</p>
-            </div>
-            <button className="btn-ghost text-sm">See methodology →</button>
-          </div>
-          <div className="mt-5 space-y-3">
-            {ENTERPRISE.nudges.byKind.map(b => (
-              <div key={b.kind}>
-                <div className="flex justify-between text-sm mb-1">
-                  <span className="flex items-center gap-2">
-                    <span className={`nudge-tag nudge-${b.kind}`} style={{fontSize: 9}}>{KIND_MAP[b.kind]?.name}</span>
-                    <span className="font-medium">{b.name}</span>
-                  </span>
-                  <span className="muted">{b.sent.toLocaleString()} sent · <b className="ink">{Math.round(b.rate*100)}%</b> acted</span>
-                </div>
-                <div className="progress-bar"><div className="progress-fill" style={{width: `${b.rate*100}%`}}/></div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </Nudge>
-
-      <div className="card p-6 mt-8">
-        <p className="text-xs muted uppercase tracking-widest font-semibold">Where your people are on the Loop</p>
-        <div className="mt-5 grid grid-cols-9 gap-3 items-end" style={{height: 220}}>
-          {ENTERPRISE.distribution.map(d => {
-            const stage = STAGES.find(s => s.id === d.stage);
-            const h = (d.count / max) * 180;
-            return (
-              <div key={d.stage} className="flex flex-col items-center justify-end h-full">
-                <p className="text-xs font-semibold mb-1">{d.count}</p>
-                <div style={{width: "100%", height: h, background: stage.color, borderRadius: "8px 8px 2px 2px", opacity: 0.9}}/>
-                <p className="text-[10px] text-center mt-2 muted leading-tight" style={{maxWidth: 70}}>{stage.icon} {stage.name}</p>
-              </div>
-            );
-          })}
-        </div>
-        <p className="text-xs muted mt-4">Most employees are clustered in Write–Add. The pivot zone is Think → Make: the largest jump in measurable productivity happens here.</p>
-      </div>
-
-      <div className="grid md:grid-cols-2 gap-6 mt-8">
-        <div className="card p-6">
-          <p className="text-xs muted uppercase tracking-widest font-semibold">By function</p>
-          <div className="mt-4 space-y-3">
-            {ENTERPRISE.functions.map(f => (
-              <div key={f.name}>
-                <div className="flex justify-between text-sm mb-1">
-                  <span className="font-medium">{f.name} <span className="muted text-xs">· {f.staff} people</span></span>
-                  <span className="muted">{f.avgScore}/100 · top: {f.top}</span>
-                </div>
-                <div className="progress-bar"><div className="progress-fill" style={{width: `${f.avgScore}%`}}/></div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="card p-6">
-          <p className="text-xs muted uppercase tracking-widest font-semibold">Signals that matter</p>
-          <ul className="mt-4 space-y-4 text-sm">
-            <Signal color="#22A06B" t="Engineering pulled ahead" d="78 avg score — Make and Orchestrate stages over-indexed. Candidate champions for cross-function rollout."/>
-            <Signal color="#1F6F75" t="Sales lifted off" d="+22 pts in 30 days, driven by Read & Write adoption. Pipeline review time down 31%."/>
-            <Signal color="#D89E40" t="Finance is stuck at Read" d="43 avg. Likely tool-trust barrier. Recommend a guided clinic on AI for analysis & reconciliation."/>
-            <Signal color="#B86F5E" t="Operations dropped off after week 3" d="Completion rate fell from 72% → 38%. Schedule a manager-led restart."/>
-          </ul>
-        </div>
-      </div>
-
-      <div className="card p-7 mt-8 bg-ink text-white">
-        <div className="flex justify-between items-center flex-wrap gap-4">
-          <div>
-            <p className="text-xs uppercase tracking-widest text-gold font-semibold">Ready for pilot</p>
-            <p className="serif text-2xl mt-1">Run a 60-day pilot with 100–200 employees in one function.</p>
-            <p className="opacity-80 text-sm mt-1">We'll set up baseline, the Loop journey, weekly nudges, and a manager dashboard. Outcomes guaranteed in writing.</p>
-          </div>
-          <button className="btn-gold">Talk to AI&amp;Beyond</button>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const Signal = ({color, t, d}) => (
-  <li className="flex gap-3">
-    <span className="mt-1 w-2 h-2 rounded-full flex-shrink-0" style={{background: color}}/>
-    <div>
-      <p className="font-semibold">{t}</p>
-      <p className="muted">{d}</p>
-    </div>
-  </li>
-);
-
-/* NUDGE LAB */
-const NudgeLab = ({ enabled, toggle }) => {
-  return (
-    <div className="max-w-6xl mx-auto px-6 py-10 fade-up">
-      <div className="flex items-end justify-between flex-wrap gap-3">
-        <div>
-          <p className="pill" style={{background:"#EFE9F7", color:"#5B4391"}}>Behind the design</p>
-          <h2 className="serif text-4xl font-semibold mt-3">10x Loop is engineered choice architecture.</h2>
-          <p className="muted max-w-2xl mt-2">Built on Richard Thaler's Nobel-Prize-winning work on nudges (2017). Every interaction applies a named behavioural-science principle. Toggle the overlay on to see each one in context.</p>
-        </div>
-        <button onClick={toggle} className={enabled ? "btn-gold" : "btn-primary"}>
-          {enabled ? "Overlay is ON — hide" : "Turn overlay ON"}
-        </button>
-      </div>
-
-      <div className="card p-6 mt-6 bg-ink text-white">
-        <div className="grid md:grid-cols-3 gap-6 items-center">
-          <div className="md:col-span-2">
-            <p className="text-xs uppercase tracking-widest text-gold font-semibold">Why this matters</p>
-            <p className="serif text-2xl mt-1 leading-snug">Most adoption tools rely on content. 10x Loop relies on choice architecture.</p>
-            <p className="opacity-80 text-sm mt-2">In 60-day pilots, behavioural nudges out-perform content depth as a predictor of stage completion by ~3x. Show this to a CHRO and you'll close the conversation in 20 minutes.</p>
-          </div>
-          <div>
-            <p className="serif text-4xl">2017</p>
-            <p className="text-xs uppercase tracking-widest text-gold font-semibold mt-1">Nobel Prize, Economics</p>
-            <p className="opacity-80 text-sm mt-1">Awarded to Richard Thaler for his contributions to behavioural economics.</p>
-          </div>
-        </div>
-      </div>
-
-      <div className="grid md:grid-cols-2 gap-5 mt-8">
-        {NUDGE_REGISTRY.map(n => (
-          <div key={n.kind} className="card p-6">
-            <div className="flex items-start justify-between gap-3 mb-3">
-              <span className={`nudge-tag nudge-${n.kind}`}>{n.name}</span>
-              <span className="text-xs muted">{n.thaler}</span>
-            </div>
-            <p className="serif text-xl font-semibold leading-snug">{n.title}</p>
-            <p className="muted text-sm mt-2 leading-relaxed">{n.desc}</p>
-            <div className="grid grid-cols-3 gap-3 mt-4 text-xs">
-              <div>
-                <p className="muted uppercase tracking-wider font-semibold">Where</p>
-                <p className="ink mt-1">{n.where}</p>
-              </div>
-              <div>
-                <p className="muted uppercase tracking-wider font-semibold">Expected lift</p>
-                <p className="ink mt-1">{n.lift}</p>
-              </div>
-              <div>
-                <p className="muted uppercase tracking-wider font-semibold">Times fired (you)</p>
-                <p className="serif text-2xl ink">{n.fired}</p>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      <div className="card p-7 mt-8">
-        <p className="text-xs muted uppercase tracking-widest font-semibold">Nudge calendar · this week</p>
-        <p className="muted text-sm mt-1">When does each nudge fire? Most are timed to friction points, not arbitrary intervals.</p>
-        <div className="mt-5 grid grid-cols-7 gap-2 text-xs">
-          {["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].map((d,i) => (
-            <div key={d} className="card p-3" style={{background: i === 0 ? "#EEF6D9" : "white"}}>
-              <p className="font-semibold mb-2">{d}</p>
-              {i === 0 && <span className="nudge-tag nudge-fresh mb-1 block">Fresh-start</span>}
-              {(i === 1 || i === 3) && <span className="nudge-tag nudge-intent mb-1 block">Plan</span>}
-              {i === 2 && <span className="nudge-tag nudge-social mb-1 block">Peer</span>}
-              {i === 4 && <span className="nudge-tag nudge-commit mb-1 block">Manager check</span>}
-              {(i === 5 || i === 6) && <span className="nudge-tag nudge-loss block">Streak</span>}
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div className="card p-7 mt-8 bg-[#EEF6D9]">
-        <p className="serif text-xl font-semibold leading-snug">"Choice architecture is unavoidable. The question isn't whether to nudge — it's whether to do it well."</p>
-        <p className="muted text-sm mt-2">— Richard Thaler &amp; Cass Sunstein, <i>Nudge</i> (2008)</p>
-      </div>
-    </div>
-  );
-};
-
-/* CERTIFICATE */
-const Certificate = ({ score, level, onRestart, userName }) => (
-  <div className="max-w-3xl mx-auto px-6 py-12 fade-up">
-    <div className="certificate">
-      <p className="text-xs uppercase tracking-widest text-gold font-semibold text-center">Certificate of AI Literacy</p>
-      <p className="serif text-center text-4xl mt-3">10x Loop Completed.</p>
-      <p className="text-center muted mt-2">This certifies that</p>
-      <p className="serif text-center text-3xl mt-1 font-semibold">{userName || "You"}</p>
-      <p className="text-center muted mt-2 max-w-md mx-auto">has completed one full loop of AI literacy — from Read through Orchestrate — and returns as a more capable, AI-augmented human.</p>
-      <div className="mt-8 grid grid-cols-3 gap-4 text-center">
-        <div><p className="serif text-3xl font-semibold">{score || "—"}</p><p className="text-xs muted uppercase tracking-widest mt-1">Final score</p></div>
-        <div><p className="serif text-3xl font-semibold">{level?.name || "—"}</p><p className="text-xs muted uppercase tracking-widest mt-1">Level achieved</p></div>
-        <div><p className="serif text-3xl font-semibold">9/9</p><p className="text-xs muted uppercase tracking-widest mt-1">Stages</p></div>
-      </div>
-      <div className="mt-10 flex items-end justify-between">
-        <div>
-          <p className="serif italic">Anuj Magazine</p>
-          <p className="text-xs muted">Founder, AI&amp;Beyond</p>
-        </div>
-        <div className="text-right">
-          <p className="text-xs muted">Issued</p>
-          <p className="text-sm">{new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}</p>
-        </div>
-      </div>
-    </div>
-    <div className="flex justify-center gap-3 mt-8">
-      <button onClick={onRestart} className="btn-ghost">Start a new loop at a higher level</button>
-      <button onClick={() => window.print()} className="btn-primary">Save / print certificate</button>
-    </div>
-  </div>
-);
-
-/* ===========================================================
-   V0.3 ADDITIONS — Goal anchor (#2), Artifact eval (#3),
-   Inline feedback + observer view (#5)
-   =========================================================== */
-
-/* CONFIG — wire feedbackWebhook later via Google Apps Script if you want Sheet capture */
-const CONFIG = {
-  feedbackWebhook: "",
-  feedbackEmail: "anuj@aiandbeyond.in"
-};
-const STORAGE_KEY = "loop_v0_3_state";
-
-/* HEURISTIC ARTIFACT EVAL — runs client-side, no API needed.
-   Inspects the artifact for spec-mindset markers (audience, constraints, format,
-   intended action, voice cues, negative instructions, length). Calibrated to
-   feel credible to an early AI user — not magic, but better than self-report. */
+/* ========================= ARTIFACT EVAL ========================= */
 const evaluateArtifact = (text) => {
   const trimmed = text.trim();
   const wordCount = trimmed.split(/\s+/).filter(Boolean).length;
@@ -1509,164 +237,547 @@ const evaluateArtifact = (text) => {
   if (wordCount > 220) score -= 0.5;
   if (wordCount < 15) score -= 1.5;
   score = Math.max(1, Math.min(10, score));
-  const strengths = [];
-  const lifts = [];
-  if (checks.hasAudience) strengths.push("You named the audience — the single biggest tone lever.");
-  else lifts.push("**Name the audience.** 'For a CFO who has 60 seconds' lands very differently from 'for a leader.'");
+  const strengths = [], lifts = [];
+  if (checks.hasAudience) strengths.push("You named the audience — the biggest tone lever.");
+  else lifts.push("Name the audience. 'For a CFO with 60 seconds' lands differently from 'for a leader.'");
   if (checks.hasConstraint) strengths.push("You set a constraint. That's spec-mindset — exactly right.");
-  else lifts.push("**Set a constraint.** 'Under 80 words' or 'in 5 bullets.' AI defaults to long without one.");
+  else lifts.push("Set a constraint. 'Under 80 words' or 'in 5 bullets.' AI defaults to long without one.");
   if (checks.hasFormat) strengths.push("You specified the format. Saves an iteration round.");
-  else lifts.push("**Specify the format.** Bullets, table, email, slide — removes ambiguity.");
-  if (checks.hasIntent) strengths.push("You stated what should happen next. Output-driven prompts beat content-driven ones.");
-  else lifts.push("**State the desired action.** 'I want them to approve this' reframes the whole response.");
-  if (checks.hasNegative) strengths.push("You told it what NOT to do. Negative instructions are underused.");
-  if (checks.hasExample) strengths.push("You showed an example. Few-shot examples are gold for tone matching.");
-  if (wordCount < 15) lifts.unshift("**Too short to be a spec.** Aim for 40–100 well-chosen words. AI quality scales with context.");
-  if (wordCount > 220) lifts.unshift("**This prompt is long.** Compress — most prompts peak in quality at 50–150 words.");
+  else lifts.push("Specify the format. Bullets, table, email, slide — removes ambiguity.");
+  if (checks.hasIntent) strengths.push("You stated what should happen next. Outcome-driven beats content-driven.");
+  else lifts.push("State the desired action. 'I want them to approve this' reframes the whole response.");
+  if (checks.hasNegative) strengths.push("You told it what NOT to do. Underused and powerful.");
+  if (checks.hasExample) strengths.push("You showed an example. Gold for tone matching.");
+  if (wordCount < 15) lifts.unshift("Too short to be a spec. Aim for 40–100 well-chosen words.");
+  if (wordCount > 220) lifts.unshift("This is long. Most prompts peak at 50–150 words.");
   return { score: Math.round(score * 10) / 10, strengths: strengths.slice(0, 4), lifts: lifts.slice(0, 3), wordCount };
 };
 
 const claudeDeepEvalUrl = (text, stageName, goal) => {
-  const goalLine = goal ? `\nMy work goal for this Loop is: "${goal}"` : "";
-  const prompt = `I'm on the "${stageName}" stage of an AI literacy program called 10x Loop.${goalLine}\n\nHere's a work artifact (a prompt I wrote, or AI output I produced). Please:\n1. Score it 1–10 on prompt clarity, output quality, and spec rigour\n2. Tell me 3 things it does well\n3. Tell me the single most important thing to lift — and rewrite the section that needs it\n4. Tell me what a 10/10 version of this artifact would look like\n\nMy artifact:\n\n${text}`;
+  const goalLine = goal ? `\nMy work goal for this program is: "${goal}"` : "";
+  const prompt = `I'm on the "${stageName}" stage of an AI literacy program called 10x Loop.${goalLine}\n\nHere's a work artifact (a prompt I wrote, or AI output I produced). Please:\n1. Score it 1-10 on clarity and spec rigour\n2. Tell me 3 things it does well\n3. Tell me the single most important lift — and rewrite that section\n4. Show me what a 10/10 version looks like\n\nMy artifact:\n\n${text}`;
   return `https://claude.ai/new?q=${encodeURIComponent(prompt)}`;
 };
 
-/* NAME + GOAL MODAL — fires after IntentModal closes. Captures who she is and
-   what specific work outcome she wants the Loop to drive. */
-const NameGoalModal = ({ onSave, onSkip }) => {
+/* ========================= NUDGE REGISTRY (demo mode) ========================= */
+const NUDGE_REGISTRY = [
+  { kind: "default", name: "Defaults", thaler: "Thaler & Sunstein, 2008", title: "Auto-enrol into the next stage", desc: "Users follow whatever path requires no decision. We set the stage and starting point; the user opts out, not in.", where: "After setup · Stage transitions", lift: "+22 to +60 pp in behaviour-change studies" },
+  { kind: "intent", name: "Implementation intentions", thaler: "Gollwitzer", title: "Name when & where", desc: "'If it's Tuesday 4pm at my desk, then I practise.' 2–3x follow-through across health and learning research.", where: "During setup", lift: "+91% follow-through (Milkman et al.)" },
+  { kind: "loss", name: "Loss aversion", thaler: "Kahneman & Tversky", title: "Frame inaction as loss", desc: "'Don't break your streak' beats 'earn a longer streak.' Losses feel ~2x as painful as gains.", where: "Today screen · streak", lift: "Duolingo: streaks lift DAU ~40%" },
+  { kind: "salience", name: "Salience", thaler: "Thaler & Sunstein", title: "One obvious action per screen", desc: "The Today screen has exactly one primary action. Everything else recedes.", where: "Every screen", lift: "+20 to +40% form completion" },
+  { kind: "gradient", name: "Goal-gradient", thaler: "Kivetz et al.", title: "Show concrete distance", desc: "'2 stages left' beats '78% done.' People accelerate near the goal.", where: "Journey view", lift: "+18% completion velocity" },
+  { kind: "feedback", name: "Immediate feedback", thaler: "Thaler & Sunstein", title: "Instant consequences", desc: "Artifact scores and badges fire instantly on completion, attaching reward to action.", where: "Practice flow", lift: "Foundational to habit products" },
+  { kind: "identity", name: "Identity priming", thaler: "Bryan et al.", title: "Frame the person, not the task", desc: "'You're becoming a 10x human' is identity; 'complete task 3' is procedure. Identity changes behaviour.", where: "Certificate · Journey", lift: "+13% (voter turnout studies)" },
+  { kind: "fresh", name: "Fresh-start effect", thaler: "Dai, Milkman, Riis", title: "Anchor restarts to landmarks", desc: "Mondays and month-firsts are when people are most open to change. Re-engagement lands there.", where: "Return visits", lift: "+15 to +30% engagement" }
+];
+const KIND_MAP = {}; NUDGE_REGISTRY.forEach(n => { KIND_MAP[n.kind] = n; });
+
+const NudgeCtx = createContext({ visible: false });
+const Nudge = ({ kind, children, outline = true }) => {
+  const { visible } = useContext(NudgeCtx);
+  if (!visible) return children;
+  return (
+    <div className={`nudge-wrap ${outline ? "outline" : ""}`}>
+      {children}
+      <span className={`nudge-tag nudge-${kind} nudge-floating`}>{KIND_MAP[kind] ? KIND_MAP[kind].name : kind}</span>
+    </div>
+  );
+};
+
+/* ========================= SHARED UI ========================= */
+const Logo = ({ light }) => (
+  <div className="flex items-center gap-2.5">
+    <svg width="30" height="30" viewBox="0 0 32 32" fill="none">
+      <path d="M6 22 C 6 12, 14 6, 22 10 C 30 14, 28 26, 18 26 C 10 26, 4 22, 10 16" stroke={light ? "#fff" : "#141b4d"} strokeWidth="2.6" fill="none" strokeLinecap="round"/>
+      <circle cx="22" cy="10" r="3" fill="#94c90d"/>
+    </svg>
+    <span className="head text-lg font-bold tracking-tight" style={{color: light ? "#fff" : "var(--ink)"}}>10x Loop</span>
+  </div>
+);
+
+const KPI = ({label, value, sub}) => (
+  <div className="card p-5 h-full">
+    <p className="text-xs muted uppercase tracking-widest font-semibold head">{label}</p>
+    <p className="head text-3xl font-bold mt-1">{value}</p>
+    <p className="text-xs muted mt-1">{sub}</p>
+  </div>
+);
+
+const LoopVisual = ({ progress, currentStage, onSelect, compact }) => {
+  const W = 760, H = compact ? 190 : 250;
+  const padX = 40, padY = compact ? 38 : 56;
+  const points = STAGES.map((s, i) => {
+    const t = i / (STAGES.length - 1);
+    const x = padX + t * (W - padX * 2);
+    const y = H - padY - (t * (H - padY * 2)) + Math.sin(t * Math.PI) * 14;
+    return { ...s, x, y };
+  });
+  const path = points.map((p, i) => (i === 0 ? `M ${p.x} ${p.y}` : `L ${p.x} ${p.y}`)).join(" ");
+  const first = points[0], last = points[points.length - 1];
+  const arc = `M ${last.x} ${last.y} C ${last.x + 10} ${-28}, ${first.x - 10} ${-28}, ${first.x} ${first.y}`;
+  return (
+    <div className="w-full overflow-x-auto">
+      <svg viewBox={`0 -55 ${W} ${H + 55}`} className="w-full" style={{minHeight: compact ? 170 : 230}}>
+        <path d={path} stroke="#dfe2da" strokeWidth="2.4" fill="none" />
+        <path d={arc} className="arc-loop" stroke="#94c90d" strokeWidth="2.2" fill="none" />
+        <polygon points={`${first.x-5},${first.y-12} ${first.x+5},${first.y-12} ${first.x},${first.y-2}`} fill="#94c90d"/>
+        {points.map((p) => {
+          const done = !!(progress[p.id] && progress[p.id].completed);
+          const active = currentStage === p.id;
+          return (
+            <g key={p.id} onClick={() => onSelect && onSelect(p.id)} style={{cursor: onSelect ? "pointer" : "default"}}>
+              <circle cx={p.x} cy={p.y} r={active ? 21 : 17}
+                fill={done ? p.color : "#fff"} stroke={active ? "#94c90d" : (done ? p.color : "#dfe2da")}
+                strokeWidth={active ? 3 : 1.8} className={active ? "stage-active" : ""}/>
+              <text x={p.x} y={p.y + 5} textAnchor="middle" fontSize="15">{p.icon}</text>
+              {!compact && <text x={p.x} y={p.y + 36} textAnchor="middle" fontSize="11" fill="#141b4d" fontWeight={active ? 700 : 500}>{p.name}</text>}
+              {done && <circle cx={p.x + 13} cy={p.y - 13} r="5.5" fill="#53bc86" stroke="white" strokeWidth="1.5"/>}
+            </g>
+          );
+        })}
+        <text x={W/2} y={-30} textAnchor="middle" fontSize="11" fill="#6f9a06" fontWeight="700" letterSpacing="2" fontFamily="Poppins">THE LOOP CONTINUES</text>
+      </svg>
+    </div>
+  );
+};
+
+/* ========================= HEADER ========================= */
+const Header = ({ screen, setScreen, demo, nudgesVisible, toggleNudges, userName, onReset }) => {
+  const userTabs = [["today", "Today"], ["journey", "My Journey"]];
+  const demoTabs = [["today", "Today"], ["journey", "Journey"], ["enterprise", "Enterprise"], ["nudgelab", "Nudge Lab"]];
+  const tabs = demo ? demoTabs : userTabs;
+  return (
+    <header className="relative z-10 border-b" style={{borderColor: "var(--line)", background: "rgba(251,252,249,0.92)", backdropFilter: "blur(8px)"}}>
+      <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between flex-wrap gap-3">
+        <button onClick={() => setScreen("today")} className="cursor-pointer"><Logo /></button>
+        <nav className="flex items-center gap-1 text-sm flex-wrap">
+          {tabs.map(([id, label]) => (
+            <button key={id} onClick={() => setScreen(id)}
+              className={`px-4 py-2 rounded-full transition text-sm head font-medium ${screen === id ? "text-white" : "hover:bg-[#f3f9e2] ink"}`}
+              style={screen === id ? {background: "var(--ink)"} : {}}>
+              {label}
+            </button>
+          ))}
+        </nav>
+        <div className="flex items-center gap-3">
+          {demo && (
+            <button onClick={toggleNudges}
+              className={`px-3 py-2 rounded-full text-xs font-semibold transition head ${nudgesVisible ? "text-white" : "border"}`}
+              style={nudgesVisible ? {background: "var(--accent-dark)"} : {borderColor: "var(--line)"}}>
+              {nudgesVisible ? "✕ Hide nudges" : "👁 Show nudges"}
+            </button>
+          )}
+          {demo && <span className="pill" style={{background: "#141b4d", color: "#94c90d"}}>Demo mode</span>}
+          {userName && !demo && <span className="pill" style={{background: "var(--accent-tint)", color: "var(--ink)"}}>{userName}</span>}
+          {onReset && <button onClick={onReset} className="text-xs muted hover:ink px-1" title="Reset all my data">↻</button>}
+        </div>
+      </div>
+    </header>
+  );
+};
+
+/* ========================= WELCOME ========================= */
+const Welcome = ({ onStart }) => (
+  <div className="max-w-2xl mx-auto px-6 pt-20 pb-24 text-center fade-up">
+    <p className="pill" style={{background: "var(--accent-tint)", color: "var(--accent-dark)"}}>An AI&amp;Beyond pilot</p>
+    <h1 className="head text-5xl font-bold leading-tight mt-6 tracking-tight">
+      15 minutes a day.<br/>One <span className="brand-gradient-text">real work goal.</span>
+    </h1>
+    <p className="mt-6 text-lg muted leading-relaxed max-w-md mx-auto">
+      10x Loop is a daily AI practice companion. You pick one outcome that matters in your job — it builds your AI capability around it, one short session at a time.
+    </p>
+    <div className="card p-6 mt-10 text-left max-w-md mx-auto">
+      <p className="text-xs muted uppercase tracking-widest font-semibold head mb-4">Setup takes 3 minutes</p>
+      {[
+        ["1", "Four quick questions", "so we start you at the right level — not the basics"],
+        ["2", "One work goal", "everything you practise ties back to it"],
+        ["3", "Your first session", "start today, or schedule it"]
+      ].map(([n, t, d]) => (
+        <div key={n} className="flex gap-4 items-start mb-4 last:mb-0">
+          <span className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold head flex-shrink-0" style={{background: "var(--accent)", color: "var(--ink)"}}>{n}</span>
+          <div>
+            <p className="font-semibold text-sm head">{t}</p>
+            <p className="text-sm muted">{d}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+    <button onClick={onStart} className="btn-accent mt-10 text-base">Start setup →</button>
+  </div>
+);
+
+/* ========================= SETUP (single flow) ========================= */
+const Setup = ({ onComplete }) => {
+  const [step, setStep] = useState(0); // 0..3 questions, 4 = about you, 5 = result
+  const [answers, setAnswers] = useState({});
   const [name, setName] = useState("");
   const [role, setRole] = useState("");
   const [goal, setGoal] = useState("");
+  const [when, setWhen] = useState("");
+  const total = ASSESSMENT.length + 1;
+
   const SUGGESTED_GOALS = [
     "Halve my email triage time",
     "Ship a weekly client digest in 30 min",
     "Automate my weekly status report",
     "Pre-brief every meeting in 5 min",
-    "Build an AI assistant for my team",
-    "Cut my reading load by 60%"
+    "Build an AI assistant for my team"
   ];
-  const canSave = name.trim().length > 1 && goal.trim().length > 5;
-  return (
-    <div className="modal-overlay">
-      <div className="modal fade-up">
-        <Nudge kind="identity" pos="tr" outline={false}>
-          <p className="pill" style={{background:"#EEF6D9", color:"#5A6B14"}}>Goal anchor</p>
-        </Nudge>
-        <h2 className="serif text-3xl font-semibold mt-3 leading-tight">One real outcome. Not a vague goal.</h2>
-        <p className="muted text-sm mt-2">Every stage from here on will reframe around this. Make it specific to <i>your</i> work.</p>
-        <div className="mt-6 space-y-4">
+  const WHEN_OPTIONS = ["Morning, with coffee", "Right after lunch", "Late afternoon", "Evening wind-down"];
+
+  const score = () => {
+    let s = 0;
+    ASSESSMENT.forEach((q, i) => {
+      const a = answers[i];
+      if (q.type === "single" && a != null) s += q.options[a].score;
+      if (q.type === "multi" && Array.isArray(a)) a.forEach(idx => s += q.options[idx].score);
+    });
+    return Math.min(100, Math.round(s));
+  };
+
+  if (step === ASSESSMENT.length) {
+    const canGo = name.trim().length > 1 && goal.trim().length > 5;
+    return (
+      <div className="max-w-xl mx-auto px-6 py-12 fade-up">
+        <div className="progress-bar mb-8"><div className="progress-fill" style={{width: `${(step/total)*100}%`}}/></div>
+        <h2 className="head text-3xl font-bold leading-tight">Last step: anchor it to your work.</h2>
+        <p className="muted text-sm mt-2">Every practice session ties back to this. Specific beats noble.</p>
+        <div className="mt-7 space-y-5">
           <div>
-            <p className="text-xs muted uppercase tracking-widest font-semibold mb-2">Your name</p>
+            <p className="text-xs muted uppercase tracking-widest font-semibold head mb-2">Your name</p>
             <input type="text" placeholder="e.g. Aisha Verma" value={name} onChange={e => setName(e.target.value)} />
           </div>
           <div>
-            <p className="text-xs muted uppercase tracking-widest font-semibold mb-2">Your role (optional)</p>
+            <p className="text-xs muted uppercase tracking-widest font-semibold head mb-2">Your role <span className="normal-case font-normal">(optional)</span></p>
             <input type="text" placeholder="e.g. Senior Marketing Manager" value={role} onChange={e => setRole(e.target.value)} />
           </div>
           <div>
-            <p className="text-xs muted uppercase tracking-widest font-semibold mb-2">Your goal — try one of these</p>
-            <div className="chip-row mb-3">
+            <p className="text-xs muted uppercase tracking-widest font-semibold head mb-2">One work outcome you want AI to change</p>
+            <div className="flex flex-wrap gap-2 mb-3">
               {SUGGESTED_GOALS.map(g => (
                 <button key={g} className={`chip ${goal === g ? "active" : ""}`} onClick={() => setGoal(g)}>{g}</button>
               ))}
             </div>
-            <textarea rows="3" placeholder="…or write your own. The more specific, the better."
-              value={goal} onChange={e => setGoal(e.target.value)} />
+            <textarea rows="2" placeholder="…or write your own. The more specific, the better." value={goal} onChange={e => setGoal(e.target.value)} />
+          </div>
+          <div>
+            <p className="text-xs muted uppercase tracking-widest font-semibold head mb-2">When will you usually practise? <span className="normal-case font-normal">(optional)</span></p>
+            <div className="flex flex-wrap gap-2">
+              {WHEN_OPTIONS.map(w => (
+                <button key={w} className={`chip ${when === w ? "active" : ""}`} onClick={() => setWhen(w)}>{w}</button>
+              ))}
+            </div>
           </div>
         </div>
-        {canSave && (
-          <div className="card p-4 mt-5 bg-[#FAF6EB]">
-            <p className="text-sm leading-snug">
-              <b>{name}</b> is doing the 10x Loop to <b>{goal.toLowerCase()}</b>.<br/>
-              <span className="muted">Every stage from here will be filtered through that goal.</span>
-            </p>
-          </div>
-        )}
-        <div className="flex gap-3 mt-6 justify-end">
-          <button onClick={onSkip} className="btn-ghost">Skip for now</button>
-          <button onClick={() => canSave && onSave({name, role, goal})} className="btn-gold" disabled={!canSave} style={{opacity: canSave ? 1 : 0.4}}>
-            Set my anchor →
+        <div className="flex justify-between mt-9">
+          <button onClick={() => setStep(s => s - 1)} className="btn-ghost">← Back</button>
+          <button onClick={() => canGo && onComplete({ score: score(), name: name.trim(), role: role.trim(), goal: goal.trim(), when })}
+            className="btn-accent" disabled={!canGo} style={{opacity: canGo ? 1 : 0.4}}>
+            Finish setup →
           </button>
         </div>
       </div>
+    );
+  }
+
+  const q = ASSESSMENT[step];
+  const answered = q.type === "single" ? answers[step] != null : (answers[step] && answers[step].length > 0);
+  return (
+    <div className="max-w-xl mx-auto px-6 py-12 fade-up" key={step}>
+      <div className="progress-bar mb-8"><div className="progress-fill" style={{width: `${(step/total)*100}%`}}/></div>
+      <p className="text-xs muted uppercase tracking-widest font-semibold head">Question {step+1} of {ASSESSMENT.length}</p>
+      <h2 className="head text-2xl font-bold mt-2 leading-snug">{q.q}</h2>
+      <div className="space-y-3 mt-6">
+        {q.options.map((opt, oi) => {
+          const selected = q.type === "single" ? answers[step] === oi : (answers[step] || []).includes(oi);
+          return (
+            <button key={oi}
+              onClick={() => {
+                if (q.type === "single") {
+                  setAnswers(a => ({...a, [step]: oi}));
+                  setTimeout(() => setStep(s => s + 1), 250);
+                } else {
+                  setAnswers(a => {
+                    const arr = a[step] || [];
+                    return { ...a, [step]: arr.includes(oi) ? arr.filter(x => x !== oi) : [...arr, oi] };
+                  });
+                }
+              }}
+              className={`w-full text-left p-4 rounded-xl border-2 transition text-sm ${selected ? "bg-[#f3f9e2]" : "hover:border-[#4198d3]"}`}
+              style={{borderColor: selected ? "var(--accent)" : "var(--line)"}}>
+              {opt.label}
+            </button>
+          );
+        })}
+      </div>
+      <div className="flex justify-between mt-8">
+        <button onClick={() => setStep(s => Math.max(0, s - 1))} className="btn-ghost" disabled={step === 0} style={{opacity: step === 0 ? 0.4 : 1}}>← Back</button>
+        {q.type === "multi" && (
+          <button onClick={() => answered && setStep(s => s + 1)} className="btn-primary" disabled={!answered} style={{opacity: answered ? 1 : 0.5}}>Continue →</button>
+        )}
+      </div>
     </div>
   );
 };
 
-/* ARTIFACT EVALUATOR — pasted text → heuristic score + strengths + lifts.
-   Lives inside the Prompt Challenge tab. */
-const ArtifactEvaluator = ({ stage, goal, savedEval, onSave }) => {
-  const [text, setText] = useState(savedEval?.text || "");
-  const [result, setResult] = useState(savedEval?.result || null);
-
-  const run = () => {
-    const ev = evaluateArtifact(text);
-    setResult(ev);
-    if (ev) onSave({ text, result: ev, evaluatedAt: new Date().toISOString() });
-  };
-
-  const renderMd = (s) => {
-    const parts = s.split(/(\*\*[^*]+\*\*)/);
-    return parts.map((p, i) => p.startsWith("**") ? <b key={i}>{p.slice(2, -2)}</b> : <span key={i}>{p}</span>);
-  };
+/* ========================= TODAY (home) ========================= */
+const Today = ({ user, goal, when, level, score, currentStage, progress, streak, onStartPractice, onSeeJourney }) => {
+  const stage = STAGES.find(s => s.id === currentStage) || STAGES[1];
+  const done = STAGES.filter(s => progress[s.id] && progress[s.id].completed).length;
+  const levelObj = LEVELS.find(l => l.id === level);
+  const stageData = progress[stage.id] || {};
+  const started = !!(stageData.practiceNote || stageData.reflection);
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
 
   return (
-    <div className="mt-6">
-      <p className="text-xs muted uppercase tracking-widest font-semibold mb-2">Paste a real artifact — a prompt you wrote, or AI output you got. We'll score it.</p>
-      <textarea rows="7" placeholder={`Paste your prompt or AI output here. ${goal ? `Connect it to your goal: "${goal}".` : "Be specific."}`}
-        value={text} onChange={e => setText(e.target.value)} />
-      <div className="flex gap-2 mt-3 flex-wrap">
-        <button onClick={run} className="btn-primary text-sm" disabled={text.trim().split(/\s+/).filter(Boolean).length < 5}
-          style={{opacity: text.trim().split(/\s+/).filter(Boolean).length >= 5 ? 1 : 0.4}}>
-          ⚡ Get instant evaluation
+    <div className="max-w-3xl mx-auto px-6 py-12 fade-up">
+      <p className="muted text-sm">{greeting}{user && user.name ? `, ${user.name.split(" ")[0]}` : ""}.</p>
+      <h2 className="head text-4xl font-bold mt-1 tracking-tight">Today's practice</h2>
+
+      <Nudge kind="salience">
+      <div className="card p-8 mt-7" style={{borderColor: "var(--accent)", borderWidth: 2}}>
+        <div className="flex items-start gap-5">
+          <div className="w-16 h-16 rounded-2xl flex items-center justify-center flex-shrink-0" style={{background: stage.color + "1a"}}>
+            <span className="text-3xl">{stage.icon}</span>
+          </div>
+          <div className="flex-1">
+            <p className="text-xs muted uppercase tracking-widest font-semibold head">Stage {STAGES.findIndex(s => s.id === stage.id) + 1} of 9 · ~{stage.minutes} min</p>
+            <h3 className="head text-2xl font-bold mt-1">{stage.name} — {stage.short}</h3>
+            {goal && <p className="text-sm mt-2 leading-relaxed"><span className="muted">Applied to your goal:</span> <b>{goal}</b></p>}
+          </div>
+        </div>
+        <p className="text-[15px] mt-5 leading-relaxed">{stage.practice}</p>
+        <button onClick={onStartPractice} className="btn-accent mt-6 w-full text-center text-base">
+          {started ? "Continue this session →" : "Start today's session →"}
         </button>
-        {text.trim().length > 10 && (
-          <a href={claudeDeepEvalUrl(text, stage.name, goal)} target="_blank" rel="noopener" className="btn-ghost text-sm">
-            🧠 Get deeper evaluation from Claude →
-          </a>
-        )}
+      </div>
+      </Nudge>
+
+      <div className="grid grid-cols-3 gap-4 mt-6">
+        <Nudge kind="loss" outline={false}>
+        <div className="card p-4 text-center h-full">
+          <p className="head text-2xl font-bold">🔥 {streak}</p>
+          <p className="text-xs muted mt-1">day streak</p>
+        </div>
+        </Nudge>
+        <div className="card p-4 text-center h-full">
+          <p className="head text-2xl font-bold">{done}<span className="text-sm muted">/9</span></p>
+          <p className="text-xs muted mt-1">stages complete</p>
+        </div>
+        <div className="card p-4 text-center h-full">
+          <p className="head text-2xl font-bold">{levelObj ? levelObj.name : "—"}</p>
+          <p className="text-xs muted mt-1">{score != null ? `${score}/100 baseline` : "level"}</p>
+        </div>
       </div>
 
-      {result && (
-        <div className="card p-5 mt-5 fade-up bg-[#FAF6EB]" style={{borderColor:"#C39247"}}>
-          <div className="flex items-center justify-between flex-wrap gap-3">
-            <div>
-              <p className="text-xs muted uppercase tracking-widest font-semibold">Instant evaluation</p>
-              <p className="serif text-4xl font-semibold mt-1">{result.score}<span className="text-base muted">/10</span></p>
-            </div>
-            <div className="text-right">
-              <p className="text-xs muted uppercase tracking-widest font-semibold">{result.wordCount} words</p>
-              <p className="text-xs muted mt-1">Heuristic — not a real LLM. Use Claude link for deep eval.</p>
-            </div>
+      {when && (
+        <p className="text-xs muted text-center mt-5">Your usual practice window: <b>{when}</b></p>
+      )}
+
+      <button onClick={onSeeJourney} className="block mx-auto mt-8 text-sm muted hover:ink underline underline-offset-4">
+        See my full journey →
+      </button>
+    </div>
+  );
+};
+
+/* ========================= PRACTICE (linear flow) ========================= */
+const Practice = ({ stage, goal, savedData, savedEval, onSave, onSaveEval, onComplete, onBack, log }) => {
+  const [practiceNote, setPracticeNote] = useState(savedData && savedData.practiceNote || "");
+  const [reflection, setReflection] = useState(savedData && savedData.reflection || "");
+  const [evalText, setEvalText] = useState(savedEval && savedEval.text || "");
+  const [evalResult, setEvalResult] = useState(savedEval && savedEval.result || null);
+  const [copied, setCopied] = useState(false);
+
+  useEffect(() => { onSave({ practiceNote, reflection }); }, [practiceNote, reflection]);
+
+  const runEval = () => {
+    const ev = evaluateArtifact(evalText);
+    setEvalResult(ev);
+    if (ev) { onSaveEval({ text: evalText, result: ev, evaluatedAt: new Date().toISOString() }); log("eval_run", `${stage.id}: ${ev.score}/10`); }
+  };
+  const copyPrompt = () => {
+    navigator.clipboard && navigator.clipboard.writeText(stage.prompt).then(() => { setCopied(true); setTimeout(() => setCopied(false), 1600); });
+  };
+  const canComplete = practiceNote.length > 8 || reflection.length > 8 || !!evalResult;
+  const evalWords = evalText.trim().split(/\s+/).filter(Boolean).length;
+
+  return (
+    <div className="max-w-2xl mx-auto px-6 py-10 fade-up">
+      <button onClick={onBack} className="text-sm muted hover:ink">← Today</button>
+
+      <div className="mt-5 flex items-center gap-4">
+        <div className="w-14 h-14 rounded-2xl flex items-center justify-center" style={{background: stage.color + "1a"}}>
+          <span className="text-2xl">{stage.icon}</span>
+        </div>
+        <div>
+          <h2 className="head text-3xl font-bold">{stage.name}</h2>
+          <p className="muted text-sm">{stage.short} · ~{stage.minutes} min</p>
+        </div>
+      </div>
+
+      {goal && (
+        <div className="mt-5 px-4 py-3 rounded-xl text-sm" style={{background: "var(--accent-tint)", border: "1px solid var(--accent)"}}>
+          🎯 <b>Do this for:</b> {goal}
+        </div>
+      )}
+
+      {/* 1 · LEARN */}
+      <div className="mt-8">
+        <p className="pill mb-3" style={{background: "var(--blue-tint)", color: "var(--blue)"}}>1 · Understand — 2 min</p>
+        <p className="text-[15px] leading-relaxed">{stage.learn}</p>
+      </div>
+
+      {/* 2 · DO */}
+      <div className="mt-9">
+        <p className="pill mb-3" style={{background: "var(--mint-tint)", color: "#2e8a5e"}}>2 · Do — {stage.minutes - 7} min</p>
+        <p className="text-[15px] leading-relaxed mb-4">{stage.practice}</p>
+        <div className="card p-4" style={{background: "#f7f8f4"}}>
+          <div className="flex items-start justify-between gap-3">
+            <p className="text-sm font-mono leading-relaxed flex-1">{stage.prompt}</p>
+            <button onClick={copyPrompt} className="text-xs btn-ghost flex-shrink-0" style={{padding: "6px 12px"}}>{copied ? "✓ Copied" : "Copy"}</button>
           </div>
-          {result.strengths.length > 0 && (
-            <div className="mt-4">
-              <p className="text-xs uppercase tracking-widest font-semibold" style={{color:"#1F8F5D"}}>What's working</p>
-              <ul className="text-sm mt-2 space-y-1.5">
-                {result.strengths.map((s, i) => <li key={i} className="flex gap-2"><span>✓</span><span>{renderMd(s)}</span></li>)}
-              </ul>
-            </div>
-          )}
-          {result.lifts.length > 0 && (
-            <div className="mt-4">
-              <p className="text-xs uppercase tracking-widest font-semibold" style={{color:"#B86F5E"}}>The single lift that matters most</p>
-              <ul className="text-sm mt-2 space-y-1.5">
-                {result.lifts.map((s, i) => <li key={i} className="flex gap-2"><span>→</span><span>{renderMd(s)}</span></li>)}
-              </ul>
+        </div>
+        <p className="text-xs muted uppercase tracking-widest font-semibold head mt-5 mb-2">What did you do? (2–3 lines)</p>
+        <textarea rows="3" placeholder="What task did you pick, what did you ask AI, what did you keep or change?"
+          value={practiceNote} onChange={e => setPracticeNote(e.target.value)} />
+
+        <div className="mt-6 p-5 rounded-2xl" style={{border: "1.5px dashed var(--blue)"}}>
+          <p className="text-sm font-semibold head">Optional: get your work scored</p>
+          <p className="text-xs muted mt-1 mb-3">Paste the actual prompt you wrote (or AI's output). You'll get an instant score and the one lift that matters most.</p>
+          <textarea rows="4" placeholder="Paste your real prompt or AI output here…" value={evalText} onChange={e => setEvalText(e.target.value)} />
+          <div className="flex gap-2 mt-3 flex-wrap">
+            <button onClick={runEval} className="btn-primary text-sm" disabled={evalWords < 5} style={{opacity: evalWords >= 5 ? 1 : 0.4, padding: "10px 18px"}}>⚡ Score it</button>
+            {evalText.trim().length > 10 && (
+              <a href={claudeDeepEvalUrl(evalText, stage.name, goal)} target="_blank" rel="noopener" className="btn-ghost text-sm" style={{padding: "10px 18px"}}>🧠 Deep eval in Claude →</a>
+            )}
+          </div>
+          {evalResult && (
+            <div className="mt-4 fade-up">
+              <div className="flex items-baseline gap-3">
+                <p className="head text-4xl font-bold" style={{color: evalResult.score >= 7 ? "var(--accent-dark)" : evalResult.score >= 5 ? "var(--blue)" : "var(--warn)"}}>{evalResult.score}<span className="text-base muted font-normal">/10</span></p>
+                <p className="text-xs muted">{evalResult.wordCount} words · heuristic score</p>
+              </div>
+              {evalResult.strengths.length > 0 && (
+                <ul className="text-sm mt-3 space-y-1.5">
+                  {evalResult.strengths.map((s, i) => <li key={i} className="flex gap-2"><span style={{color: "var(--mint)"}}>✓</span><span>{s}</span></li>)}
+                </ul>
+              )}
+              {evalResult.lifts.length > 0 && (
+                <div className="mt-3 px-4 py-3 rounded-xl text-sm" style={{background: "#fdf3ef"}}>
+                  <b>Biggest lift:</b> {evalResult.lifts[0]}
+                </div>
+              )}
             </div>
           )}
         </div>
-      )}
+      </div>
+
+      {/* 3 · REFLECT */}
+      <div className="mt-9">
+        <p className="pill mb-3" style={{background: "#f3eefa", color: "#7b6baf"}}>3 · Reflect — 2 min</p>
+        <p className="text-[15px] leading-relaxed mb-3 font-medium">{stage.reflect}</p>
+        <textarea rows="3" placeholder="A few honest lines. This shapes your capability more than the practice does."
+          value={reflection} onChange={e => setReflection(e.target.value)} />
+      </div>
+
+      <div className="mt-9 flex items-center justify-between flex-wrap gap-3 pb-6">
+        <p className="text-xs muted">{canComplete ? "Nice — you can finish this stage now." : "Fill in at least one box above to finish."}</p>
+        <div className="flex gap-3">
+          <button onClick={onBack} className="btn-ghost">Save &amp; exit</button>
+          {!(savedData && savedData.completed) && (
+            <button onClick={onComplete} className="btn-accent" disabled={!canComplete} style={{opacity: canComplete ? 1 : 0.4}}>
+              Finish stage ✓
+            </button>
+          )}
+        </div>
+      </div>
     </div>
   );
 };
 
-/* FLOATING FEEDBACK BUTTON — always visible, captures notes per screen */
+/* ========================= JOURNEY ========================= */
+const Journey = ({ progress, currentStage, onPick, score, level, goal, activity }) => {
+  const done = STAGES.filter(s => progress[s.id] && progress[s.id].completed).length;
+  const left = STAGES.length - done;
+  const levelObj = LEVELS.find(l => l.id === level);
+  const activeDays = [...new Set((activity || []).map(a => a.t.slice(0, 10)))].length;
+
+  return (
+    <div className="max-w-4xl mx-auto px-6 py-10 fade-up">
+      <h2 className="head text-4xl font-bold tracking-tight">My journey</h2>
+      {goal && <p className="muted mt-2">Working toward: <b className="ink">{goal}</b></p>}
+
+      <div className="card p-6 mt-7">
+        <LoopVisual progress={progress} currentStage={currentStage} onSelect={onPick} />
+        <Nudge kind="gradient" outline={false}>
+          <p className="text-center text-sm muted mt-2">{left === 0 ? "Loop complete — start again, higher." : `${left} stage${left === 1 ? "" : "s"} to complete the loop.`}</p>
+        </Nudge>
+      </div>
+
+      <div className="grid md:grid-cols-3 gap-4 mt-6">
+        <KPI label="Baseline score" value={score != null ? `${score}/100` : "—"} sub={levelObj ? levelObj.name : ""} />
+        <KPI label="Stages complete" value={`${done}/9`} sub={`${Math.round((done/9)*100)}% of the loop`} />
+        <KPI label="Days active" value={activeDays} sub="real sessions, this device" />
+      </div>
+
+      <div className="grid md:grid-cols-3 gap-3 mt-6">
+        {STAGES.map(s => {
+          const d = progress[s.id] && progress[s.id].completed;
+          const active = currentStage === s.id;
+          return (
+            <button key={s.id} onClick={() => onPick(s.id)}
+              className="card p-4 text-left transition hover:shadow-md"
+              style={{borderColor: active ? "var(--accent)" : d ? s.color + "66" : "var(--line)", borderWidth: active ? 2 : 1}}>
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style={{background: d ? s.color : s.color + "1a"}}>
+                  <span className="text-base">{s.icon}</span>
+                </div>
+                <div>
+                  <p className="font-semibold text-sm head">{s.name} {d && <span style={{color: "var(--mint)"}}>✓</span>}{active && !d && <span className="text-xs ml-1" style={{color: "var(--accent-dark)"}}>← now</span>}</p>
+                  <p className="text-xs muted">{s.short}</p>
+                </div>
+              </div>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
+/* ========================= CERTIFICATE ========================= */
+const Certificate = ({ score, level, userName, onRestart }) => (
+  <div className="max-w-2xl mx-auto px-6 py-12 fade-up">
+    <div className="certificate">
+      <p className="text-xs uppercase tracking-widest font-bold head text-center" style={{color: "var(--accent-dark)"}}>Certificate of AI Literacy</p>
+      <p className="head text-center text-4xl font-bold mt-3">10x Loop Completed</p>
+      <p className="text-center muted mt-3">This certifies that</p>
+      <p className="head text-center text-3xl mt-1 font-bold">{userName || "You"}</p>
+      <p className="text-center muted mt-3 max-w-md mx-auto text-sm leading-relaxed">completed one full loop of AI literacy — from Read through Orchestrate — and returns a more capable, AI-augmented human.</p>
+      <div className="mt-8 grid grid-cols-3 gap-4 text-center">
+        <div><p className="head text-3xl font-bold">{score || "—"}</p><p className="text-xs muted uppercase tracking-widest mt-1">Baseline</p></div>
+        <div><p className="head text-3xl font-bold">{level ? level.name : "—"}</p><p className="text-xs muted uppercase tracking-widest mt-1">Level</p></div>
+        <div><p className="head text-3xl font-bold">9/9</p><p className="text-xs muted uppercase tracking-widest mt-1">Stages</p></div>
+      </div>
+      <div className="mt-10 flex items-end justify-between">
+        <div><p className="head italic font-medium">Anuj Magazine</p><p className="text-xs muted">Founder, AI&amp;Beyond</p></div>
+        <div className="text-right"><p className="text-xs muted">Issued</p><p className="text-sm">{new Date().toLocaleDateString("en-US", {year: "numeric", month: "long", day: "numeric"})}</p></div>
+      </div>
+    </div>
+    <div className="flex justify-center gap-3 mt-8">
+      <button onClick={onRestart} className="btn-ghost">Start a new loop, higher</button>
+      <button onClick={() => window.print()} className="btn-primary">Save / print</button>
+    </div>
+  </div>
+);
+
+/* ========================= FEEDBACK ========================= */
 const FeedbackButton = ({ onClick }) => (
   <button onClick={onClick}
-    className="fixed bottom-6 right-6 z-50 text-white rounded-full px-4 py-3 shadow-lg text-sm font-semibold hover:scale-105 transition-transform"
-    style={{background: "#141B4D"}}>
+    className="fixed bottom-6 right-6 z-50 text-white rounded-full px-4 py-3 shadow-lg text-sm font-semibold head hover:scale-105 transition-transform"
+    style={{background: "#141b4d"}}>
     💬 Note to Anuj
   </button>
 );
@@ -1675,336 +786,474 @@ const FeedbackModal = ({ user, currentScreen, currentStage, onSave, onClose }) =
   const [note, setNote] = useState("");
   const [sentiment, setSentiment] = useState(null);
   const [sent, setSent] = useState(false);
-
   const submit = () => {
     if (note.trim().length < 3) return;
-    const payload = {
-      note, sentiment, screen: currentScreen, stage: currentStage || "",
-      user: user?.name || "Anonymous", role: user?.role || "", goal: user?.goal || "",
-      timestamp: new Date().toISOString()
-    };
-    onSave(payload);
-    if (CONFIG.feedbackWebhook) {
-      fetch(CONFIG.feedbackWebhook, { method: "POST", body: JSON.stringify(payload) }).catch(() => {});
-    }
+    onSave({ note, sentiment, screen: currentScreen, stage: currentStage || "", user: user && user.name || "Anonymous", timestamp: new Date().toISOString() });
     setSent(true);
-    setTimeout(onClose, 1500);
+    setTimeout(onClose, 1400);
   };
-  const mailtoFallback = () => {
-    const subject = `[10x Loop feedback] ${user?.name || "Reviewer"} · ${currentScreen}`;
-    const body = `Screen: ${currentScreen}\nStage: ${currentStage || "—"}\nSentiment: ${sentiment || "—"}\nReviewer: ${user?.name || "—"} (${user?.role || "no role"})\nGoal: ${user?.goal || "—"}\n\n---\n\n${note}`;
+  const mailto = () => {
+    const subject = `[10x Loop] ${user && user.name || "Reviewer"} · ${currentScreen}`;
+    const body = `Screen: ${currentScreen}\nStage: ${currentStage || "—"}\nSentiment: ${sentiment || "—"}\n\n${note}`;
     window.location.href = `mailto:${CONFIG.feedbackEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   };
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal fade-up" onClick={e => e.stopPropagation()} style={{maxWidth: 460}}>
+      <div className="modal fade-up" onClick={e => e.stopPropagation()} style={{maxWidth: 440}}>
         {sent ? (
           <div className="text-center py-6">
             <p className="text-5xl">✅</p>
-            <p className="serif text-2xl mt-3">Saved.</p>
-            <p className="muted text-sm mt-2">Anuj sees this in the Observer view.</p>
+            <p className="head text-2xl font-bold mt-3">Saved.</p>
+            <p className="muted text-sm mt-1">Anuj will see this.</p>
           </div>
         ) : (
-          <>
-            <p className="pill" style={{background:"#FCE3EE", color:"#B0316E"}}>Your note</p>
-            <h2 className="serif text-2xl font-semibold mt-2">What stood out — or didn't?</h2>
-            <p className="muted text-xs mt-1">Screen: <b>{currentScreen}</b>{currentStage ? ` · Stage: ${currentStage}` : ""}</p>
+          <div>
+            <h2 className="head text-2xl font-bold">What stood out — or didn't?</h2>
+            <p className="muted text-xs mt-1">You're on: <b>{currentScreen}</b>{currentStage ? ` · ${currentStage}` : ""}</p>
             <div className="flex gap-2 mt-4 flex-wrap">
-              {[["love","💚 Loved it"],["meh","🤔 Meh"],["confusing","😕 Confusing"],["broken","🐞 Broken"]].map(([k,v]) => (
+              {[["love", "💚 Loved it"], ["meh", "🤔 Meh"], ["confusing", "😕 Confusing"], ["broken", "🐞 Broken"]].map(([k, v]) => (
                 <button key={k} className={`chip text-xs ${sentiment === k ? "active" : ""}`} onClick={() => setSentiment(k)}>{v}</button>
               ))}
             </div>
-            <textarea rows="5" className="mt-4" placeholder="What worked? What didn't? Anything missing? Be specific — it's gold for Anuj."
-              value={note} onChange={e => setNote(e.target.value)} />
+            <textarea rows="4" className="mt-4" placeholder="Be specific and honest — it's gold." value={note} onChange={e => setNote(e.target.value)} />
             <div className="flex gap-2 mt-5 justify-end flex-wrap">
               <button onClick={onClose} className="btn-ghost text-sm">Cancel</button>
-              <button onClick={mailtoFallback} className="btn-ghost text-sm" disabled={note.length < 3} style={{opacity: note.length >= 3 ? 1 : 0.4}}>Email it</button>
-              <button onClick={submit} className="btn-gold text-sm" disabled={note.length < 3} style={{opacity: note.length >= 3 ? 1 : 0.4}}>Save note →</button>
+              <button onClick={mailto} className="btn-ghost text-sm" disabled={note.length < 3} style={{opacity: note.length >= 3 ? 1 : 0.4}}>Email it</button>
+              <button onClick={submit} className="btn-accent text-sm" disabled={note.length < 3} style={{opacity: note.length >= 3 ? 1 : 0.4}}>Save →</button>
             </div>
-          </>
+          </div>
         )}
       </div>
     </div>
   );
 };
 
-/* OBSERVER VIEW — Anuj's read-only window into a user's session.
-   Activated via ?view=observer in the URL on the user's own device. */
-const ObserverView = ({ user, goal, progress, intent, commitment, streak, score, level, feedbacks, evaluations, currentStage }) => {
-  const done = STAGES.filter(s => progress[s.id]?.completed);
+/* ========================= OBSERVER ========================= */
+const ObserverView = ({ state }) => {
+  const { user, goal, progress, streak, score, level, feedbacks, evaluations, currentStage, activity } = state;
+  const done = STAGES.filter(s => progress[s.id] && progress[s.id].completed);
+  const activeDays = [...new Set((activity || []).map(a => a.t.slice(0, 10)))];
   const exportJSON = () => {
-    const data = { user, goal, progress, intent, commitment, streak, score, level, feedbacks, evaluations, currentStage, exportedAt: new Date().toISOString() };
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+    const blob = new Blob([JSON.stringify({ ...state, exportedAt: new Date().toISOString() }, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement("a"); a.href = url;
-    a.download = `loop-session-${(user?.name || "anon").replace(/\s+/g, "_")}.json`;
-    a.click();
+    const a = document.createElement("a");
+    a.href = url; a.download = `loop-session-${((user && user.name) || "anon").replace(/\s+/g, "_")}.json`; a.click();
   };
   return (
-    <div className="max-w-5xl mx-auto px-6 py-10 fade-up">
+    <div className="max-w-4xl mx-auto px-6 py-10 fade-up">
       <div className="flex items-end justify-between flex-wrap gap-3">
         <div>
-          <p className="pill" style={{background:"#141B4D", color:"white"}}>Observer · for Anuj only</p>
-          <h2 className="serif text-4xl font-semibold mt-3">{user?.name || "Anonymous reviewer"}</h2>
-          <p className="muted">{user?.role || "no role"} · session on this device</p>
+          <p className="pill" style={{background: "#141b4d", color: "#94c90d"}}>Observer · for Anuj</p>
+          <h2 className="head text-4xl font-bold mt-3">{(user && user.name) || "Anonymous"}</h2>
+          <p className="muted">{(user && user.role) || "no role"} · this device's session</p>
         </div>
         <div className="flex gap-2">
           <button onClick={exportJSON} className="btn-ghost text-sm">Export JSON</button>
-          <button onClick={() => { window.location.href = window.location.pathname; }} className="btn-primary text-sm">← Back to user view</button>
+          <button onClick={() => { window.location.href = window.location.pathname; }} className="btn-primary text-sm">← User view</button>
         </div>
       </div>
+
       <div className="grid md:grid-cols-4 gap-4 mt-8">
-        <KPI label="Goal" value={goal ? "Set" : "—"} sub={goal || "Not set"}/>
-        <KPI label="Score" value={score != null ? `${score}/100` : "—"} sub={level || "—"}/>
-        <KPI label="Stages done" value={`${done.length}/${STAGES.length}`} sub={`Current: ${currentStage || "—"}`}/>
-        <KPI label="Streak · Notes" value={`${streak}d · ${(feedbacks || []).length}`} sub="day streak · feedback notes"/>
+        <KPI label="Goal" value={goal ? "Set" : "—"} sub={goal || "not set"} />
+        <KPI label="Baseline" value={score != null ? `${score}/100` : "—"} sub={level || "—"} />
+        <KPI label="Stages done" value={`${done.length}/9`} sub={`current: ${currentStage || "—"}`} />
+        <KPI label="Days active" value={activeDays.length} sub={`streak: ${streak}d · notes: ${(feedbacks || []).length}`} />
       </div>
-      {goal && (
-        <div className="card p-5 mt-6 bg-[#FAF6EB]">
-          <p className="text-xs muted uppercase tracking-widest font-semibold">Stated goal</p>
-          <p className="serif text-xl mt-1">{goal}</p>
-        </div>
-      )}
+
+      {/* H1 evidence: return pattern */}
       <div className="card p-6 mt-6">
-        <p className="text-xs muted uppercase tracking-widest font-semibold mb-4">Per-stage detail</p>
+        <p className="text-xs muted uppercase tracking-widest font-semibold head mb-2">H1 evidence · return pattern (drop-off signal)</p>
+        <p className="text-sm mb-3">Active days: {activeDays.length ? activeDays.join(" · ") : "none yet"}</p>
+        <p className="text-xs muted">If gaps exceed ~5 days without a nudge, that's your drop-off signal. Cross-reference with what nudges (if any) she received.</p>
+      </div>
+
+      <div className="card p-6 mt-6">
+        <p className="text-xs muted uppercase tracking-widest font-semibold head mb-4">Per-stage detail (H5 evidence lives in reflections)</p>
         <div className="space-y-3">
           {STAGES.map(s => {
-            const data = progress[s.id] || {};
-            const ev = evaluations?.[s.id];
-            const hasData = data.completed || data.practiceNote || data.promptResponse || data.reflection || ev;
+            const d = progress[s.id] || {};
+            const ev = evaluations && evaluations[s.id];
+            const has = d.completed || d.practiceNote || d.reflection || ev;
+            if (!has) return null;
             return (
-              <div key={s.id} className={`p-4 rounded-xl border ${data.completed ? "bg-[#F4FAF4]" : "border-line"}`}
-                style={{borderColor: data.completed ? "#1F8F5D33" : "var(--line)", opacity: hasData ? 1 : 0.45}}>
-                <div className="flex justify-between items-start flex-wrap gap-2">
-                  <div>
-                    <p className="font-semibold">{s.icon} {s.name} {data.completed && <span className="text-xs ml-2" style={{color:"#1F8F5D"}}>✓ DONE</span>}</p>
-                    <p className="text-xs muted mt-0.5">{s.short}</p>
-                  </div>
-                  {ev && <span className="pill" style={{background:"#FAF6EB", color:"#7A5A23"}}>Eval: {ev.result?.score}/10</span>}
-                </div>
-                {data.practiceNote && <p className="text-xs mt-2"><b>Practice:</b> {data.practiceNote.slice(0,300)}{data.practiceNote.length > 300 ? "…" : ""}</p>}
-                {data.promptResponse && <p className="text-xs mt-2"><b>Prompt output:</b> {data.promptResponse.slice(0,300)}{data.promptResponse.length > 300 ? "…" : ""}</p>}
-                {data.reflection && <p className="text-xs mt-2"><b>Reflection:</b> {data.reflection.slice(0,300)}{data.reflection.length > 300 ? "…" : ""}</p>}
-                {ev?.result && (
-                  <div className="mt-3 text-xs bg-white rounded-lg p-3 border border-line">
-                    <p><b>Artifact ({ev.result.wordCount} words):</b> {ev.text?.slice(0, 200)}{ev.text?.length > 200 ? "…" : ""}</p>
-                    <p className="mt-2"><b>Strengths:</b> {ev.result.strengths.join(" · ")}</p>
-                    <p className="mt-1"><b>Lifts:</b> {ev.result.lifts.join(" · ")}</p>
-                  </div>
-                )}
+              <div key={s.id} className="p-4 rounded-xl border" style={{borderColor: d.completed ? "var(--mint)" : "var(--line)", background: d.completed ? "var(--mint-tint)" : "white"}}>
+                <p className="font-semibold text-sm head">{s.icon} {s.name} {d.completed && <span style={{color: "var(--mint)"}}>✓ done{d.completedAt ? ` · ${d.completedAt.slice(0,10)}` : ""}</span>}</p>
+                {d.practiceNote && <p className="text-xs mt-2"><b>Practice:</b> {d.practiceNote.slice(0, 280)}</p>}
+                {d.reflection && <p className="text-xs mt-2"><b>Reflection:</b> {d.reflection.slice(0, 280)}</p>}
+                {ev && ev.result && <p className="text-xs mt-2"><b>Artifact eval:</b> {ev.result.score}/10 · {ev.result.wordCount} words · "{(ev.text || "").slice(0, 120)}…"</p>}
               </div>
             );
           })}
+          {STAGES.every(s => { const d = progress[s.id] || {}; return !(d.completed || d.practiceNote || d.reflection || (evaluations && evaluations[s.id])); }) && <p className="muted text-sm">No stage activity yet.</p>}
         </div>
       </div>
+
       <div className="card p-6 mt-6">
-        <p className="text-xs muted uppercase tracking-widest font-semibold mb-4">Feedback notes ({(feedbacks || []).length})</p>
-        {(feedbacks || []).length === 0 ? (
-          <p className="muted text-sm">No notes yet.</p>
-        ) : (
+        <p className="text-xs muted uppercase tracking-widest font-semibold head mb-4">Feedback notes ({(feedbacks || []).length})</p>
+        {(feedbacks || []).length === 0 ? <p className="muted text-sm">None yet.</p> : (
           <div className="space-y-3">
             {[...feedbacks].reverse().map((f, i) => (
-              <div key={i} className="p-4 rounded-xl border border-line">
-                <div className="flex justify-between items-start text-xs muted flex-wrap gap-2">
-                  <span><b>{f.screen}</b>{f.stage ? ` · ${f.stage}` : ""} · {f.sentiment || "no sentiment"}</span>
+              <div key={i} className="p-4 rounded-xl border" style={{borderColor: "var(--line)"}}>
+                <div className="flex justify-between text-xs muted flex-wrap gap-2">
+                  <span><b>{f.screen}</b>{f.stage ? ` · ${f.stage}` : ""} · {f.sentiment || "—"}</span>
                   <span>{new Date(f.timestamp).toLocaleString()}</span>
                 </div>
-                <p className="text-sm mt-2 leading-relaxed">{f.note}</p>
+                <p className="text-sm mt-2">{f.note}</p>
               </div>
             ))}
           </div>
         )}
       </div>
-      <div className="card p-5 mt-6 text-xs muted">
-        <p><b>How this view works:</b> all session state lives in this browser's <code>localStorage</code>. To see your teammate's session, you'll need to open the URL on <i>her device</i> with <code>?view=observer</code> appended. Or have her hit "Export JSON" from this view.</p>
+
+      <div className="card p-6 mt-6">
+        <p className="text-xs muted uppercase tracking-widest font-semibold head mb-4">Activity log (last 30)</p>
+        <div className="space-y-1 text-xs font-mono">
+          {(activity || []).slice(-30).reverse().map((a, i) => (
+            <p key={i}><span className="muted">{a.t.slice(0, 16).replace("T", " ")}</span> · <b>{a.type}</b>{a.detail ? ` — ${a.detail}` : ""}</p>
+          ))}
+          {(!activity || !activity.length) && <p className="muted">Empty.</p>}
+        </div>
       </div>
     </div>
   );
 };
 
-/* ROOT APP */
-const isObserverRoute = () => new URLSearchParams(window.location.search).get("view") === "observer";
+/* ========================= ENTERPRISE (demo only) ========================= */
+const ENTERPRISE = {
+  name: "Sample Co.", employees: 1247, weeklyActive: 0.71,
+  distribution: [
+    { stage: "human", count: 89 }, { stage: "read", count: 214 }, { stage: "write", count: 268 },
+    { stage: "draw", count: 192 }, { stage: "add", count: 188 }, { stage: "think", count: 132 },
+    { stage: "make", count: 81 }, { stage: "orchestrate", count: 56 }, { stage: "tenx", count: 27 }
+  ],
+  functions: [
+    { name: "Marketing", staff: 142, avgScore: 64, top: "Write" },
+    { name: "Sales", staff: 218, avgScore: 51, top: "Read" },
+    { name: "Operations", staff: 312, avgScore: 47, top: "Add" },
+    { name: "Engineering", staff: 188, avgScore: 78, top: "Make" },
+    { name: "HR & L&D", staff: 64, avgScore: 58, top: "Write" },
+    { name: "Finance", staff: 96, avgScore: 43, top: "Read" },
+    { name: "Customer Support", staff: 227, avgScore: 55, top: "Think" }
+  ],
+  nudges: { sent: 4328, acted: 2901,
+    byKind: [
+      { kind: "loss", name: "Streak (loss aversion)", sent: 1218, rate: 0.92 },
+      { kind: "commit", name: "Manager-shared commitments", sent: 304, rate: 0.89 },
+      { kind: "social", name: "Peer social proof", sent: 880, rate: 0.71 },
+      { kind: "fresh", name: "Monday fresh-start", sent: 612, rate: 0.64 },
+      { kind: "intent", name: "Implementation intentions", sent: 711, rate: 0.58 },
+      { kind: "default", name: "Auto-enrol to next stage", sent: 603, rate: 0.14 }
+    ] }
+};
 
+const EnterpriseDashboard = () => {
+  const max = Math.max(...ENTERPRISE.distribution.map(d => d.count));
+  const rate = Math.round((ENTERPRISE.nudges.acted / ENTERPRISE.nudges.sent) * 100);
+  return (
+    <div className="max-w-5xl mx-auto px-6 py-10 fade-up">
+      <p className="pill" style={{background: "var(--blue-tint)", color: "var(--blue)"}}>Enterprise view · illustrative sample data</p>
+      <h2 className="head text-4xl font-bold mt-3">{ENTERPRISE.name}</h2>
+      <p className="muted">{ENTERPRISE.employees.toLocaleString()} employees · 30-day view · <b>this is what a buyer would see</b></p>
+
+      <div className="grid md:grid-cols-4 gap-4 mt-8">
+        <KPI label="Weekly active users" value={`${Math.round(ENTERPRISE.weeklyActive * 100)}%`} sub="vs. 38% pre-pilot" />
+        <KPI label="Avg. literacy score" value="58" sub="+19 pts in 60 days" />
+        <KPI label="Stages completed" value="3,841" sub="all employees" />
+        <KPI label="Est. productivity lift" value="11.6%" sub="self-reported, validated" />
+      </div>
+
+      <Nudge kind="default">
+      <div className="card p-6 mt-8">
+        <p className="text-xs muted uppercase tracking-widest font-semibold head">Nudges this month · Thaler choice architecture</p>
+        <p className="head text-2xl font-bold mt-1">{ENTERPRISE.nudges.sent.toLocaleString()} sent · <span style={{color: "var(--accent-dark)"}}>{rate}% acted on</span></p>
+        <div className="mt-5 space-y-3">
+          {ENTERPRISE.nudges.byKind.map(b => (
+            <div key={b.kind}>
+              <div className="flex justify-between text-sm mb-1">
+                <span className="flex items-center gap-2"><span className={`nudge-tag nudge-${b.kind}`}>{KIND_MAP[b.kind] ? KIND_MAP[b.kind].name : b.kind}</span><span className="font-medium">{b.name}</span></span>
+                <span className="muted">{b.sent.toLocaleString()} · <b className="ink">{Math.round(b.rate * 100)}%</b></span>
+              </div>
+              <div className="progress-bar" style={{height: 7}}><div className="progress-fill" style={{width: `${b.rate * 100}%`}}/></div>
+            </div>
+          ))}
+        </div>
+      </div>
+      </Nudge>
+
+      <div className="card p-6 mt-6">
+        <p className="text-xs muted uppercase tracking-widest font-semibold head">Where your people are on the Loop</p>
+        <div className="mt-5 grid grid-cols-9 gap-2 items-end" style={{height: 190}}>
+          {ENTERPRISE.distribution.map(d => {
+            const st = STAGES.find(s => s.id === d.stage);
+            return (
+              <div key={d.stage} className="flex flex-col items-center justify-end h-full">
+                <p className="text-xs font-semibold mb-1">{d.count}</p>
+                <div style={{width: "100%", height: (d.count / max) * 150, background: st.color, borderRadius: "6px 6px 2px 2px", opacity: 0.9}}/>
+                <p className="text-[10px] text-center mt-1.5 muted leading-tight">{st.icon}<br/>{st.name}</p>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="card p-6 mt-6">
+        <p className="text-xs muted uppercase tracking-widest font-semibold head">By function</p>
+        <div className="mt-4 space-y-3">
+          {ENTERPRISE.functions.map(f => (
+            <div key={f.name}>
+              <div className="flex justify-between text-sm mb-1">
+                <span className="font-medium">{f.name} <span className="muted text-xs">· {f.staff}</span></span>
+                <span className="muted">{f.avgScore}/100 · top: {f.top}</span>
+              </div>
+              <div className="progress-bar" style={{height: 7}}><div className="progress-fill" style={{width: `${f.avgScore}%`}}/></div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="card p-7 mt-8 text-white" style={{background: "var(--ink)"}}>
+        <div className="flex justify-between items-center flex-wrap gap-4">
+          <div>
+            <p className="text-xs uppercase tracking-widest font-bold head" style={{color: "var(--accent)"}}>The pilot pitch</p>
+            <p className="head text-2xl font-bold mt-1">60-day pilot · 100–200 employees · one function.</p>
+            <p className="opacity-80 text-sm mt-1">Baseline, guided loop, weekly nudges, this dashboard. Outcomes in writing.</p>
+          </div>
+          <button className="btn-accent">Talk to AI&amp;Beyond</button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/* ========================= NUDGE LAB (demo only) ========================= */
+const NudgeLab = ({ enabled, toggle }) => (
+  <div className="max-w-5xl mx-auto px-6 py-10 fade-up">
+    <div className="flex items-end justify-between flex-wrap gap-3">
+      <div>
+        <p className="pill" style={{background: "#f3eefa", color: "#7b6baf"}}>Behind the design</p>
+        <h2 className="head text-4xl font-bold mt-3">Engineered choice architecture.</h2>
+        <p className="muted max-w-2xl mt-2">Built on Richard Thaler's Nobel-winning work (2017). Every interaction applies a named behavioural principle. Toggle the overlay to see them in context.</p>
+      </div>
+      <button onClick={toggle} className={enabled ? "btn-accent" : "btn-primary"}>{enabled ? "Overlay ON — hide" : "Turn overlay ON"}</button>
+    </div>
+    <div className="grid md:grid-cols-2 gap-5 mt-8">
+      {NUDGE_REGISTRY.map(n => (
+        <div key={n.kind} className="card p-6">
+          <div className="flex items-start justify-between gap-3 mb-3">
+            <span className={`nudge-tag nudge-${n.kind}`}>{n.name}</span>
+            <span className="text-xs muted">{n.thaler}</span>
+          </div>
+          <p className="head text-lg font-bold leading-snug">{n.title}</p>
+          <p className="muted text-sm mt-2 leading-relaxed">{n.desc}</p>
+          <div className="flex justify-between mt-4 text-xs gap-3">
+            <span><span className="muted uppercase tracking-wider font-semibold">Where:</span> {n.where}</span>
+            <span className="text-right"><span className="muted uppercase tracking-wider font-semibold">Lift:</span> {n.lift}</span>
+          </div>
+        </div>
+      ))}
+    </div>
+    <div className="card p-7 mt-8" style={{background: "var(--accent-tint)"}}>
+      <p className="head text-lg font-bold leading-snug">"Choice architecture is unavoidable. The question isn't whether to nudge — it's whether to do it well."</p>
+      <p className="muted text-sm mt-2">— Richard Thaler &amp; Cass Sunstein, <i>Nudge</i> (2008)</p>
+    </div>
+  </div>
+);
+
+/* ========================= APP ========================= */
 const App = () => {
-  const [screen, setScreen] = useState("landing");
-  const [progress, setProgress] = useState({});
-  const [currentStage, setCurrentStage] = useState(null);
+  const demo = isDemo();
+  const [screen, setScreen] = useState("today");
+  const [user, setUser] = useState(null);
+  const [goal, setGoal] = useState(null);
+  const [when, setWhen] = useState(null);
   const [score, setScore] = useState(null);
   const [level, setLevel] = useState(null);
-  const [nudgesVisible, setNudgesVisible] = useState(false);
-  const [intent, setIntent] = useState(null);
-  const [commitment, setCommitment] = useState(null);
-  const [streak, setStreak] = useState(5);
-  const [showIntent, setShowIntent] = useState(false);
-  const [showCommit, setShowCommit] = useState(false);
-
-  // V0.3 state
-  const [user, setUser] = useState(null);              // { name, role }
-  const [goal, setGoal] = useState(null);              // string
-  const [showNameGoal, setShowNameGoal] = useState(false);
-  const [evaluations, setEvaluations] = useState({});  // { stageId: { text, result, evaluatedAt } }
+  const [currentStage, setCurrentStage] = useState(null);
+  const [progress, setProgress] = useState({});
+  const [evaluations, setEvaluations] = useState({});
   const [feedbacks, setFeedbacks] = useState([]);
+  const [activity, setActivity] = useState([]);
+  const [streak, setStreak] = useState(0);
   const [showFeedback, setShowFeedback] = useState(false);
+  const [nudgesVisible, setNudgesVisible] = useState(false);
   const [hydrated, setHydrated] = useState(false);
 
-  // Hydrate from localStorage on mount
+  const log = (type, detail) => {
+    setActivity(a => [...a.slice(-499), { t: new Date().toISOString(), type, detail: detail || "" }]);
+  };
+
+  // Hydrate + compute real streak + log session
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) {
-        const s = JSON.parse(raw);
-        if (s.screen) setScreen(s.screen);
-        if (s.progress) setProgress(s.progress);
-        if (s.currentStage) setCurrentStage(s.currentStage);
-        if (s.score != null) setScore(s.score);
-        if (s.level) setLevel(s.level);
-        if (s.intent) setIntent(s.intent);
-        if (s.commitment) setCommitment(s.commitment);
-        if (s.streak != null) setStreak(s.streak);
-        if (s.user) setUser(s.user);
-        if (s.goal) setGoal(s.goal);
-        if (s.evaluations) setEvaluations(s.evaluations);
-        if (s.feedbacks) setFeedbacks(s.feedbacks);
-      }
-    } catch (e) { /* corrupted state — ignore */ }
+    let s = null;
+    try { const raw = localStorage.getItem(STORAGE_KEY); if (raw) s = JSON.parse(raw); } catch (e) {}
+    // Demo mode with no saved state: seed a rich sample session so it demos instantly
+    if (!s && demo) {
+      const now = new Date();
+      const daysAgo = (n) => { const d = new Date(now); d.setDate(d.getDate() - n); return d.toISOString(); };
+      s = {
+        user: { name: "Aisha Verma", role: "Senior Marketing Manager" },
+        goal: "Ship a weekly client digest in 30 min",
+        when: "Morning, with coffee",
+        score: 58, level: "practitioner", currentStage: "think",
+        progress: {
+          read: { completed: true, completedAt: daysAgo(9), practiceNote: "Summarised the Q3 client review deck — asked for decisions + owners only.", reflection: "It caught a dependency I'd skimmed past." },
+          write: { completed: true, completedAt: daysAgo(6), practiceNote: "Had AI critique my client email instead of rewriting it. Kept my voice.", reflection: "Editor, not fraud — as long as I write the first draft." },
+          draw: { completed: true, completedAt: daysAgo(3), practiceNote: "Turned the campaign timeline into a one-slide visual.", reflection: "The visual exposed a sequencing problem the text hid." },
+          add: { completed: true, completedAt: daysAgo(1), practiceNote: "Ran a full AI-augmented workday. Meeting pre-briefs were the biggest win.", reflection: "Slide reviews got slower with AI — I trust my own eye more there." }
+        },
+        evaluations: { write: { text: "Critique this client email like a chief of staff — where is it unclear, too long, or burying the ask? For a CMO with 60 seconds. Under 100 words. Don't rewrite it.", result: { score: 8.5, wordCount: 33, strengths: ["You named the audience — the biggest tone lever.", "You set a constraint. That's spec-mindset — exactly right.", "You told it what NOT to do. Underused and powerful."], lifts: ["State the desired action. 'I want them to approve this' reframes the whole response."] }, evaluatedAt: daysAgo(6) } },
+        feedbacks: [{ note: "The goal line at the top of each session keeps me honest — I stopped doing generic exercises.", sentiment: "love", screen: "practice", stage: "Add", user: "Aisha Verma", timestamp: daysAgo(1) }],
+        activity: [
+          { t: daysAgo(9), type: "setup_complete", detail: "score 58 · practitioner" },
+          { t: daysAgo(9), type: "stage_completed", detail: "read" },
+          { t: daysAgo(6), type: "eval_run", detail: "write: 8.5/10" },
+          { t: daysAgo(6), type: "stage_completed", detail: "write" },
+          { t: daysAgo(3), type: "stage_completed", detail: "draw" },
+          { t: daysAgo(1), type: "stage_completed", detail: "add" },
+          { t: daysAgo(0), type: "session_start", detail: "" }
+        ]
+      };
+    }
+    if (s) {
+      if (s.user) setUser(s.user);
+      if (s.goal) setGoal(s.goal);
+      if (s.when) setWhen(s.when);
+      if (s.score != null) setScore(s.score);
+      if (s.level) setLevel(s.level);
+      if (s.currentStage) setCurrentStage(s.currentStage);
+      if (s.progress) setProgress(s.progress);
+      if (s.evaluations) setEvaluations(s.evaluations);
+      if (s.feedbacks) setFeedbacks(s.feedbacks);
+      if (s.activity) setActivity(s.activity);
+    }
+    // real streak from activity days
+    const days = [...new Set(((s && s.activity) || []).map(a => a.t.slice(0, 10)))].sort();
+    let st = 0;
+    const today = new Date(todayISO());
+    for (let i = 0; ; i++) {
+      const d = new Date(today); d.setDate(d.getDate() - i);
+      const iso = d.toISOString().slice(0, 10);
+      if (days.includes(iso)) st++;
+      else if (i === 0) continue; // today not yet logged is fine
+      else break;
+    }
+    setStreak(Math.max(st, days.length ? st : 0) + (days.includes(todayISO()) ? 0 : 0));
+    if (s && s.user) setScreen("today"); else setScreen("welcome");
     setHydrated(true);
+    setActivity(a => [...a, { t: new Date().toISOString(), type: "session_start", detail: "" }]);
   }, []);
 
-  // Persist on any change (after hydration to avoid wiping state)
+  // Persist
   useEffect(() => {
     if (!hydrated) return;
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({
-        screen, progress, currentStage, score, level, intent, commitment, streak,
-        user, goal, evaluations, feedbacks
-      }));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ user, goal, when, score, level, currentStage, progress, evaluations, feedbacks, activity }));
     } catch (e) {}
-  }, [hydrated, screen, progress, currentStage, score, level, intent, commitment, streak, user, goal, evaluations, feedbacks]);
+  }, [hydrated, user, goal, when, score, level, currentStage, progress, evaluations, feedbacks, activity]);
 
-  const allDone = STAGES.every(s => progress[s.id]?.completed);
-  useEffect(() => { if (allDone && screen !== "certificate" && hydrated) setScreen("certificate"); }, [allDone]);
+  // Recompute streak whenever activity changes
+  useEffect(() => {
+    const days = [...new Set(activity.map(a => a.t.slice(0, 10)))].sort();
+    let st = 0;
+    for (let i = 0; ; i++) {
+      const d = new Date(); d.setDate(d.getDate() - i);
+      const iso = d.toISOString().slice(0, 10);
+      if (days.includes(iso)) st++;
+      else break;
+    }
+    setStreak(st);
+  }, [activity]);
 
-  const handleSubmitAssessment = (s) => {
-    setScore(s);
-    const lvl = calcLevel(s);
+  const allDone = STAGES.every(s => progress[s.id] && progress[s.id].completed);
+  useEffect(() => { if (hydrated && allDone && screen !== "certificate") setScreen("certificate"); }, [allDone, hydrated]);
+
+  const handleSetupComplete = (v) => {
+    setUser({ name: v.name, role: v.role });
+    setGoal(v.goal);
+    setWhen(v.when || null);
+    setScore(v.score);
+    const lvl = calcLevel(v.score);
     setLevel(lvl.id);
-    const rec = recommendStage(s);
-    setCurrentStage(rec);
-    setScreen("result");
+    setCurrentStage(recommendStage(v.score));
+    log("setup_complete", `score ${v.score} · ${lvl.id} · goal: ${v.goal}`);
+    setScreen("today");
   };
 
-  const pickStageFromResult = (id) => {
-    setCurrentStage(id);
-    if (!intent) setShowIntent(true);
-    else if (!user || !goal) setShowNameGoal(true);
-    else setScreen("loop");
+  const resetSession = () => {
+    if (!confirm("Clear all your data and start fresh?")) return;
+    localStorage.removeItem(STORAGE_KEY);
+    window.location.href = window.location.pathname + (demo ? "?mode=demo" : "");
   };
-
-  const pickStage = (id) => { setCurrentStage(id); setScreen("stage"); };
 
   const stage = STAGES.find(s => s.id === currentStage);
 
-  const resetSession = () => {
-    if (!confirm("Clear all your session data and start fresh? This wipes name, goal, progress, and notes.")) return;
-    localStorage.removeItem(STORAGE_KEY);
-    window.location.href = window.location.pathname;
-  };
-
-  // OBSERVER ROUTE — render Anuj's view instead of the user-facing app
-  if (hydrated && isObserverRoute()) {
+  if (hydrated && isObserver()) {
     return (
-      <NudgeCtx.Provider value={{ visible: false, toggle: () => {} }}>
-        <div className="min-h-screen">
-          <Header screen="observer" setScreen={() => {}} progress={progress} nudgesVisible={false} toggleNudges={() => {}} />
-          <ObserverView user={user} goal={goal} progress={progress} intent={intent} commitment={commitment}
-            streak={streak} score={score} level={level} feedbacks={feedbacks} evaluations={evaluations}
-            currentStage={currentStage} />
-        </div>
-      </NudgeCtx.Provider>
+      <div className="min-h-screen">
+        <div className="brand-strip"/>
+        <ObserverView state={{ user, goal, when, score, level, currentStage, progress, evaluations, feedbacks, activity, streak }} />
+      </div>
     );
   }
+  if (!hydrated) return <div/>;
 
   return (
-    <NudgeCtx.Provider value={{ visible: nudgesVisible, toggle: () => setNudgesVisible(v => !v) }}>
-    <div className="min-h-screen">
-      <div className="brand-gradient-strip" style={{height: 3, borderRadius: 0}}/>
-      <Header screen={screen} setScreen={setScreen} progress={progress}
-        nudgesVisible={nudgesVisible} toggleNudges={() => setNudgesVisible(v => !v)} userName={user?.name} onReset={resetSession} />
-
-      {screen === "landing" && <Landing onStart={() => setScreen("assessment")} setScreen={setScreen} />}
-      {screen === "assessment" && <Assessment onSubmit={handleSubmitAssessment} />}
-      {screen === "result" && <Result score={score} onContinue={pickStageFromResult} />}
-      {screen === "loop" && (
-        <LoopHub progress={progress} currentStage={currentStage} onPick={pickStage}
-          streak={streak} intent={intent} commitment={commitment} goal={goal} user={user}
-          openCommit={() => setShowCommit(true)} />
-      )}
-      {screen === "stage" && stage && (
-        <StageDetail stage={stage} savedData={progress[stage.id]} streak={streak} intent={intent}
-          goal={goal}
-          savedEval={evaluations[stage.id]}
-          onSaveEval={(ev) => setEvaluations(e => ({ ...e, [stage.id]: ev }))}
-          onSave={(data) => setProgress(p => ({ ...p, [stage.id]: { ...(p[stage.id] || {}), ...data }}))}
-          onComplete={() => {
-            setProgress(p => ({ ...p, [stage.id]: { ...(p[stage.id] || {}), completed: true }}));
-            setStreak(s => s + 4);
-            const idx = STAGES.findIndex(s => s.id === stage.id);
-            const next = STAGES[idx+1];
-            if (next) setCurrentStage(next.id);
-            setScreen("loop");
-          }}
-          onBack={() => setScreen("loop")} />
-      )}
-      {screen === "individual" && (
-        <IndividualDashboard progress={progress} score={score} level={level}
-          currentStage={currentStage} streak={streak} intent={intent} commitment={commitment} />
-      )}
-      {screen === "enterprise" && <EnterpriseDashboard />}
-      {screen === "nudgelab" && <NudgeLab enabled={nudgesVisible} toggle={() => setNudgesVisible(v=>!v)} />}
-      {screen === "certificate" && (
-        <Certificate score={score} level={LEVELS.find(l => l.id === level)} userName={user?.name}
-          onRestart={() => {
-            setProgress({}); setScore(null); setLevel(null); setCurrentStage(null);
-            setIntent(null); setCommitment(null); setStreak(5);
-            setScreen("landing");
-          }} />
+    <NudgeCtx.Provider value={{ visible: demo && nudgesVisible }}>
+    <div className="min-h-screen flex flex-col">
+      <div className="brand-strip"/>
+      {screen !== "welcome" && screen !== "setup" && (
+        <Header screen={screen} setScreen={setScreen} demo={demo}
+          nudgesVisible={nudgesVisible} toggleNudges={() => setNudgesVisible(v => !v)}
+          userName={user && user.name} onReset={resetSession} />
       )}
 
-      {showIntent && stage && (
-        <IntentModal stage={stage}
-          onSave={(v) => {
-            setIntent(v); setShowIntent(false);
-            if (!user || !goal) setShowNameGoal(true);
-            else setScreen("loop");
-          }}
-          onSkip={() => {
-            setShowIntent(false);
-            if (!user || !goal) setShowNameGoal(true);
-            else setScreen("loop");
-          }} />
-      )}
-      {showNameGoal && (
-        <NameGoalModal
-          onSave={(v) => { setUser({ name: v.name, role: v.role }); setGoal(v.goal); setShowNameGoal(false); setScreen("loop"); }}
-          onSkip={() => { setShowNameGoal(false); setScreen("loop"); }} />
-      )}
-      {showCommit && stage && (
-        <CommitmentModal stage={stage} intent={intent}
-          onConfirm={(v) => { setCommitment(v); setShowCommit(false); }}
-          onClose={() => setShowCommit(false)} />
+      <div className="flex-1">
+        {screen === "welcome" && <Welcome onStart={() => { log("setup_started"); setScreen("setup"); }} />}
+        {screen === "setup" && <Setup onComplete={handleSetupComplete} />}
+        {screen === "today" && (user || demo) && (
+          <Today user={user} goal={goal} when={when} level={level} score={score}
+            currentStage={currentStage || "read"} progress={progress} streak={streak}
+            onStartPractice={() => { log("practice_opened", currentStage || "read"); if (!currentStage) setCurrentStage("read"); setScreen("practice"); }}
+            onSeeJourney={() => setScreen("journey")} />
+        )}
+        {screen === "today" && !user && !demo && <Welcome onStart={() => { log("setup_started"); setScreen("setup"); }} />}
+        {screen === "practice" && stage && (
+          <Practice stage={stage} goal={goal}
+            savedData={progress[stage.id]} savedEval={evaluations[stage.id]}
+            onSave={(d) => setProgress(p => ({ ...p, [stage.id]: { ...(p[stage.id] || {}), ...d } }))}
+            onSaveEval={(ev) => setEvaluations(e => ({ ...e, [stage.id]: ev }))}
+            onComplete={() => {
+              setProgress(p => ({ ...p, [stage.id]: { ...(p[stage.id] || {}), completed: true, completedAt: new Date().toISOString() } }));
+              log("stage_completed", stage.id);
+              const idx = STAGES.findIndex(s => s.id === stage.id);
+              if (STAGES[idx + 1]) setCurrentStage(STAGES[idx + 1].id);
+              setScreen("today");
+            }}
+            onBack={() => setScreen("today")} log={log} />
+        )}
+        {screen === "journey" && (
+          <Journey progress={progress} currentStage={currentStage} score={score} level={level} goal={goal} activity={activity}
+            onPick={(id) => { setCurrentStage(id); log("practice_opened", id); setScreen("practice"); }} />
+        )}
+        {screen === "certificate" && (
+          <Certificate score={score} level={LEVELS.find(l => l.id === level)} userName={user && user.name}
+            onRestart={() => { setProgress({}); setCurrentStage("read"); setScreen("today"); }} />
+        )}
+        {demo && screen === "enterprise" && <EnterpriseDashboard />}
+        {demo && screen === "nudgelab" && <NudgeLab enabled={nudgesVisible} toggle={() => setNudgesVisible(v => !v)} />}
+      </div>
+
+      {screen !== "welcome" && screen !== "setup" && (
+        <FeedbackButton onClick={() => setShowFeedback(true)} />
       )}
       {showFeedback && (
-        <FeedbackModal user={{ ...user, goal }} currentScreen={screen} currentStage={stage?.name}
-          onSave={(payload) => setFeedbacks(f => [...f, payload])}
+        <FeedbackModal user={user} currentScreen={screen} currentStage={stage && stage.name}
+          onSave={(p) => { setFeedbacks(f => [...f, p]); log("feedback", p.sentiment || ""); }}
           onClose={() => setShowFeedback(false)} />
       )}
 
-      <FeedbackButton onClick={() => setShowFeedback(true)} />
-
-      <footer className="text-xs muted text-center py-10 border-t border-line mt-16">
-        <Logo />
-        <p className="mt-3">10x Loop · An AI&amp;Beyond product · Concept MVP v0.3 · Engineered choice architecture (Thaler, 2008)</p>
-        <p className="mt-1 opacity-60">Observer view: append <code>?view=observer</code> to the URL on this device.</p>
+      <footer className="text-xs muted text-center py-8 border-t mt-12" style={{borderColor: "var(--line)"}}>
+        <p>10x Loop · an AI&amp;Beyond concept pilot · v0.4</p>
       </footer>
     </div>
     </NudgeCtx.Provider>
