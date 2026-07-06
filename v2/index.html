@@ -40,6 +40,13 @@
   .task-tile.active { border-color: var(--accent); background: var(--accent-tint); border-width: 2px; }
   @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
   .fade-up { animation: fadeUp 0.45s ease-out both; }
+  @keyframes pulseGlow {
+    0%, 100% { filter: drop-shadow(0 0 0 rgba(148,201,13,0)); }
+    50% { filter: drop-shadow(0 0 12px rgba(148,201,13,0.75)); }
+  }
+  .stage-active { animation: pulseGlow 2.6s ease-in-out infinite; }
+  .arc-loop { stroke-dasharray: 6 8; animation: dash 30s linear infinite; }
+  @keyframes dash { to { stroke-dashoffset: -200; } }
   .modal-overlay { position: fixed; inset: 0; background: rgba(20,27,77,0.55); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 24px; animation: fadeUp .25s ease-out both; }
   .modal { background: var(--card); border-radius: 20px; padding: 32px; max-width: 480px; width: 100%; max-height: 90vh; overflow-y: auto; box-shadow: 0 24px 70px rgba(20,27,77,0.35); }
 </style>
@@ -146,6 +153,74 @@ const LEVELS = [
   { id: "novice", name: "Novice" }, { id: "explorer", name: "Explorer" },
   { id: "practitioner", name: "Practitioner" }, { id: "orchestrator", name: "Orchestrator" }
 ];
+
+/* ================= THE LOOP — staircase visual, filled by experiments ================= */
+const LOOP_NODES = [
+  { id: "human", name: "Human", icon: "👤", color: "#6b7280" },
+  ...CAPS,
+  { id: "tenx", name: "10x Human", icon: "✨", color: "#94c90d" }
+];
+
+const capCountsFrom = (experiments) => {
+  const counts = {};
+  experiments.forEach(e => {
+    const t = TASKS.find(x => x.id === e.taskId);
+    if (t) t.caps.forEach(c => { counts[c] = (counts[c] || 0) + 1; });
+  });
+  return counts;
+};
+
+const LoopVisual = ({ experiments, hasSetup, compact }) => {
+  const counts = capCountsFrom(experiments);
+  const allCovered = CAPS.every(c => counts[c.id] > 0);
+  const isFilled = (n) => n.id === "human" ? !!hasSetup : n.id === "tenx" ? allCovered : (counts[n.id] || 0) > 0;
+  const nextNode = LOOP_NODES.find(n => !isFilled(n));
+
+  const W = 760, H = compact ? 185 : 245;
+  const padX = 40, padY = compact ? 36 : 54;
+  const points = LOOP_NODES.map((n, i) => {
+    const t = i / (LOOP_NODES.length - 1);
+    const x = padX + t * (W - padX * 2);
+    const y = H - padY - (t * (H - padY * 2)) + Math.sin(t * Math.PI) * 14;
+    return { node: n, x, y };
+  });
+  const path = points.map((p, i) => (i === 0 ? `M ${p.x} ${p.y}` : `L ${p.x} ${p.y}`)).join(" ");
+  const first = points[0], last = points[points.length - 1];
+  const arc = `M ${last.x} ${last.y} C ${last.x + 10} ${-28}, ${first.x - 10} ${-28}, ${first.x} ${first.y}`;
+
+  return (
+    <div className="w-full overflow-x-auto">
+      <svg viewBox={`0 -52 ${W} ${H + 52}`} className="w-full" style={{minHeight: compact ? 165 : 225}}>
+        <path d={path} stroke="#dfe2da" strokeWidth="2.4" fill="none" />
+        <path d={arc} className="arc-loop" stroke="#94c90d" strokeWidth="2.2" fill="none" />
+        <polygon points={`${first.x-5},${first.y-12} ${first.x+5},${first.y-12} ${first.x},${first.y-2}`} fill="#94c90d"/>
+        {points.map((p) => {
+          const filled = isFilled(p.node);
+          const active = nextNode && nextNode.id === p.node.id;
+          const count = counts[p.node.id] || 0;
+          return (
+            <g key={p.node.id}>
+              <circle cx={p.x} cy={p.y} r={active ? 20 : 16}
+                fill={filled ? p.node.color : "#fff"}
+                stroke={active ? "#94c90d" : (filled ? p.node.color : "#dfe2da")}
+                strokeWidth={active ? 3 : 1.8}
+                className={active ? "stage-active" : ""}/>
+              <text x={p.x} y={p.y + 5} textAnchor="middle" fontSize="14">{p.node.icon}</text>
+              {!compact && <text x={p.x} y={p.y + 34} textAnchor="middle" fontSize="10.5" fill="#141b4d" fontWeight={active ? 700 : 500}>{p.node.name}</text>}
+              {!compact && count > 0 && p.node.id !== "human" && p.node.id !== "tenx" && (
+                <text x={p.x} y={p.y + 46} textAnchor="middle" fontSize="9" fill="#6b7280">×{count}</text>
+              )}
+              {filled && p.node.id !== "human" && <circle cx={p.x + 12} cy={p.y - 12} r="5" fill="#53bc86" stroke="white" strokeWidth="1.5"/>}
+            </g>
+          );
+        })}
+        <text x={W/2} y={-28} textAnchor="middle" fontSize="11" fill="#6f9a06" fontWeight="700" letterSpacing="2" fontFamily="Poppins">
+          {allCovered ? "LOOP CLOSED — CLIMB AGAIN, HIGHER" : "EVERY EXPERIMENT IS A TURN OF THE LOOP"}
+        </text>
+      </svg>
+    </div>
+  );
+};
 
 const CALIBRATION = [
   { q: "How often do you use AI at work today?", options: [
@@ -340,7 +415,8 @@ const Week = ({ user, picked, experiments, onRun, setScreen }) => {
   return (
     <div className="max-w-3xl mx-auto px-6 py-12 fade-up">
       <p className="muted text-sm">{greeting}{user && user.name ? `, ${user.name.split(" ")[0]}` : ""}.</p>
-      <h2 className="head text-4xl font-bold mt-1 tracking-tight">Week {weekNo} · this week's experiment</h2>
+      <h2 className="head text-4xl font-bold mt-1 tracking-tight">Turn {weekNo} of your loop</h2>
+      <p className="muted text-sm mt-1">One experiment a week. Each one climbs the loop.</p>
 
       {nextTask ? (
         <div className="card p-8 mt-7" style={{borderColor: "var(--accent)", borderWidth: 2}}>
@@ -385,6 +461,10 @@ const Week = ({ user, picked, experiments, onRun, setScreen }) => {
           <p className="head text-2xl font-bold">{kept.length}<span className="text-sm muted">/{experiments.length || 0}</span></p>
           <p className="text-xs muted mt-1">workflows kept</p>
         </div>
+      </div>
+
+      <div className="card p-5 mt-6">
+        <LoopVisual experiments={experiments} hasSetup={!!user} compact />
       </div>
 
       <button onClick={() => setScreen("ledger")} className="block mx-auto mt-8 text-sm muted hover:ink underline underline-offset-4">See my full ledger →</button>
@@ -576,9 +656,16 @@ const Ledger = ({ user, experiments, picked, onRerun }) => {
       </div>
 
       <div className="card p-6 mt-6">
-        <p className="text-xs muted uppercase tracking-widest font-semibold head mb-1">Capability coverage</p>
-        <p className="text-xs muted mb-4">The 10x Loop skills, filled by your experiments — not by lessons.</p>
-        <div className="grid grid-cols-7 gap-2">
+        <p className="text-xs muted uppercase tracking-widest font-semibold head mb-1">Your loop</p>
+        <p className="text-xs muted mb-2">The 10x Loop, climbed by experiments — not by lessons. Cover all seven capabilities to close it.</p>
+        <LoopVisual experiments={experiments} hasSetup={!!user} />
+        {untouched.length === 0 && (
+          <div className="mt-2 mb-4 p-4 rounded-xl text-center" style={{background: "linear-gradient(90deg, var(--blue-tint), var(--accent-tint))"}}>
+            <p className="head text-lg font-bold">✨ Loop closed — you're operating as a 10x human.</p>
+            <p className="text-xs muted mt-1">All seven capabilities exercised on real work, with the hours to prove it. The next loop starts higher: bigger tasks, team workflows.</p>
+          </div>
+        )}
+        <div className="grid grid-cols-7 gap-2 mt-2">
           {CAPS.map(c => {
             const n = capCounts[c.id] || 0;
             return (
@@ -709,7 +796,7 @@ const ConceptNotes = () => (
     <div className="card p-6 mt-10" style={{background: "#f7f8f4"}}>
       <p className="text-xs muted uppercase tracking-widest font-semibold head mb-3">What's different in this concept (v2 vs v1)</p>
       <div className="space-y-2 text-sm">
-        <p><b>Task-first, not curriculum-first.</b> The spine is your real recurring tasks, not a 9-stage syllabus. The 9 capabilities survive as a coverage lens in the ledger.</p>
+        <p><b>Task-first, not curriculum-first.</b> The spine is your real recurring tasks, not a syllabus. The Loop staircase is still central — but you climb it by running experiments, not by taking lessons. Each week is one turn; covering all seven capabilities closes the loop.</p>
         <p><b>The work is the practice.</b> No separate practice sessions to find time for — experiments run on tasks that were going to happen anyway. (Kills the biggest v1 friction: the round trip.)</p>
         <p><b>Measurement is the product.</b> Every experiment logs before/after time and a keep/kill verdict. The ledger is self-generating ROI evidence — for the user, the manager, and the board.</p>
         <p><b>Killing is a win.</b> Calibration (knowing when NOT to use AI) is treated as literacy, which directly instruments the shadow-work (H3) and confidence (H5) hypotheses.</p>
