@@ -946,77 +946,159 @@ const ENTERPRISE = {
     ] }
 };
 
+/* Each section leads with a plain-English claim a CHRO can read in 3 seconds.
+   Behavioural-science detail lives in the Nudge Lab tab, not here. */
+const SectionHead = ({ eyebrow, claim }) => (
+  <div className="mt-12 mb-4">
+    <p className="text-xs uppercase tracking-widest font-bold head" style={{color: "var(--blue)"}}>{eyebrow}</p>
+    <h3 className="head text-2xl font-bold mt-1 leading-snug">{claim}</h3>
+  </div>
+);
+
+const Bar = ({ pct, color, height }) => (
+  <div style={{height: height || 10, background: "#eef0ea", borderRadius: 999, overflow: "hidden"}}>
+    <div style={{width: `${pct}%`, height: "100%", background: color, borderRadius: 999}}/>
+  </div>
+);
+
 const EnterpriseDashboard = () => {
   const max = Math.max(...ENTERPRISE.distribution.map(d => d.count));
   const rate = Math.round((ENTERPRISE.nudges.acted / ENTERPRISE.nudges.sent) * 100);
+  const avgStages = (3841 / ENTERPRISE.employees).toFixed(1);
+  const fnStatus = (score) => score >= 70 ? { label: "Leading", color: "#53bc86" }
+    : score >= 55 ? { label: "On track", color: "#4198d3" }
+    : score >= 48 ? { label: "Watch", color: "#c8971d" }
+    : { label: "Stuck", color: "#c05e3d" };
+
   return (
-    <div className="max-w-5xl mx-auto px-6 py-10 fade-up">
+    <div className="max-w-4xl mx-auto px-6 py-10 fade-up">
       <p className="pill" style={{background: "var(--blue-tint)", color: "var(--blue)"}}>Enterprise view · illustrative sample data</p>
       <h2 className="head text-4xl font-bold mt-3">{ENTERPRISE.name}</h2>
-      <p className="muted">{ENTERPRISE.employees.toLocaleString()} employees · 30-day view · <b>this is what a buyer would see</b></p>
+      <p className="muted">{ENTERPRISE.employees.toLocaleString()} employees · last 60 days</p>
 
-      <div className="grid md:grid-cols-4 gap-4 mt-8">
-        <KPI label="Weekly active users" value={`${Math.round(ENTERPRISE.weeklyActive * 100)}%`} sub="vs. 38% pre-pilot" />
-        <KPI label="Avg. literacy score" value="58" sub="+19 pts in 60 days" />
-        <KPI label="Stages completed" value="3,841" sub="all employees" />
-        <KPI label="Est. productivity lift" value="11.6%" sub="self-reported, validated" />
+      {/* 1 · ADOPTION — the headline */}
+      <SectionHead eyebrow="01 · Adoption" claim="Weekly AI usage nearly doubled in 60 days." />
+      <div className="card p-7">
+        <div className="flex items-end gap-4 mb-6">
+          <p className="head font-bold" style={{fontSize: 44, lineHeight: 1}}>38% <span className="muted" style={{fontSize: 26}}>→</span> <span style={{color: "var(--accent-dark)"}}>71%</span></p>
+          <p className="muted text-sm mb-1">of employees using AI for real work, weekly</p>
+        </div>
+        <div className="space-y-3">
+          <div>
+            <div className="flex justify-between text-sm mb-1"><span className="muted">Before the pilot</span><span className="font-semibold">38%</span></div>
+            <Bar pct={38} color="#c3c8bf" />
+          </div>
+          <div>
+            <div className="flex justify-between text-sm mb-1"><span className="font-medium">Today</span><span className="font-bold" style={{color: "var(--accent-dark)"}}>71%</span></div>
+            <Bar pct={71} color="var(--accent)" />
+          </div>
+        </div>
+        <p className="text-xs muted mt-4">Usage = completed a real work task with AI that week — measured in-product, not surveyed.</p>
       </div>
 
-      <Nudge kind="default">
-      <div className="card p-6 mt-8">
-        <p className="text-xs muted uppercase tracking-widest font-semibold head">Nudges this month · Thaler choice architecture</p>
-        <p className="head text-2xl font-bold mt-1">{ENTERPRISE.nudges.sent.toLocaleString()} sent · <span style={{color: "var(--accent-dark)"}}>{rate}% acted on</span></p>
-        <div className="mt-5 space-y-3">
-          {ENTERPRISE.nudges.byKind.map(b => (
-            <div key={b.kind}>
-              <div className="flex justify-between text-sm mb-1">
-                <span className="flex items-center gap-2"><span className={`nudge-tag nudge-${b.kind}`}>{KIND_MAP[b.kind] ? KIND_MAP[b.kind].name : b.kind}</span><span className="font-medium">{b.name}</span></span>
-                <span className="muted">{b.sent.toLocaleString()} · <b className="ink">{Math.round(b.rate * 100)}%</b></span>
-              </div>
-              <div className="progress-bar" style={{height: 7}}><div className="progress-fill" style={{width: `${b.rate * 100}%`}}/></div>
-            </div>
-          ))}
+      {/* 2 · CAPABILITY */}
+      <SectionHead eyebrow="02 · Capability" claim="People aren't just using AI more — they're getting measurably better at it." />
+      <div className="grid md:grid-cols-3 gap-4">
+        <div className="card p-5">
+          <p className="head text-3xl font-bold">58<span className="text-base muted font-normal">/100</span></p>
+          <p className="text-sm font-medium mt-1">Avg. capability score</p>
+          <p className="text-xs muted mt-1">up 19 points from the day-one baseline</p>
+        </div>
+        <div className="card p-5">
+          <p className="head text-3xl font-bold">{avgStages}</p>
+          <p className="text-sm font-medium mt-1">Skill stages completed</p>
+          <p className="text-xs muted mt-1">average per employee, of 9 total</p>
+        </div>
+        <div className="card p-5">
+          <p className="head text-3xl font-bold">11.6%</p>
+          <p className="text-sm font-medium mt-1">Time saved per week</p>
+          <p className="text-xs muted mt-1">self-reported, sampled &amp; verified</p>
         </div>
       </div>
-      </Nudge>
-
-      <div className="card p-6 mt-6">
-        <p className="text-xs muted uppercase tracking-widest font-semibold head">Where your people are on the Loop</p>
-        <div className="mt-5 grid grid-cols-9 gap-2 items-end" style={{height: 190}}>
+      <div className="card p-6 mt-4">
+        <p className="text-sm font-medium mb-1">Where your {ENTERPRISE.employees.toLocaleString()} people are on the journey</p>
+        <p className="text-xs muted mb-4">Nine stages, from reading with AI to orchestrating it across workflows.</p>
+        <div className="grid grid-cols-9 gap-2 items-end" style={{height: 160}}>
           {ENTERPRISE.distribution.map(d => {
             const st = STAGES.find(s => s.id === d.stage);
             return (
               <div key={d.stage} className="flex flex-col items-center justify-end h-full">
                 <p className="text-xs font-semibold mb-1">{d.count}</p>
-                <div style={{width: "100%", height: (d.count / max) * 150, background: st.color, borderRadius: "6px 6px 2px 2px", opacity: 0.9}}/>
-                <p className="text-[10px] text-center mt-1.5 muted leading-tight">{st.icon}<br/>{st.name}</p>
+                <div style={{width: "100%", height: (d.count / max) * 118, background: st.color, borderRadius: "6px 6px 2px 2px", opacity: 0.9}}/>
+                <p className="text-[10px] text-center mt-1.5 muted leading-tight">{st.name}</p>
               </div>
             );
           })}
         </div>
+        <p className="text-xs mt-4 px-3 py-2 rounded-lg" style={{background: "var(--accent-tint)"}}>📈 <b>The next win:</b> 320 people are ready to cross from everyday use into building and automating — that's where the productivity jump is biggest.</p>
       </div>
 
-      <div className="card p-6 mt-6">
-        <p className="text-xs muted uppercase tracking-widest font-semibold head">By function</p>
-        <div className="mt-4 space-y-3">
-          {ENTERPRISE.functions.map(f => (
-            <div key={f.name}>
-              <div className="flex justify-between text-sm mb-1">
-                <span className="font-medium">{f.name} <span className="muted text-xs">· {f.staff}</span></span>
-                <span className="muted">{f.avgScore}/100 · top: {f.top}</span>
+      {/* 3 · VISIBILITY — the H6 answer */}
+      <SectionHead eyebrow="03 · Team visibility" claim="You can see exactly which teams lead — and which need help this month." />
+      <div className="card p-6">
+        <div className="space-y-4">
+          {ENTERPRISE.functions.slice().sort((a, b) => b.avgScore - a.avgScore).map(f => {
+            const st = fnStatus(f.avgScore);
+            return (
+              <div key={f.name}>
+                <div className="flex justify-between items-center text-sm mb-1">
+                  <span className="font-medium">{f.name} <span className="muted text-xs">· {f.staff} people</span></span>
+                  <span className="flex items-center gap-2">
+                    <span className="text-xs font-semibold px-2 py-0.5 rounded-full" style={{background: st.color + "22", color: st.color}}>{st.label}</span>
+                    <b>{f.avgScore}</b>
+                  </span>
+                </div>
+                <Bar pct={f.avgScore} color={st.color} height={8} />
               </div>
-              <div className="progress-bar" style={{height: 7}}><div className="progress-fill" style={{width: `${f.avgScore}%`}}/></div>
+            );
+          })}
+        </div>
+        <div className="mt-6 pt-5 space-y-3" style={{borderTop: "1px solid var(--line)"}}>
+          <p className="text-xs muted uppercase tracking-widest font-semibold head">What to do about it — this month</p>
+          {[
+            ["🟢", "Engineering is 20+ points ahead.", "Nominate 5 of them as cross-function champions."],
+            ["🟠", "Operations dropped off in week 3.", "One manager-led restart session gets the 312-person team moving again."],
+            ["🔴", "Finance is stuck at basic reading tasks.", "A 90-minute clinic on AI for analysis & reconciliation unblocks them."]
+          ].map(([dot, signal, action], i) => (
+            <div key={i} className="flex gap-3 text-sm">
+              <span>{dot}</span>
+              <p><b>{signal}</b> <span className="muted">{action}</span></p>
             </div>
           ))}
         </div>
       </div>
 
-      <div className="card p-7 mt-8 text-white" style={{background: "var(--ink)"}}>
+      {/* 4 · THE ENGINE — compact, de-jargoned */}
+      <SectionHead eyebrow="04 · How it keeps going" claim="Automated nudges do the following-up — no extra workshops needed." />
+      <Nudge kind="default">
+      <div className="card p-6">
+        <div className="flex items-end justify-between flex-wrap gap-3">
+          <p className="head text-2xl font-bold">{ENTERPRISE.nudges.sent.toLocaleString()} nudges last month · <span style={{color: "var(--accent-dark)"}}>{rate}% acted on</span></p>
+        </div>
+        <div className="grid md:grid-cols-3 gap-3 mt-5">
+          {[
+            ["“Don't break your 12-day streak”", "92%", "the single most effective re-engager"],
+            ["“Your manager sees progress Friday”", "89%", "gentle accountability, opt-in"],
+            ["“3 teammates finished this stage”", "71%", "peer momentum"]
+          ].map(([msg, pct, why], i) => (
+            <div key={i} className="p-4 rounded-xl" style={{background: "#f7f8f4"}}>
+              <p className="text-sm font-medium leading-snug">{msg}</p>
+              <p className="head text-2xl font-bold mt-2" style={{color: "var(--accent-dark)"}}>{pct}</p>
+              <p className="text-xs muted">{why}</p>
+            </div>
+          ))}
+        </div>
+        <p className="text-xs muted mt-4">Every nudge applies a published behavioural-science principle (Thaler, Nobel 2017). Full breakdown in the <b>Nudge Lab</b> tab.</p>
+      </div>
+      </Nudge>
+
+      {/* 5 · CTA */}
+      <div className="card p-7 mt-12 text-white" style={{background: "var(--ink)"}}>
         <div className="flex justify-between items-center flex-wrap gap-4">
           <div>
-            <p className="text-xs uppercase tracking-widest font-bold head" style={{color: "var(--accent)"}}>The pilot pitch</p>
+            <p className="text-xs uppercase tracking-widest font-bold head" style={{color: "var(--accent)"}}>See it with your data</p>
             <p className="head text-2xl font-bold mt-1">60-day pilot · 100–200 employees · one function.</p>
-            <p className="opacity-80 text-sm mt-1">Baseline, guided loop, weekly nudges, this dashboard. Outcomes in writing.</p>
+            <p className="opacity-80 text-sm mt-1">Day-one baseline, guided journey, weekly nudges — and this dashboard with your numbers on it. Success metrics agreed in writing before we start.</p>
           </div>
           <button className="btn-accent">Talk to AI&amp;Beyond</button>
         </div>
