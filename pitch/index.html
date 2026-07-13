@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>10x Loop — the 90-second story</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Roboto:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --ink: #141b4d; --deep: #0d1233; --deeper: #090d26;
+    --accent: #94c90d; --blue: #4198d3; --mint: #53bc86;
+    --white: #f5f7ef; --dim: #8b91b5; --warn: #e07a5a;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; background: var(--deeper); color: var(--white); font-family: 'Roboto', system-ui, sans-serif; overflow: hidden; }
+  .head { font-family: 'Poppins', sans-serif; }
+
+  #stage { position: fixed; inset: 0; background: radial-gradient(120% 100% at 50% 0%, #17204f 0%, var(--deep) 45%, var(--deeper) 100%); }
+
+  /* ===== scenes ===== */
+  .scene { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 6vh 8vw; opacity: 0; visibility: hidden; transform: translateY(14px); transition: opacity .7s ease, transform .7s ease, visibility .7s; text-align: center; }
+  .scene.active { opacity: 1; visibility: visible; transform: translateY(0); }
+
+  .kicker { font-family: 'Poppins'; font-size: clamp(11px, 1.3vw, 14px); letter-spacing: .28em; text-transform: uppercase; color: var(--accent); font-weight: 700; margin-bottom: 2.6vh; opacity: 0; }
+  .big { font-family: 'Poppins'; font-weight: 800; font-size: clamp(28px, 5.2vw, 64px); line-height: 1.12; letter-spacing: -0.01em; max-width: 22ch; }
+  .big .hl { color: var(--accent); }
+  .big .hlb { color: var(--blue); }
+  .sub { font-size: clamp(14px, 1.7vw, 20px); color: var(--dim); margin-top: 2.8vh; max-width: 52ch; line-height: 1.55; }
+  .sub b { color: var(--white); font-weight: 500; }
+
+  /* staged reveals */
+  .r { opacity: 0; transform: translateY(16px); }
+  .active .r { animation: rise .8s cubic-bezier(.2,.7,.2,1) forwards; }
+  .active .r1 { animation-delay: .1s; } .active .r2 { animation-delay: .55s; }
+  .active .r3 { animation-delay: 1.1s; } .active .r4 { animation-delay: 1.7s; }
+  .active .r5 { animation-delay: 2.4s; } .active .r6 { animation-delay: 3.2s; }
+  @keyframes rise { to { opacity: 1; transform: translateY(0); } }
+  .active .kicker { animation: rise .7s .05s cubic-bezier(.2,.7,.2,1) forwards; }
+
+  /* ===== scene 1 · tools rain ===== */
+  .toolgrid { display: flex; gap: clamp(10px, 2vw, 22px); margin: 4vh 0 1vh; }
+  .tool { width: clamp(44px, 6vw, 74px); height: clamp(44px, 6vw, 74px); border-radius: 18px; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.14); display: flex; align-items: center; justify-content: center; font-size: clamp(20px, 3vw, 34px); opacity: 0; transform: translateY(-40px) scale(.7); }
+  .active .tool { animation: drop .55s cubic-bezier(.2,.9,.3,1.3) forwards; }
+  .active .tool:nth-child(1){animation-delay:.5s} .active .tool:nth-child(2){animation-delay:.65s}
+  .active .tool:nth-child(3){animation-delay:.8s} .active .tool:nth-child(4){animation-delay:.95s}
+  .active .tool:nth-child(5){animation-delay:1.1s} .active .tool:nth-child(6){animation-delay:1.25s}
+  @keyframes drop { to { opacity: 1; transform: translateY(0) scale(1); } }
+
+  /* ===== scene 2 · decay chart ===== */
+  .chartwrap { width: min(680px, 84vw); margin-top: 3.5vh; }
+  .chartwrap svg { width: 100%; height: auto; overflow: visible; }
+  .decay { stroke: var(--warn); stroke-width: 3.5; fill: none; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 1; }
+  .active .decay { animation: draw 3.2s .9s cubic-bezier(.5,0,.4,1) forwards; }
+  .axis { stroke: rgba(255,255,255,.18); stroke-width: 1.5; }
+  .chartlabel { font-family: 'Poppins'; font-size: 13px; fill: var(--dim); font-weight: 600; }
+  .chartlabel.warn { fill: var(--warn); }
+  .chartlabel.acc { fill: var(--accent); }
+  @keyframes draw { to { stroke-dashoffset: 0; } }
+
+  /* ===== scene 4 · the loop ===== */
+  .loopwrap { width: min(760px, 88vw); margin-top: 2.5vh; }
+  .loopwrap svg { width: 100%; height: auto; overflow: visible; }
+  .looppath { stroke: rgba(255,255,255,.22); stroke-width: 2.4; fill: none; stroke-dasharray: 1; stroke-dashoffset: 1; }
+  .active .looppath { animation: draw 2.4s .5s cubic-bezier(.5,0,.4,1) forwards; }
+  .looparc { stroke: var(--accent); stroke-width: 2.4; fill: none; stroke-dasharray: .04 .028; stroke-dashoffset: 1; opacity: 0; }
+  .active .looparc { animation: arcIn .8s 5.6s forwards; }
+  @keyframes arcIn { from { opacity: 0; } to { opacity: 1; } }
+  .lnode { opacity: 0; transform-origin: center; }
+  .active .lnode { animation: pop .5s cubic-bezier(.2,.9,.3,1.4) forwards; }
+  .active .ln1{animation-delay:1.0s} .active .ln2{animation-delay:1.45s} .active .ln3{animation-delay:1.9s}
+  .active .ln4{animation-delay:2.35s} .active .ln5{animation-delay:2.8s} .active .ln6{animation-delay:3.25s}
+  .active .ln7{animation-delay:3.7s} .active .ln8{animation-delay:4.15s} .active .ln9{animation-delay:4.7s}
+  @keyframes pop { 0% { opacity: 0; transform: scale(.3); } 100% { opacity: 1; transform: scale(1); } }
+  .nodelabel { font-family: 'Poppins'; font-size: 12.5px; fill: var(--white); font-weight: 600; }
+  .looptag { font-family: 'Poppins'; font-size: 12px; fill: var(--accent); font-weight: 700; letter-spacing: .22em; }
+
+  /* keep/kill cards */
+  .kkrow { display: flex; gap: clamp(12px, 2vw, 24px); margin-top: 3vh; }
+  .kk { padding: 12px 22px; border-radius: 14px; font-family: 'Poppins'; font-weight: 700; font-size: clamp(13px, 1.6vw, 17px); opacity: 0; transform: scale(.6) rotate(-4deg); }
+  .kk.keep { background: rgba(148,201,13,.16); border: 1.5px solid var(--accent); color: var(--accent); }
+  .kk.kill { background: rgba(224,122,90,.13); border: 1.5px solid var(--warn); color: var(--warn); }
+  .active .kk { animation: stamp .5s cubic-bezier(.2,.9,.3,1.4) forwards; }
+  .active .kk.keep { animation-delay: 5.2s; }
+  .active .kk.kill { animation-delay: 5.7s; }
+  @keyframes stamp { to { opacity: 1; transform: scale(1) rotate(0deg); } }
+
+  /* ===== scene 5 · network ===== */
+  .netwrap { width: min(560px, 80vw); margin-top: 2vh; }
+  .netwrap svg { width: 100%; height: auto; overflow: visible; }
+  .nedge { stroke: rgba(148,201,13,.5); stroke-width: 1.6; stroke-dasharray: 1; stroke-dashoffset: 1; }
+  .active .nedge { animation: draw .7s forwards; }
+  .nnode { opacity: 0; transform-origin: center; }
+  .active .nnode { animation: pop .45s cubic-bezier(.2,.9,.3,1.4) forwards; }
+  .active .nw1 { animation-delay: .6s; }
+  .active .nw2 { animation-delay: 1.5s; } .active .ne2 { animation-delay: 1.3s; }
+  .active .nw3 { animation-delay: 2.6s; } .active .ne3 { animation-delay: 2.4s; }
+  .active .nw4 { animation-delay: 3.7s; } .active .ne4 { animation-delay: 3.5s; }
+  .corepulse { animation: corePulse 2.2s ease-in-out infinite; transform-origin: center; }
+  @keyframes corePulse { 0%,100% { opacity: .35; transform: scale(1); } 50% { opacity: .12; transform: scale(1.5); } }
+
+  /* ===== counters / stats ===== */
+  .statrow { display: flex; gap: clamp(20px, 5vw, 70px); margin-top: 4.5vh; flex-wrap: wrap; justify-content: center; }
+  .stat .num { font-family: 'Poppins'; font-weight: 800; font-size: clamp(34px, 5.5vw, 66px); color: var(--accent); line-height: 1; }
+  .stat .num.blue { color: var(--blue); } .stat .num.white { color: var(--white); } .stat .num.warn { color: var(--warn); }
+  .stat .lab { font-size: clamp(11px, 1.3vw, 14px); color: var(--dim); margin-top: 1vh; letter-spacing: .06em; text-transform: uppercase; font-family: 'Poppins'; font-weight: 600; }
+
+  /* ===== scene 7 · flywheel ===== */
+  .flywrap { width: min(440px, 72vw); margin-top: 2.5vh; position: relative; }
+  .flywrap svg { width: 100%; height: auto; overflow: visible; }
+  .flyring { transform-origin: 220px 220px; }
+  .active .flyring { animation: spin 26s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .flylabel { font-family: 'Poppins'; font-weight: 700; font-size: 15px; fill: var(--white); }
+  .flysub { font-size: 11.5px; fill: var(--dim); }
+
+  /* ===== scene 8 · logo ===== */
+  .biglogo { display: flex; align-items: center; gap: 18px; margin-bottom: 3.5vh; }
+  .biglogo svg { width: clamp(54px, 7vw, 88px); height: auto; }
+  .logopath { stroke-dasharray: 1; stroke-dashoffset: 1; }
+  .active .logopath { animation: draw 1.6s .3s cubic-bezier(.5,0,.4,1) forwards; }
+  .logodot { opacity: 0; }
+  .active .logodot { animation: pop .5s 1.7s forwards; }
+  .biglogo .wordmark { font-family: 'Poppins'; font-weight: 800; font-size: clamp(34px, 5vw, 60px); }
+  .ctarow { display: flex; gap: 16px; margin-top: 4.5vh; flex-wrap: wrap; justify-content: center; }
+  .cta { padding: 13px 26px; border-radius: 999px; font-family: 'Poppins'; font-weight: 700; font-size: clamp(13px, 1.5vw, 16px); }
+  .cta.solid { background: var(--accent); color: var(--ink); }
+  .cta.line { border: 1.5px solid rgba(255,255,255,.35); color: var(--white); }
+
+  /* ===== chrome (controls) ===== */
+  #progress { position: fixed; top: 0; left: 0; height: 3px; background: linear-gradient(90deg, var(--blue), var(--mint), var(--accent)); width: 0%; z-index: 50; transition: width .3s linear; }
+  #chrome { position: fixed; bottom: 0; left: 0; right: 0; display: flex; align-items: center; justify-content: center; gap: 14px; padding: 18px; z-index: 50; }
+  .ctl { background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.16); color: var(--white); border-radius: 999px; padding: 9px 16px; font-family: 'Poppins'; font-size: 13px; font-weight: 600; cursor: pointer; transition: background .2s; }
+  .ctl:hover { background: rgba(255,255,255,.15); }
+  .dots { display: flex; gap: 7px; align-items: center; }
+  .dot { width: 7px; height: 7px; border-radius: 999px; background: rgba(255,255,255,.22); cursor: pointer; transition: all .25s; }
+  .dot.on { background: var(--accent); width: 20px; }
+  #scenenum { color: var(--dim); font-size: 12px; font-family: 'Poppins'; min-width: 42px; text-align: center; }
+
+  /* ===== start overlay ===== */
+  #overlay { position: fixed; inset: 0; background: radial-gradient(120% 100% at 50% 0%, #17204f 0%, var(--deep) 45%, var(--deeper) 100%); z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3.5vh; text-align: center; padding: 8vw; transition: opacity .6s, visibility .6s; }
+  #overlay.hidden { opacity: 0; visibility: hidden; }
+  #overlay .kicker { opacity: 1; animation: none; }
+  #playbtn { background: var(--accent); color: var(--ink); border: none; border-radius: 999px; padding: 18px 44px; font-family: 'Poppins'; font-weight: 800; font-size: clamp(16px, 2vw, 21px); cursor: pointer; transition: transform .15s, box-shadow .2s; }
+  #playbtn:hover { transform: translateY(-2px); box-shadow: 0 10px 40px rgba(148,201,13,.4); }
+  .hint { color: var(--dim); font-size: 13px; }
+
+  body.paused .scene *, body.paused .flyring { animation-play-state: paused !important; }
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+<div id="stage">
+
+  <!-- SCENE 1 · THE PROBLEM -->
+  <section class="scene" data-dur="12000" data-say="Your company bought AI. Licences, copilots, training days. But look at actual usage — fewer than one in three employees use AI for real work in any given week.">
+    <p class="kicker">The problem every enterprise shares</p>
+    <h1 class="big r r1">You bought AI.<br/><span class="hl">Your people aren't using it.</span></h1>
+    <div class="toolgrid">
+      <div class="tool">🤖</div><div class="tool">✨</div><div class="tool">💬</div>
+      <div class="tool">🧠</div><div class="tool">📊</div><div class="tool">⚡</div>
+    </div>
+    <div class="statrow r r4">
+      <div class="stat"><div class="num warn" data-to="30" data-prefix="&lt;" data-suffix="%">&lt;0%</div><div class="lab">of licensed employees use AI weekly</div></div>
+    </div>
+  </section>
+
+  <!-- SCENE 2 · TRAINING DECAYS -->
+  <section class="scene" data-dur="11500" data-say="So companies run training. It works — for a day. Within two weeks, seven in ten employees are back to their old way of working. Awareness was never the problem.">
+    <p class="kicker">And training doesn't fix it</p>
+    <h1 class="big r r1">Day one: excitement.<br/><span class="hl" style="color:var(--warn)">Week two: old habits.</span></h1>
+    <div class="chartwrap r r2">
+      <svg viewBox="0 0 680 240">
+        <line class="axis" x1="40" y1="200" x2="650" y2="200"/>
+        <line class="axis" x1="40" y1="200" x2="40" y2="20"/>
+        <path class="decay" pathLength="1" d="M 40 185 L 120 180 L 150 45 C 200 50, 230 110, 300 150 C 380 190, 500 182, 645 184"/>
+        <text class="chartlabel" x="118" y="225">training day</text>
+        <text class="chartlabel warn" x="490" y="165">2 weeks later: 70% have stopped</text>
+        <text class="chartlabel" x="44" y="16">AI usage</text>
+      </svg>
+    </div>
+    <p class="sub r r4">Workshops create <b>awareness</b>. Monday morning creates <b>reality</b>.</p>
+  </section>
+
+  <!-- SCENE 3 · THE INSIGHT -->
+  <section class="scene" data-dur="10000" data-say="Here's the insight everyone misses. Adoption doesn't happen in classrooms. It happens on the tasks your people already do every week — the report, the inbox, the deck.">
+    <p class="kicker">The insight</p>
+    <h1 class="big r r1">Adoption doesn't happen in classrooms.</h1>
+    <h1 class="big r r3">It happens on <span class="hl">the tasks people already do.</span></h1>
+    <div class="toolgrid r r5" style="margin-top:4.5vh">
+      <div class="tool" style="opacity:1;transform:none;animation:none">📋</div>
+      <div class="tool" style="opacity:1;transform:none;animation:none">📥</div>
+      <div class="tool" style="opacity:1;transform:none;animation:none">📊</div>
+      <div class="tool" style="opacity:1;transform:none;animation:none">📝</div>
+      <div class="tool" style="opacity:1;transform:none;animation:none">🧮</div>
+    </div>
+    <p class="sub r r5">The weekly report. The inbox. The deck. <b>That's where adoption lives.</b></p>
+  </section>
+
+  <!-- SCENE 4 · THE PRODUCT -->
+  <section class="scene" data-dur="15000" data-say="10x Loop turns every employee into an experimenter. One AI experiment a week, on their real work. Measure the time saved. Keep what works. Kill what doesn't. Each experiment climbs the loop — from reading with AI, all the way to orchestrating it.">
+    <p class="kicker">Introducing 10x Loop</p>
+    <h1 class="big r r1" style="font-size:clamp(24px,3.6vw,44px)">One real-work <span class="hl">experiment a week.</span></h1>
+    <div class="loopwrap">
+      <svg viewBox="0 -60 760 300">
+        <path class="looppath" pathLength="1" d="M 40 190 L 130 172 L 220 152 L 310 130 L 400 106 L 490 82 L 580 58 L 670 34 L 720 22"/>
+        <path class="looparc" pathLength="1" d="M 720 22 C 730 -40, 50 -40, 40 190" transform="translate(0,0)"/>
+        <g class="lnode ln1"><circle cx="40" cy="190" r="17" fill="#6b7280"/><text x="40" y="196" text-anchor="middle" font-size="15">👤</text><text class="nodelabel" x="40" y="225" text-anchor="middle">Human</text></g>
+        <g class="lnode ln2"><circle cx="130" cy="172" r="17" fill="#4198d3"/><text x="130" y="178" text-anchor="middle" font-size="15">📖</text><text class="nodelabel" x="130" y="207" text-anchor="middle">Read</text></g>
+        <g class="lnode ln3"><circle cx="220" cy="152" r="17" fill="#7b6baf"/><text x="220" y="158" text-anchor="middle" font-size="15">✍️</text><text class="nodelabel" x="220" y="187" text-anchor="middle">Write</text></g>
+        <g class="lnode ln4"><circle cx="310" cy="130" r="17" fill="#c05e3d"/><text x="310" y="136" text-anchor="middle" font-size="15">🎨</text><text class="nodelabel" x="310" y="165" text-anchor="middle">Draw</text></g>
+        <g class="lnode ln5"><circle cx="400" cy="106" r="17" fill="#c8971d"/><text x="400" y="112" text-anchor="middle" font-size="15">➕</text><text class="nodelabel" x="400" y="141" text-anchor="middle">Add</text></g>
+        <g class="lnode ln6"><circle cx="490" cy="82" r="17" fill="#2b7a8c"/><text x="490" y="88" text-anchor="middle" font-size="15">🧠</text><text class="nodelabel" x="490" y="117" text-anchor="middle">Think</text></g>
+        <g class="lnode ln7"><circle cx="580" cy="58" r="17" fill="#3f5f6b"/><text x="580" y="64" text-anchor="middle" font-size="15">🛠️</text><text class="nodelabel" x="580" y="93" text-anchor="middle">Make</text></g>
+        <g class="lnode ln8"><circle cx="670" cy="34" r="17" fill="#141b4d" stroke="rgba(255,255,255,.4)"/><text x="670" y="40" text-anchor="middle" font-size="15">🎼</text><text class="nodelabel" x="670" y="69" text-anchor="middle">Orchestrate</text></g>
+        <g class="lnode ln9"><circle cx="720" cy="22" r="19" fill="#94c90d"/><text x="720" y="28" text-anchor="middle" font-size="16">✨</text><text class="nodelabel" x="716" y="57" text-anchor="middle">10x Human</text></g>
+        <text class="looptag" x="380" y="-44" text-anchor="middle">THE LOOP · CLIMBED BY DOING, NOT LEARNING</text>
+      </svg>
+    </div>
+    <div class="kkrow">
+      <div class="kk keep">✅ KEEP — 45 min banked, every week</div>
+      <div class="kk kill">🗑️ KILL — dead end, valid result</div>
+    </div>
+  </section>
+
+  <!-- SCENE 5 · THE COMPOUNDING -->
+  <section class="scene" data-dur="12500" data-say="And here's what no training programme has: every kept workflow becomes a recipe teammates adopt in one click. Adoption spreads person to person. Every user makes the next one faster to start.">
+    <p class="kicker">The compounding engine</p>
+    <h1 class="big r r1" style="font-size:clamp(24px,3.6vw,44px)">Every win becomes a <span class="hl">recipe</span><br/>your whole team can adopt.</h1>
+    <div class="netwrap r r2">
+      <svg viewBox="0 0 560 300">
+        <circle class="corepulse" cx="280" cy="150" r="34" fill="rgba(148,201,13,.3)"/>
+        <line class="nedge ne2" pathLength="1" x1="280" y1="150" x2="170" y2="80"/>
+        <line class="nedge ne2" pathLength="1" x1="280" y1="150" x2="395" y2="75"/>
+        <line class="nedge ne2" pathLength="1" x1="280" y1="150" x2="185" y2="228"/>
+        <line class="nedge ne3" pathLength="1" x1="170" y1="80" x2="70" y2="45"/>
+        <line class="nedge ne3" pathLength="1" x1="395" y1="75" x2="490" y2="40"/>
+        <line class="nedge ne3" pathLength="1" x1="395" y1="75" x2="480" y2="130"/>
+        <line class="nedge ne3" pathLength="1" x1="185" y1="228" x2="90" y2="255"/>
+        <line class="nedge ne4" pathLength="1" x1="70" y1="45" x2="30" y2="110"/>
+        <line class="nedge ne4" pathLength="1" x1="490" y1="40" x2="530" y2="105"/>
+        <line class="nedge ne4" pathLength="1" x1="90" y1="255" x2="180" y2="285"/>
+        <line class="nedge ne4" pathLength="1" x1="480" y1="130" x2="470" y2="215"/>
+        <g class="nnode nw1"><circle cx="280" cy="150" r="22" fill="#94c90d"/><text x="280" y="157" text-anchor="middle" font-size="18">👤</text></g>
+        <g class="nnode nw2"><circle cx="170" cy="80" r="15" fill="#4198d3"/><text x="170" y="86" text-anchor="middle" font-size="13">👤</text></g>
+        <g class="nnode nw2"><circle cx="395" cy="75" r="15" fill="#4198d3"/><text x="395" y="81" text-anchor="middle" font-size="13">👤</text></g>
+        <g class="nnode nw2"><circle cx="185" cy="228" r="15" fill="#4198d3"/><text x="185" y="234" text-anchor="middle" font-size="13">👤</text></g>
+        <g class="nnode nw3"><circle cx="70" cy="45" r="13" fill="#53bc86"/><text x="70" y="50" text-anchor="middle" font-size="11">👤</text></g>
+        <g class="nnode nw3"><circle cx="490" cy="40" r="13" fill="#53bc86"/><text x="490" y="45" text-anchor="middle" font-size="11">👤</text></g>
+        <g class="nnode nw3"><circle cx="480" cy="130" r="13" fill="#53bc86"/><text x="480" y="135" text-anchor="middle" font-size="11">👤</text></g>
+        <g class="nnode nw3"><circle cx="90" cy="255" r="13" fill="#53bc86"/><text x="90" y="260" text-anchor="middle" font-size="11">👤</text></g>
+        <g class="nnode nw4"><circle cx="30" cy="110" r="11" fill="#8b91b5"/><text x="30" y="115" text-anchor="middle" font-size="10">👤</text></g>
+        <g class="nnode nw4"><circle cx="530" cy="105" r="11" fill="#8b91b5"/><text x="530" y="110" text-anchor="middle" font-size="10">👤</text></g>
+        <g class="nnode nw4"><circle cx="180" cy="285" r="11" fill="#8b91b5"/><text x="180" y="290" text-anchor="middle" font-size="10">👤</text></g>
+        <g class="nnode nw4"><circle cx="470" cy="215" r="11" fill="#8b91b5"/><text x="470" y="220" text-anchor="middle" font-size="10">👤</text></g>
+      </svg>
+    </div>
+    <div class="statrow r r5" style="margin-top:1.5vh">
+      <div class="stat"><div class="num" data-to="236">0</div><div class="lab">workflows adopted by week 8</div></div>
+    </div>
+  </section>
+
+  <!-- SCENE 6 · THE MEASUREMENT -->
+  <section class="scene" data-dur="12000" data-say="Everything rolls up to two numbers. The Adoption Quotient — a benchmarked score for every employee, team, and function. And hours banked — real time savings, every hour traced to a named experiment. That's the slide your board has been asking for.">
+    <p class="kicker">Finally — adoption you can measure</p>
+    <h1 class="big r r1" style="font-size:clamp(24px,3.8vw,46px)">Two numbers the board <span class="hlb">actually believes.</span></h1>
+    <div class="statrow r r2">
+      <div class="stat"><div class="num blue" data-to="54">0</div><div class="lab">Org AQ · vs industry 48</div></div>
+      <div class="stat"><div class="num" data-to="638" data-suffix="h">0</div><div class="lab">banked per week, org-wide</div></div>
+      <div class="stat"><div class="num white" data-to="3.5" data-decimals="1" data-prefix="₹" data-suffix=" Cr">₹0</div><div class="lab">annual value at loaded cost</div></div>
+    </div>
+    <p class="sub r r4">Not survey estimates. <b>A ledger — every hour traced to a named experiment.</b></p>
+  </section>
+
+  <!-- SCENE 7 · THE FLYWHEEL (investors) -->
+  <section class="scene" data-dur="10500" data-say="And it compounds at the business level too. Bootcamps seed the product. The product generates adoption data. Data builds the industry benchmark. And the benchmark wins the next client. Every customer makes the product smarter.">
+    <p class="kicker">Why this wins over time</p>
+    <h1 class="big r r1" style="font-size:clamp(24px,3.6vw,44px)">Every client makes it <span class="hl">smarter.</span></h1>
+    <div class="flywrap r r2">
+      <svg viewBox="0 0 440 440">
+        <circle cx="220" cy="220" r="150" fill="none" stroke="rgba(255,255,255,.14)" stroke-width="1.5" stroke-dasharray="4 7"/>
+        <g class="flyring">
+          <circle cx="220" cy="70" r="8" fill="#94c90d"/>
+        </g>
+        <g>
+          <text class="flylabel" x="220" y="36" text-anchor="middle">Bootcamps</text>
+          <text class="flysub" x="220" y="54" text-anchor="middle">trust in the room</text>
+          <text class="flylabel" x="408" y="222" text-anchor="middle">Product</text>
+          <text class="flysub" x="408" y="240" text-anchor="middle">weekly experiments</text>
+          <text class="flylabel" x="220" y="412" text-anchor="middle">Data</text>
+          <text class="flysub" x="220" y="430" text-anchor="middle">what actually works</text>
+          <text class="flylabel" x="34" y="222" text-anchor="middle">Benchmark</text>
+          <text class="flysub" x="34" y="240" text-anchor="middle">the AQ index</text>
+        </g>
+        <text x="220" y="215" text-anchor="middle" class="flylabel" style="font-size:19px" fill="#94c90d">THE MOAT</text>
+        <text x="220" y="240" text-anchor="middle" class="flysub">data no competitor can copy</text>
+      </svg>
+    </div>
+  </section>
+
+  <!-- SCENE 8 · CLOSE -->
+  <section class="scene" data-dur="9000" data-say="10x Loop. From AI awareness, to AI adoption, to proof. Pilot it in sixty days — or back the adoption layer every enterprise is missing.">
+    <div class="biglogo r r1">
+      <svg viewBox="0 0 32 32" fill="none">
+        <path class="logopath" pathLength="1" d="M6 22 C 6 12, 14 6, 22 10 C 30 14, 28 26, 18 26 C 10 26, 4 22, 10 16" stroke="#f5f7ef" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+        <circle class="logodot" cx="22" cy="10" r="3" fill="#94c90d"/>
+      </svg>
+      <span class="wordmark head">10x Loop</span>
+    </div>
+    <h1 class="big r r2" style="font-size:clamp(22px,3.4vw,42px)">From AI awareness → adoption → <span class="hl">proof.</span></h1>
+    <p class="sub r r3">An AI&amp;Beyond product · built on 45+ enterprise bootcamps</p>
+    <div class="ctarow r r4">
+      <div class="cta solid">Pilot it in 60 days</div>
+      <div class="cta line">Back the adoption layer</div>
+    </div>
+  </section>
+
+</div>
+
+<!-- chrome -->
+<div id="chrome">
+  <button class="ctl" id="btnRestart" title="Restart">↺</button>
+  <button class="ctl" id="btnPlay" title="Play / pause">⏸</button>
+  <div class="dots" id="dots"></div>
+  <span id="scenenum">1/8</span>
+  <button class="ctl" id="btnVoice" title="Toggle narration">🔇 Voice off</button>
+  <button class="ctl" id="btnFull" title="Fullscreen">⛶</button>
+</div>
+
+<!-- start overlay -->
+<div id="overlay">
+  <p class="kicker">AI&amp;Beyond presents</p>
+  <h1 class="big">The <span class="hl">10x Loop</span> story<br/>in 90 seconds.</h1>
+  <button id="playbtn">▶ &nbsp;Play</button>
+  <p class="hint">Best fullscreen (press F) · space to pause · ← → to jump scenes · 🔊 toggles narration</p>
+</div>
+
+<script>
+(function () {
+  var scenes = Array.prototype.slice.call(document.querySelectorAll('.scene'));
+  var durs = scenes.map(function (s) { return parseInt(s.getAttribute('data-dur'), 10); });
+  var total = durs.reduce(function (a, b) { return a + b; }, 0);
+  var idx = -1, timer = null, sceneStart = 0, remaining = 0, playing = false, voiceOn = false;
+  var progressEl = document.getElementById('progress');
+  var dotsEl = document.getElementById('dots');
+  var numEl = document.getElementById('scenenum');
+  var btnPlay = document.getElementById('btnPlay');
+  var btnVoice = document.getElementById('btnVoice');
+
+  scenes.forEach(function (_, i) {
+    var d = document.createElement('div');
+    d.className = 'dot';
+    d.addEventListener('click', function () { go(i, true); });
+    dotsEl.appendChild(d);
+  });
+  var dots = Array.prototype.slice.call(dotsEl.children);
+
+  function elapsedBefore(i) { var e = 0; for (var k = 0; k < i; k++) e += durs[k]; return e; }
+
+  function speak(text) {
+    if (!voiceOn || !window.speechSynthesis) return;
+    window.speechSynthesis.cancel();
+    var u = new SpeechSynthesisUtterance(text);
+    u.rate = 1.02; u.pitch = 1.0;
+    var voices = window.speechSynthesis.getVoices();
+    var pick = null;
+    var prefs = [/Neerja/i, /Sonia/i, /Libby/i, /Google UK English Female/i, /Google US English/i, /Female/i];
+    for (var p = 0; p < prefs.length && !pick; p++) {
+      for (var v = 0; v < voices.length; v++) {
+        if (prefs[p].test(voices[v].name)) { pick = voices[v]; break; }
+      }
+    }
+    if (pick) u.voice = pick;
+    window.speechSynthesis.speak(u);
+  }
+
+  function animateCounters(scene) {
+    var els = scene.querySelectorAll('[data-to]');
+    Array.prototype.forEach.call(els, function (el) {
+      var to = parseFloat(el.getAttribute('data-to'));
+      var dec = parseInt(el.getAttribute('data-decimals') || '0', 10);
+      var pre = el.getAttribute('data-prefix') || '';
+      var suf = el.getAttribute('data-suffix') || '';
+      pre = pre.replace('&lt;', '<');
+      var t0 = null, dur = 1800;
+      function frame(ts) {
+        if (!playing) { requestAnimationFrame(frame); return; }
+        if (t0 === null) t0 = ts;
+        var p = Math.min(1, (ts - t0) / dur);
+        var eased = 1 - Math.pow(1 - p, 3);
+        el.textContent = pre + (to * eased).toFixed(dec) + suf;
+        if (p < 1 && el.__runId === runId) requestAnimationFrame(frame);
+      }
+      var runId = (el.__runId || 0) + 1;
+      el.__runId = runId;
+      setTimeout(function () { requestAnimationFrame(frame); }, 600);
+    });
+  }
+
+  function go(i, manual) {
+    if (i >= scenes.length) { pause(); progressEl.style.width = '100%'; return; }
+    if (timer) { clearTimeout(timer); timer = null; }
+    if (idx >= 0) scenes[idx].classList.remove('active');
+    idx = i;
+    // force reflow so re-entering a scene restarts its CSS animations
+    void scenes[idx].offsetWidth;
+    scenes[idx].classList.add('active');
+    dots.forEach(function (d, k) { d.className = 'dot' + (k === idx ? ' on' : ''); });
+    numEl.textContent = (idx + 1) + '/' + scenes.length;
+    animateCounters(scenes[idx]);
+    speak(scenes[idx].getAttribute('data-say'));
+    sceneStart = Date.now();
+    remaining = durs[idx];
+    if (playing || manual) {
+      if (!playing) resumeState();
+      timer = setTimeout(function () { go(idx + 1); }, remaining);
+    }
+    updateProgressLoop();
+  }
+
+  var progRAF = null;
+  function updateProgressLoop() {
+    if (progRAF) cancelAnimationFrame(progRAF);
+    function tick() {
+      if (idx < 0) return;
+      var within = playing ? Math.min(durs[idx], Date.now() - sceneStart) : (durs[idx] - remaining);
+      var pct = ((elapsedBefore(idx) + within) / total) * 100;
+      progressEl.style.width = pct + '%';
+      progRAF = requestAnimationFrame(tick);
+    }
+    progRAF = requestAnimationFrame(tick);
+  }
+
+  function pause() {
+    if (!playing) return;
+    playing = false;
+    document.body.classList.add('paused');
+    if (timer) { clearTimeout(timer); timer = null; }
+    remaining = Math.max(0, durs[idx] - (Date.now() - sceneStart));
+    if (window.speechSynthesis) window.speechSynthesis.pause();
+    btnPlay.textContent = '▶';
+  }
+  function resumeState() {
+    playing = true;
+    document.body.classList.remove('paused');
+    btnPlay.textContent = '⏸';
+  }
+  function resume() {
+    if (playing) return;
+    resumeState();
+    sceneStart = Date.now() - (durs[idx] - remaining);
+    timer = setTimeout(function () { go(idx + 1); }, remaining);
+    if (window.speechSynthesis) window.speechSynthesis.resume();
+  }
+
+  document.getElementById('playbtn').addEventListener('click', function () {
+    document.getElementById('overlay').classList.add('hidden');
+    playing = true;
+    btnPlay.textContent = '⏸';
+    if (window.speechSynthesis) window.speechSynthesis.getVoices();
+    go(0);
+  });
+  btnPlay.addEventListener('click', function () { playing ? pause() : resume(); });
+  document.getElementById('btnRestart').addEventListener('click', function () { resumeState(); go(0); });
+  btnVoice.addEventListener('click', function () {
+    voiceOn = !voiceOn;
+    btnVoice.textContent = voiceOn ? '🔊 Voice on' : '🔇 Voice off';
+    if (!voiceOn && window.speechSynthesis) window.speechSynthesis.cancel();
+    else if (voiceOn && idx >= 0) speak(scenes[idx].getAttribute('data-say'));
+  });
+  document.getElementById('btnFull').addEventListener('click', function () {
+    if (document.fullscreenElement) document.exitFullscreen();
+    else document.documentElement.requestFullscreen();
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === ' ') { e.preventDefault(); playing ? pause() : resume(); }
+    if (e.key === 'ArrowRight') go(Math.min(idx + 1, scenes.length - 1), true);
+    if (e.key === 'ArrowLeft') go(Math.max(idx - 1, 0), true);
+    if (e.key === 'f' || e.key === 'F') {
+      if (document.fullscreenElement) document.exitFullscreen();
+      else document.documentElement.requestFullscreen();
+    }
+    if (e.key === 'r' || e.key === 'R') { resumeState(); go(0); }
+  });
+})();
+</script>
+</body>
+</html>
