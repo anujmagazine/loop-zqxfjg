@@ -141,14 +141,13 @@
   .cta.solid { background: var(--accent); color: var(--ink); }
   .cta.line { border: 1.5px solid rgba(255,255,255,.35); color: var(--white); }
 
-  /* ==== ai&beyond logo ==== */
-  .ablogo { display: inline-flex; align-items: center; gap: .3em; font-family: 'Poppins'; font-weight: 700; letter-spacing: -0.015em; color: var(--white); line-height: 1; }
-  .ablogo .amp { height: 1.32em; width: auto; display: block; }
-  .ablogo .tag { font-weight: 500; font-size: .33em; line-height: 1.3; color: var(--dim); text-align: left; margin-left: .55em; letter-spacing: .02em; align-self: center; }
-  .ablogo.lg { font-size: clamp(34px, 5vw, 58px); }
-  .ablogo.md { font-size: clamp(22px, 2.8vw, 32px); }
-  #brandmark { position: fixed; top: 16px; right: 22px; z-index: 45; font-size: 15px; opacity: 0; transition: opacity .8s; pointer-events: none; }
-  #brandmark.show { opacity: .7; }
+  /* ==== ai&beyond logo — real brand asset (assets/aib_logo_dark.png) ==== */
+  .ablogo { display: block; height: auto; width: auto; }
+  .ablogo.lg { width: clamp(230px, 30vw, 400px); }
+  .ablogo.md { width: clamp(150px, 19vw, 220px); }
+  #brandmark { position: fixed; top: 20px; right: 24px; z-index: 45; opacity: 0; transition: opacity .8s; pointer-events: none; }
+  #brandmark img { width: clamp(90px, 11vw, 130px); height: auto; display: block; }
+  #brandmark.show { opacity: .82; }
 
   /* ==== companion feed (scene 6) ==== */
   .feed { display: flex; flex-direction: column; gap: 12px; margin-top: 3.5vh; width: min(470px, 86vw); }
@@ -381,15 +380,10 @@
       <span class="wordmark head">10x Loop</span>
     </div>
     <h1 class="big r r2" style="font-size:clamp(22px,3.4vw,42px)">Adoption that <span class="hl">spreads itself</span> —<br/>and proves itself.</h1>
-    <div class="r r3" style="display:flex;flex-direction:column;align-items:center;gap:1.4vh;margin-top:3vh">
+    <div class="r r3" style="display:flex;flex-direction:column;align-items:center;gap:1.6vh;margin-top:3vh">
       <p class="kicker" style="margin:0;opacity:1;animation:none;font-size:11px">a product by</p>
-      <div class="ablogo md">
-        <span>ai</span>
-        <svg class="amp" viewBox="0 0 100 132" aria-hidden="true"><circle cx="62" cy="22" r="20" fill="#94c90d"/><circle cx="44" cy="86" r="34" fill="#94c90d"/><polygon points="86,64 100,126 68,126" fill="#94c90d"/></svg>
-        <span>beyond</span>
-        <span class="tag">shaping<br/>the future</span>
-      </div>
-      <p class="sub" style="margin-top:.6vh;font-size:clamp(12px,1.4vw,15px)">built on 45+ enterprise bootcamps</p>
+      <img class="ablogo md" src="assets/aib_logo_dark.png" alt="ai&amp;beyond — shaping the future" />
+      <p class="sub" style="margin-top:.2vh;font-size:clamp(12px,1.4vw,15px)">built on 45+ enterprise bootcamps</p>
     </div>
     <div class="ctarow r r4">
       <div class="cta solid">Pilot it in 60 days</div>
@@ -401,10 +395,8 @@
 
 <div id="caption"></div>
 
-<div id="brandmark" class="ablogo">
-  <span>ai</span>
-  <svg class="amp" viewBox="0 0 100 132" aria-hidden="true"><circle cx="62" cy="22" r="20" fill="#94c90d"/><circle cx="44" cy="86" r="34" fill="#94c90d"/><polygon points="86,64 100,126 68,126" fill="#94c90d"/></svg>
-  <span>beyond</span>
+<div id="brandmark">
+  <img src="assets/aib_logo_dark.png" alt="ai&amp;beyond" />
 </div>
 
 <div id="chrome">
@@ -418,12 +410,7 @@
 </div>
 
 <div id="overlay">
-  <div class="ablogo lg">
-    <span>ai</span>
-    <svg class="amp" viewBox="0 0 100 132" aria-hidden="true"><circle cx="62" cy="22" r="20" fill="#94c90d"/><circle cx="44" cy="86" r="34" fill="#94c90d"/><polygon points="86,64 100,126 68,126" fill="#94c90d"/></svg>
-    <span>beyond</span>
-    <span class="tag">shaping<br/>the future</span>
-  </div>
+  <img class="ablogo lg" src="assets/aib_logo_dark.png" alt="ai&amp;beyond — shaping the future" />
   <p class="kicker" style="margin:0">presents</p>
   <h1 class="big">Meet <span class="hl">Priya.</span><br/>And the two minutes that change<br/>how your company adopts AI.</h1>
   <button id="playbtn">▶ &nbsp;Play with narration</button>
