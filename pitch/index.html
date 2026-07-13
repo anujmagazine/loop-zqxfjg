@@ -112,13 +112,14 @@
   .looppath { stroke: rgba(255,255,255,.22); stroke-width: 2.4; fill: none; stroke-dasharray: 1; stroke-dashoffset: 1; }
   .active .looppath { animation: dash 2.2s .4s cubic-bezier(.5,0,.4,1) forwards; }
   .looparc { stroke: var(--accent); stroke-width: 2.2; fill: none; stroke-dasharray: .04 .028; opacity: 0; }
-  .active .looparc { animation: fadeIn .8s 5s forwards; }
+  .active .looparc { animation: fadeIn .9s 23s forwards; }
   @keyframes fadeIn { to { opacity: 1; } }
   .lnode { opacity: 0; transform-origin: center; }
   .active .lnode { animation: pop .5s cubic-bezier(.2,.9,.3,1.4) forwards; }
-  .active .ln1{animation-delay:.9s} .active .ln2{animation-delay:1.3s} .active .ln3{animation-delay:1.7s}
-  .active .ln4{animation-delay:2.1s} .active .ln5{animation-delay:2.5s} .active .ln6{animation-delay:2.9s}
-  .active .ln7{animation-delay:3.3s} .active .ln8{animation-delay:3.7s} .active .ln9{animation-delay:4.2s}
+  /* paced to the expanded narration: human → everyday powers → deeper → building → 10x */
+  .active .ln1{animation-delay:5s} .active .ln2{animation-delay:7.6s} .active .ln3{animation-delay:8.6s}
+  .active .ln4{animation-delay:9.8s} .active .ln5{animation-delay:12.4s} .active .ln6{animation-delay:14.4s}
+  .active .ln7{animation-delay:17s} .active .ln8{animation-delay:18.6s} .active .ln9{animation-delay:21.5s}
   .nodelabel { font-family: 'Poppins'; font-size: 12.5px; fill: var(--white); font-weight: 600; }
 
   /* ==== stats ==== */
@@ -139,6 +140,23 @@
   .cta { padding: 13px 28px; border-radius: 999px; font-family: 'Poppins'; font-weight: 700; font-size: clamp(13px, 1.5vw, 16px); }
   .cta.solid { background: var(--accent); color: var(--ink); }
   .cta.line { border: 1.5px solid rgba(255,255,255,.35); color: var(--white); }
+
+  /* ==== ai&beyond logo ==== */
+  .ablogo { display: inline-flex; align-items: center; gap: .3em; font-family: 'Poppins'; font-weight: 700; letter-spacing: -0.015em; color: var(--white); line-height: 1; }
+  .ablogo .amp { height: 1.32em; width: auto; display: block; }
+  .ablogo .tag { font-weight: 500; font-size: .33em; line-height: 1.3; color: var(--dim); text-align: left; margin-left: .55em; letter-spacing: .02em; align-self: center; }
+  .ablogo.lg { font-size: clamp(34px, 5vw, 58px); }
+  .ablogo.md { font-size: clamp(22px, 2.8vw, 32px); }
+  #brandmark { position: fixed; top: 16px; right: 22px; z-index: 45; font-size: 15px; opacity: 0; transition: opacity .8s; pointer-events: none; }
+  #brandmark.show { opacity: .7; }
+
+  /* ==== companion feed (scene 6) ==== */
+  .feed { display: flex; flex-direction: column; gap: 12px; margin-top: 3.5vh; width: min(470px, 86vw); }
+  .fcard { display: flex; gap: 13px; align-items: flex-start; text-align: left; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.16); border-radius: 16px; padding: 13px 17px; }
+  .fcard .fic { font-size: 21px; line-height: 1.2; }
+  .fcard .ft { font-family: 'Poppins'; font-weight: 600; font-size: clamp(13px, 1.5vw, 15.5px); }
+  .fcard .fs { color: var(--dim); font-size: clamp(11.5px, 1.3vw, 13.5px); margin-top: 2px; line-height: 1.45; }
+  .fcard.hot { border-color: var(--accent); background: rgba(148,201,13,.1); }
 
   /* ==== captions ==== */
   #caption { position: fixed; bottom: 76px; left: 50%; transform: translateX(-50%); max-width: min(860px, 88vw); text-align: center; font-size: clamp(13px, 1.6vw, 17px); color: rgba(245,247,239,.85); background: rgba(9,13,38,.55); padding: 10px 22px; border-radius: 12px; line-height: 1.5; z-index: 40; opacity: 0; transition: opacity .5s; backdrop-filter: blur(6px); }
@@ -248,7 +266,33 @@
     <div class="stamp">✅ KEPT — her call, her evidence</div>
   </section>
 
-  <!-- S6 · THE SPREAD -->
+  <!-- S6 · A COMPANION, NOT A COURSE -->
+  <section class="scene"
+    data-dur="19000"
+    data-say="And 10x Loop stays with her — a companion, not a course. Monday morning, it picks the week's experiment for her role. The prompt is ready — one click opens it in her AI tool, whichever one her company uses. Friday, a twenty-second verdict: keep it, or kill it. And if she drifts, a gentle nudge brings her back. Fifteen minutes a week — inside work she was already doing.">
+    <p class="kicker">How it works</p>
+    <h1 class="big r r1" style="font-size:clamp(24px,3.8vw,46px)">A companion, <span class="hl">not a course.</span></h1>
+    <div class="feed">
+      <div class="fcard hot r r2">
+        <span class="fic">🔔</span>
+        <div><p class="ft">Monday 9:00 · This week's experiment</p><p class="fs">Your status report — picked for Marketing · ~15 min</p></div>
+      </div>
+      <div class="fcard r r3">
+        <span class="fic">⚡</span>
+        <div><p class="ft">Prompt ready — one click</p><p class="fs">Opens in her AI tool: Copilot, ChatGPT, or Claude — whatever the company uses</p></div>
+      </div>
+      <div class="fcard r r4">
+        <span class="fic">✅</span>
+        <div><p class="ft">Friday · the 20-second verdict</p><p class="fs">Keep it or kill it — her evidence decides, not a quiz</p></div>
+      </div>
+      <div class="fcard r r5">
+        <span class="fic">🔥</span>
+        <div><p class="ft">Streak: 3 weeks</p><p class="fs">A gentle nudge if she drifts. Never a guilt trip.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- S7 · THE SPREAD -->
   <section class="scene"
     data-dur="12000"
     data-say="Now the part no training programme has ever done. Priya's workflow becomes a recipe. Twelve teammates adopt it — in one click each. Nobody scheduled a workshop. Adoption just... spread.">
@@ -288,12 +332,12 @@
     </div>
   </section>
 
-  <!-- S7 · THE LOOP -->
+  <!-- S8 · THE LOOP, EXPLAINED -->
   <section class="scene"
-    data-dur="12500"
-    data-say="Each experiment climbs a ladder we call the Loop — from reading with AI, to writing, thinking, building, and finally orchestrating it. Skills built by doing. Proven in hours saved. That's how Priya becomes a ten-x human.">
-    <p class="kicker">Skills built by doing — not by lessons</p>
-    <h1 class="big r r1" style="font-size:clamp(22px,3.4vw,42px)">Every experiment climbs <span class="hl">the Loop.</span></h1>
+    data-dur="26000"
+    data-say="So what exactly is the Loop? It's our map of AI mastery — nine steps, climbed by doing, never by lessons. Priya starts as she is: human. First come the everyday powers — reading with AI, writing with it, creating visuals. Then it goes deeper: AI adds speed to every task, and becomes her thinking partner for real decisions. Then she starts building — small automations first, then orchestrating AI across entire workflows. And at the top, she arrives back where she began — the same Priya, ten times more capable. Then the loop starts again. Higher.">
+    <p class="kicker">The 10x Loop · our map of AI mastery</p>
+    <h1 class="big r r1" style="font-size:clamp(22px,3.4vw,42px)">Nine steps. Climbed by <span class="hl">doing.</span></h1>
     <div class="loopwrap">
       <svg viewBox="0 -55 760 300">
         <path class="looppath" pathLength="1" d="M 40 190 L 130 172 L 220 152 L 310 130 L 400 106 L 490 82 L 580 58 L 670 34 L 720 22"/>
@@ -337,7 +381,16 @@
       <span class="wordmark head">10x Loop</span>
     </div>
     <h1 class="big r r2" style="font-size:clamp(22px,3.4vw,42px)">Adoption that <span class="hl">spreads itself</span> —<br/>and proves itself.</h1>
-    <p class="sub r r3">An AI&amp;Beyond product · built on 45+ enterprise bootcamps</p>
+    <div class="r r3" style="display:flex;flex-direction:column;align-items:center;gap:1.4vh;margin-top:3vh">
+      <p class="kicker" style="margin:0;opacity:1;animation:none;font-size:11px">a product by</p>
+      <div class="ablogo md">
+        <span>ai</span>
+        <svg class="amp" viewBox="0 0 100 132" aria-hidden="true"><circle cx="62" cy="22" r="20" fill="#94c90d"/><circle cx="44" cy="86" r="34" fill="#94c90d"/><polygon points="86,64 100,126 68,126" fill="#94c90d"/></svg>
+        <span>beyond</span>
+        <span class="tag">shaping<br/>the future</span>
+      </div>
+      <p class="sub" style="margin-top:.6vh;font-size:clamp(12px,1.4vw,15px)">built on 45+ enterprise bootcamps</p>
+    </div>
     <div class="ctarow r r4">
       <div class="cta solid">Pilot it in 60 days</div>
       <div class="cta line">Own the adoption layer early</div>
@@ -348,19 +401,31 @@
 
 <div id="caption"></div>
 
+<div id="brandmark" class="ablogo">
+  <span>ai</span>
+  <svg class="amp" viewBox="0 0 100 132" aria-hidden="true"><circle cx="62" cy="22" r="20" fill="#94c90d"/><circle cx="44" cy="86" r="34" fill="#94c90d"/><polygon points="86,64 100,126 68,126" fill="#94c90d"/></svg>
+  <span>beyond</span>
+</div>
+
 <div id="chrome">
   <button class="ctl" id="btnRestart" title="Restart">↺</button>
   <button class="ctl" id="btnPlay" title="Play / pause">⏸</button>
   <div class="dots" id="dots"></div>
-  <span id="scenenum">1/9</span>
+  <span id="scenenum">1/10</span>
   <button class="ctl" id="btnVoice" title="Toggle narration">🔊 Voice on</button>
   <button class="ctl" id="btnCap" title="Toggle captions">💬 Captions</button>
   <button class="ctl" id="btnFull" title="Fullscreen">⛶</button>
 </div>
 
 <div id="overlay">
-  <p class="kicker">AI&amp;Beyond presents</p>
-  <h1 class="big">Meet <span class="hl">Priya.</span><br/>And the 90 seconds that change<br/>how your company adopts AI.</h1>
+  <div class="ablogo lg">
+    <span>ai</span>
+    <svg class="amp" viewBox="0 0 100 132" aria-hidden="true"><circle cx="62" cy="22" r="20" fill="#94c90d"/><circle cx="44" cy="86" r="34" fill="#94c90d"/><polygon points="86,64 100,126 68,126" fill="#94c90d"/></svg>
+    <span>beyond</span>
+    <span class="tag">shaping<br/>the future</span>
+  </div>
+  <p class="kicker" style="margin:0">presents</p>
+  <h1 class="big">Meet <span class="hl">Priya.</span><br/>And the two minutes that change<br/>how your company adopts AI.</h1>
   <button id="playbtn">▶ &nbsp;Play with narration</button>
   <p class="hint">Scenes wait for the narration to finish — nothing gets cut off.<br/>F fullscreen · space pause · ← → scenes · 🔊 toggles voice · 💬 toggles captions</p>
 </div>
@@ -581,6 +646,7 @@
   /* ---------- controls ---------- */
   document.getElementById('playbtn').addEventListener('click', function () {
     document.getElementById('overlay').classList.add('hidden');
+    document.getElementById('brandmark').classList.add('show');
     if (synthOK) { window.speechSynthesis.getVoices(); pickVoice(); }
     playing = true;
     btnPlay.textContent = '⏸';
