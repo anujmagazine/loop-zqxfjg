@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>10x Loop v3 — The Compounding Loop (north-star concept)</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone@7.22.20/babel.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --ink: #141b4d; --ink-soft: #3a4070;
+    --accent: #94c90d; --accent-dark: #6f9a06; --accent-tint: #f3f9e2;
+    --blue: #4198d3; --blue-tint: #e8f2fa;
+    --mint: #53bc86; --mint-tint: #e9f7f0;
+    --paper: #fbfcf9; --card: #ffffff; --line: #e5e7e1;
+    --muted: #6b7280; --warn: #c05e3d; --warn-tint: #fdf0eb;
+  }
+  html, body { background: var(--paper); color: var(--ink); font-family: 'Roboto', system-ui, sans-serif; }
+  .head { font-family: 'Poppins', 'Roboto', sans-serif; }
+  .ink { color: var(--ink); } .muted { color: var(--muted); }
+  .brand-strip { height: 4px; background: linear-gradient(90deg, #141b4d 0%, #4198d3 40%, #53bc86 70%, #94c90d 100%); }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 16px; }
+  .btn-primary { background: var(--ink); color: white; border-radius: 999px; padding: 13px 26px; font-weight: 600; font-family: 'Poppins', sans-serif; transition: transform .15s ease, box-shadow .2s ease; }
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(20,27,77,0.25); }
+  .btn-accent { background: var(--accent); color: var(--ink); border-radius: 999px; padding: 13px 26px; font-weight: 700; font-family: 'Poppins', sans-serif; transition: transform .15s ease, box-shadow .2s ease; }
+  .btn-accent:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(148,201,13,0.4); }
+  .btn-ghost { background: transparent; color: var(--ink); border: 1.5px solid var(--line); border-radius: 999px; padding: 11px 20px; font-weight: 500; }
+  .btn-ghost:hover { background: var(--accent-tint); border-color: var(--accent); }
+  .pill { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 999px; font-size: 11px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; font-family: 'Poppins', sans-serif; }
+  textarea, input[type=text] { background: var(--card); border: 1.5px solid var(--line); border-radius: 12px; padding: 13px 15px; font-family: 'Roboto', sans-serif; width: 100%; font-size: 15px; }
+  textarea:focus, input:focus { outline: none; border-color: var(--blue); }
+  .chip { padding: 9px 16px; border-radius: 999px; border: 1.5px solid var(--line); font-size: 13.5px; background: white; cursor: pointer; transition: all .15s ease; }
+  .chip:hover { border-color: var(--blue); }
+  .chip.active { background: var(--ink); color: white; border-color: var(--ink); }
+  .task-tile { border: 1.5px solid var(--line); border-radius: 14px; padding: 16px; cursor: pointer; transition: all .15s ease; background: white; text-align: left; }
+  .task-tile:hover { border-color: var(--blue); }
+  .task-tile.active { border-color: var(--accent); background: var(--accent-tint); border-width: 2px; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  .fade-up { animation: fadeUp 0.45s ease-out both; }
+  @keyframes pulseGlow { 0%, 100% { filter: drop-shadow(0 0 0 rgba(148,201,13,0)); } 50% { filter: drop-shadow(0 0 12px rgba(148,201,13,0.75)); } }
+  .stage-active { animation: pulseGlow 2.6s ease-in-out infinite; }
+  .arc-loop { stroke-dasharray: 6 8; animation: dash 30s linear infinite; }
+  @keyframes dash { to { stroke-dashoffset: -200; } }
+  .modal-overlay { position: fixed; inset: 0; background: rgba(20,27,77,0.55); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 24px; animation: fadeUp .25s ease-out both; }
+  .modal { background: var(--card); border-radius: 20px; padding: 32px; max-width: 480px; width: 100%; max-height: 90vh; overflow-y: auto; box-shadow: 0 24px 70px rgba(20,27,77,0.35); }
+  @keyframes slideIn { from { opacity: 0; transform: translateY(-14px); } to { opacity: 1; transform: translateY(0); } }
+  .aq-toast { animation: slideIn .4s ease-out both; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel" data-presets="env,react">
+
+const { useState, useEffect } = React;
+
+/* ================= CONFIG ================= */
+const CONFIG = { feedbackEmail: "anuj@aiandbeyond.in" };
+const STORAGE_KEY = "loop_v3_northstar";
+
+/* ================= CAPABILITIES ================= */
+const CAPS = [
+  { id: "read", name: "Read", icon: "📖", color: "#4198d3" },
+  { id: "write", name: "Write", icon: "✍️", color: "#7b6baf" },
+  { id: "draw", name: "Draw", icon: "🎨", color: "#c05e3d" },
+  { id: "add", name: "Add", icon: "➕", color: "#c8971d" },
+  { id: "think", name: "Think", icon: "🧠", color: "#2b7a8c" },
+  { id: "make", name: "Make", icon: "🛠️", color: "#3f5f6b" },
+  { id: "orchestrate", name: "Orchestrate", icon: "🎼", color: "#141b4d" }
+];
+
+/* ================= TASK LIBRARY ================= */
+const TASKS = [
+  { id: "status", name: "Weekly status report", icon: "📋", caps: ["read", "write"], typicalMin: 60, estSave: 40,
+    why: "Recurs every week, mostly assembly work — the highest-confidence first win.",
+    recipe: ["Dump raw notes, ticket links, and numbers into the prompt — messy is fine.", "Let AI structure it into your report format.", "Edit for judgement calls only (5 min). Never send unedited."],
+    prompt: "Turn these raw notes into my weekly status report. Format: 3 sections — Done, In Progress, Risks. Each item one line, lead with the outcome. Audience: my manager, who reads it in 60 seconds. Keep my numbers exactly as given. Flag anything that looks contradictory.\n\nMy notes:\n[paste your raw notes]",
+    watch: "AI will smooth over problems. Re-add the uncomfortable truths before sending." },
+  { id: "inbox", name: "Email triage & replies", icon: "📥", caps: ["read", "add"], typicalMin: 45, estSave: 20,
+    why: "Daily drain. AI is excellent at first-pass triage and draft replies.",
+    recipe: ["Paste the 5 emails you've been avoiding.", "Ask for a one-line summary each, what they're really asking, and drafts for the two most urgent.", "Edit tone, send."],
+    prompt: "Here are emails I've been putting off. For each: (1) one-line summary, (2) what they're actually asking of me, (3) urgency high/med/low. Then draft replies for the two most urgent — my tone: brief, warm, direct. Don't over-apologise.\n\n[paste emails]",
+    watch: "Never paste confidential content into public AI tools — check your company policy first." },
+  { id: "meetprep", name: "Meeting prep briefs", icon: "🧭", caps: ["read", "think"], typicalMin: 30, estSave: 20,
+    why: "You either over-prepare or walk in cold. AI gives you the 5-minute version.",
+    recipe: ["Give AI the agenda, attendees, and any pre-read.", "Ask for: 3 things to listen for, 2 to push on, 1 to avoid saying.", "Skim it outside the meeting-room door."],
+    prompt: "I'm walking into a meeting on [topic] with [attendees/roles]. Here's the agenda and context: [paste]. Brief me in 3 bullets: what to listen for, what to push on, what to avoid saying. Then give me one sharp question that makes me the most prepared person in the room.",
+    watch: "The sharp question is the payoff — always ask for it." },
+  { id: "minutes", name: "Meeting minutes & follow-ups", icon: "📝", caps: ["read", "write"], typicalMin: 30, estSave: 22,
+    why: "Pure assembly work that AI does in seconds from a transcript or rough notes.",
+    recipe: ["Paste the transcript (or your rough notes).", "Ask for decisions, owners, deadlines — not a summary.", "Verify owners are right, send within the hour."],
+    prompt: "From this meeting transcript/notes, extract: (1) every DECISION made, (2) every ACTION with owner and deadline, (3) anything left unresolved. Format as a table. Do NOT summarise the discussion — decisions and actions only.\n\n[paste transcript or notes]",
+    watch: "AI invents owners when unclear. Check every name before sending." },
+  { id: "deck", name: "First-draft decks & proposals", icon: "📊", caps: ["write", "draw"], typicalMin: 120, estSave: 60,
+    why: "The blank-page hours are the waste. AI kills the blank page; you keep the judgement.",
+    recipe: ["Give AI the goal, the audience, and your rough argument.", "Ask for a slide-by-slide outline: headline + 3 bullets + suggested visual per slide.", "Build only the slides that survive your edit."],
+    prompt: "Outline a [N]-slide deck. Goal: [what you want the audience to decide/do]. Audience: [who]. My core argument: [2-3 lines]. For each slide give me: a headline that is a claim (not a topic), 3 supporting bullets, and what visual would prove it. Slide 1 must state the ask.",
+    watch: "Headlines-as-claims is the trick. 'Q3 results' is a topic; 'Q3 beat plan by 12%' is a slide." },
+  { id: "sheet", name: "Spreadsheet cleanup & analysis", icon: "🧮", caps: ["make", "add"], typicalMin: 60, estSave: 35,
+    why: "Formula-writing and data cleanup are exactly the repetitive precision work AI excels at.",
+    recipe: ["Describe your columns and what you need (or paste sample rows).", "Ask for the formula/steps — or paste data and let AI clean it.", "Spot-check 5 rows before trusting the whole sheet."],
+    prompt: "My spreadsheet has these columns: [list them]. I need to [what you're computing/cleaning]. Give me: (1) the exact formula(s), (2) where to put them, (3) what could silently go wrong with my data shape. If easier, tell me the steps for a pivot table instead.",
+    watch: "Always spot-check 5 rows manually. Silent formula errors are the failure mode." },
+  { id: "research", name: "Vendor / option comparison", icon: "🔍", caps: ["read", "think"], typicalMin: 90, estSave: 50,
+    why: "Hours of tab-hopping compressed into a structured comparison you refine.",
+    recipe: ["Name the options and — critically — your decision criteria.", "Ask for a comparison table plus what each vendor's marketing hides.", "Verify the 3 facts that would change the decision."],
+    prompt: "Compare [option A, B, C] for [use case]. My criteria, weighted: [list]. Give me: (1) a comparison table, (2) what each option's marketing conveniently omits, (3) which you'd pick for my situation and the strongest argument against that pick. Mark anything you're unsure about so I can verify.",
+    watch: "AI's facts can be stale. Verify the 3 facts that would actually change your decision." },
+  { id: "feedback", name: "Reviews & feedback writing", icon: "💬", caps: ["write", "think"], typicalMin: 45, estSave: 20,
+    why: "The hardest writing you do. AI won't know the person — but it makes your points land.",
+    recipe: ["Write your honest bullet points first — AI must not invent the substance.", "Ask AI to structure them: specific, balanced, actionable.", "Check it still sounds like you."],
+    prompt: "Turn my rough notes into performance feedback. Rules: keep every point I made (don't soften or invent), structure as situation → behaviour → impact, make each point actionable, tone: direct but caring. Flag any point that's vague enough to be useless.\n\nMy notes:\n[paste your honest bullets]",
+    watch: "The substance must be yours. AI structures; you judge." },
+  { id: "automation", name: "Automate a recurring handoff", icon: "⚙️", caps: ["make", "orchestrate"], typicalMin: 45, estSave: 40,
+    why: "The orchestration frontier: stop doing the handoff, design the system that does it.",
+    recipe: ["Pick a 3+ step workflow you repeat (collect → format → send).", "Ask AI to design the automation — and build the first piece with you.", "Run it in parallel with your manual process for one week before trusting it."],
+    prompt: "I repeat this workflow every week: [describe the 3-5 steps and tools]. Design an automation for it: (1) which steps AI/tools can own, (2) where a human must stay in the loop, (3) build the first piece with me now — give me exactly what to paste and where. I'm not a developer.",
+    watch: "Run it in parallel with the old way for a week. Trust is earned, not assumed." }
+];
+
+const ROLES = ["Marketing", "Sales", "Operations", "Finance", "HR & L&D", "Engineering", "Leadership", "Other"];
+const ROLE_PREFS = {
+  "Marketing": ["deck", "status", "research", "inbox", "minutes", "feedback", "meetprep", "sheet", "automation"],
+  "Sales": ["inbox", "meetprep", "research", "status", "minutes", "deck", "feedback", "automation", "sheet"],
+  "Operations": ["sheet", "status", "minutes", "automation", "inbox", "research", "meetprep", "deck", "feedback"],
+  "Finance": ["sheet", "research", "status", "minutes", "inbox", "automation", "deck", "meetprep", "feedback"],
+  "HR & L&D": ["feedback", "inbox", "minutes", "deck", "status", "meetprep", "research", "sheet", "automation"],
+  "Engineering": ["sheet", "automation", "minutes", "status", "research", "meetprep", "inbox", "deck", "feedback"],
+  "Leadership": ["meetprep", "minutes", "feedback", "research", "status", "inbox", "deck", "sheet", "automation"],
+  "Other": ["status", "inbox", "meetprep", "minutes", "deck", "sheet", "research", "feedback", "automation"]
+};
+
+const CALIBRATION = [
+  { q: "How often do you use AI at work today?", options: [
+    { label: "Rarely", score: 0 }, { label: "Weekly", score: 1 }, { label: "Most days", score: 2 }, { label: "Constantly", score: 3 }] },
+  { q: "How confident are your prompts?", options: [
+    { label: "I copy and hope", score: 0 }, { label: "I tweak till it works", score: 1 }, { label: "I structure them deliberately", score: 2 }, { label: "I prompt for outcomes", score: 3 }] }
+];
+
+/* ================= AQ ENGINE — the index IP, prototype formula ================= */
+const capCountsFrom = (experiments) => {
+  const counts = {};
+  experiments.forEach(e => {
+    const t = TASKS.find(x => x.id === e.taskId);
+    if (t) t.caps.forEach(c => { counts[c] = (counts[c] || 0) + 1; });
+  });
+  return counts;
+};
+
+const aqScore = (calib, experiments) => {
+  const counts = capCountsFrom(experiments);
+  const covered = CAPS.filter(c => (counts[c.id] || 0) > 0).length;
+  const kept = experiments.filter(e => e.decision === "keep").length;
+  const rate = experiments.length ? kept / experiments.length : 0;
+  let s = 12 + (calib || 0) * 4;                    // starting fluency: 12–36
+  s += covered * 7;                                  // breadth: up to 49
+  s += Math.min(10, experiments.length * 1.5);       // volume: up to 10
+  if (experiments.length >= 3 && rate >= 0.5 && rate <= 0.85) s += 8;  // calibration bonus: keeps AND kills
+  return Math.min(100, Math.round(s));
+};
+const aqLevel = (s) => s <= 25 ? "Novice" : s <= 50 ? "Explorer" : s <= 75 ? "Practitioner" : "Orchestrator";
+
+/* ================= TEAM EXCHANGE — seeded recipes (the viral engine) ================= */
+const RECIPES = [
+  { taskId: "status", by: "Aisha V.", role: "Marketing", adopters: 12, savePerWk: 45, quote: "I write bullets on my commute, AI assembles, I edit 5 min." },
+  { taskId: "minutes", by: "Rohan M.", role: "Engineering", adopters: 9, savePerWk: 34, quote: "The decisions-and-owners prompt is a cheat code." },
+  { taskId: "deck", by: "Vikram S.", role: "Marketing", adopters: 8, savePerWk: 60, quote: "Headlines-as-claims changed how I build decks." },
+  { taskId: "sheet", by: "Dev P.", role: "Finance", adopters: 7, savePerWk: 30, quote: "The formula explanation taught me more than the formula." },
+  { taskId: "meetprep", by: "Meera J.", role: "Sales", adopters: 6, savePerWk: 20, quote: "The 'one sharp question' makes me the most prepared person in the room." },
+  { taskId: "feedback", by: "Sara K.", role: "HR & L&D", adopters: 4, savePerWk: 25, quote: "Kept my substance, fixed my structure. Reviews stopped eating my evenings." }
+];
+
+const TIME_OPTS = [["~15 min", 15], ["~30 min", 30], ["~1 hr", 60], ["~2 hr+", 120]];
+const AI_TIME_OPTS = [["~5 min", 5], ["~10 min", 10], ["~20 min", 20], ["~40 min", 40], ["Longer than before", 999]];
+const SIGNALS = [
+  { id: "faster", label: "⚡ Faster than doing it myself" },
+  { id: "better", label: "✨ Output was better than mine" },
+  { id: "redid", label: "🔁 I redid most of it manually" },
+  { id: "unsure", label: "🤔 Not sure the output was right" },
+  { id: "trust", label: "✅ Trusted it with light edits" }
+];
+
+const runUrl = (tool, prompt, role) => {
+  const p = (role ? `(Context: I'm in ${role}.)\n\n` : "") + prompt;
+  return tool === "claude" ? `https://claude.ai/new?q=${encodeURIComponent(p)}` : `https://chatgpt.com/?q=${encodeURIComponent(p)}`;
+};
+
+/* ================= LOOP VISUAL ================= */
+const LOOP_NODES = [{ id: "human", name: "Human", icon: "👤", color: "#6b7280" }, ...CAPS, { id: "tenx", name: "10x Human", icon: "✨", color: "#94c90d" }];
+
+const LoopVisual = ({ experiments, hasSetup, compact }) => {
+  const counts = capCountsFrom(experiments);
+  const allCovered = CAPS.every(c => (counts[c.id] || 0) > 0);
+  const isFilled = (n) => n.id === "human" ? !!hasSetup : n.id === "tenx" ? allCovered : (counts[n.id] || 0) > 0;
+  const nextNode = LOOP_NODES.find(n => !isFilled(n));
+  const W = 760, H = compact ? 185 : 245;
+  const padX = 40, padY = compact ? 36 : 54;
+  const points = LOOP_NODES.map((n, i) => {
+    const t = i / (LOOP_NODES.length - 1);
+    return { node: n, x: padX + t * (W - padX * 2), y: H - padY - (t * (H - padY * 2)) + Math.sin(t * Math.PI) * 14 };
+  });
+  const path = points.map((p, i) => (i === 0 ? `M ${p.x} ${p.y}` : `L ${p.x} ${p.y}`)).join(" ");
+  const first = points[0], last = points[points.length - 1];
+  const arc = `M ${last.x} ${last.y} C ${last.x + 10} ${-28}, ${first.x - 10} ${-28}, ${first.x} ${first.y}`;
+  return (
+    <div className="w-full overflow-x-auto">
+      <svg viewBox={`0 -52 ${W} ${H + 52}`} className="w-full" style={{minHeight: compact ? 165 : 225}}>
+        <path d={path} stroke="#dfe2da" strokeWidth="2.4" fill="none" />
+        <path d={arc} className="arc-loop" stroke="#94c90d" strokeWidth="2.2" fill="none" />
+        <polygon points={`${first.x-5},${first.y-12} ${first.x+5},${first.y-12} ${first.x},${first.y-2}`} fill="#94c90d"/>
+        {points.map((p) => {
+          const filled = isFilled(p.node);
+          const active = nextNode && nextNode.id === p.node.id;
+          const count = counts[p.node.id] || 0;
+          return (
+            <g key={p.node.id}>
+              <circle cx={p.x} cy={p.y} r={active ? 20 : 16}
+                fill={filled ? p.node.color : "#fff"} stroke={active ? "#94c90d" : (filled ? p.node.color : "#dfe2da")}
+                strokeWidth={active ? 3 : 1.8} className={active ? "stage-active" : ""}/>
+              <text x={p.x} y={p.y + 5} textAnchor="middle" fontSize="14">{p.node.icon}</text>
+              {!compact && <text x={p.x} y={p.y + 34} textAnchor="middle" fontSize="10.5" fill="#141b4d" fontWeight={active ? 700 : 500}>{p.node.name}</text>}
+              {!compact && count > 0 && p.node.id !== "human" && p.node.id !== "tenx" && <text x={p.x} y={p.y + 46} textAnchor="middle" fontSize="9" fill="#6b7280">×{count}</text>}
+              {filled && p.node.id !== "human" && <circle cx={p.x + 12} cy={p.y - 12} r="5" fill="#53bc86" stroke="white" strokeWidth="1.5"/>}
+            </g>
+          );
+        })}
+        <text x={W/2} y={-28} textAnchor="middle" fontSize="11" fill="#6f9a06" fontWeight="700" letterSpacing="2" fontFamily="Poppins">
+          {allCovered ? "LOOP CLOSED — CLIMB AGAIN, HIGHER" : "EVERY EXPERIMENT IS A TURN OF THE LOOP"}
+        </text>
+      </svg>
+    </div>
+  );
+};
+
+/* ================= SHARED UI ================= */
+const Logo = () => (
+  <div className="flex items-center gap-2.5">
+    <svg width="30" height="30" viewBox="0 0 32 32" fill="none">
+      <path d="M6 22 C 6 12, 14 6, 22 10 C 30 14, 28 26, 18 26 C 10 26, 4 22, 10 16" stroke="#141b4d" strokeWidth="2.6" fill="none" strokeLinecap="round"/>
+      <circle cx="22" cy="10" r="3" fill="#94c90d"/>
+    </svg>
+    <span className="head text-lg font-bold tracking-tight">10x Loop</span>
+    <span className="pill" style={{background: "#141b4d", color: "#94c90d"}}>v3 north star</span>
+  </div>
+);
+
+const Header = ({ screen, setScreen, userName, onReset }) => (
+  <header className="relative z-10 border-b" style={{borderColor: "var(--line)", background: "rgba(251,252,249,0.92)", backdropFilter: "blur(8px)"}}>
+    <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between flex-wrap gap-3">
+      <button onClick={() => setScreen("week")} className="cursor-pointer"><Logo /></button>
+      <nav className="flex items-center gap-1 text-sm flex-wrap">
+        {[["week", "This Week"], ["exchange", "Exchange"], ["ledger", "My Ledger"], ["org", "My Org (sample)"]].map(([id, label]) => (
+          <button key={id} onClick={() => setScreen(id)}
+            className={`px-3.5 py-2 rounded-full transition text-sm head font-medium ${screen === id ? "text-white" : "hover:bg-[#f3f9e2] ink"}`}
+            style={screen === id ? {background: "var(--ink)"} : {}}>
+            {label}
+          </button>
+        ))}
+      </nav>
+      <div className="flex items-center gap-3">
+        {userName && <span className="pill" style={{background: "var(--accent-tint)", color: "var(--ink)"}}>{userName}</span>}
+        <a href="../" className="text-xs muted hover:ink underline underline-offset-2">v1</a>
+        <a href="../v2/" className="text-xs muted hover:ink underline underline-offset-2">v2</a>
+        {onReset && <button onClick={onReset} className="text-xs muted hover:ink px-1" title="Reset all data">↻</button>}
+      </div>
+    </div>
+  </header>
+);
+
+/* ================= WELCOME ================= */
+const Welcome = ({ onStart, onSeed }) => (
+  <div className="max-w-2xl mx-auto px-6 pt-16 pb-20 text-center fade-up">
+    <p className="pill" style={{background: "var(--accent-tint)", color: "var(--accent-dark)"}}>An AI&amp;Beyond concept · v3 north star</p>
+    <h1 className="head text-5xl font-bold leading-tight mt-6 tracking-tight">
+      Your work, <span style={{color: "var(--accent-dark)"}}>compounding.</span>
+    </h1>
+    <p className="mt-6 text-lg muted leading-relaxed max-w-md mx-auto">
+      Run AI experiments on your real tasks. Keep what works — it becomes a recipe your whole team can adopt in one click. Watch your AQ score climb, and your organisation's hours bank grow.
+    </p>
+    <div className="card p-6 mt-10 text-left max-w-md mx-auto">
+      <p className="text-xs muted uppercase tracking-widest font-semibold head mb-4">Three loops, one product</p>
+      {[
+        ["🧍", "Your loop", "experiments on real work → hours banked → AQ score climbs"],
+        ["👥", "Your team's loop", "every kept workflow becomes a one-click recipe for teammates — adoption spreads person to person"],
+        ["🏢", "Your org's loop", "everything rolls up to a benchmarked AQ and an ROI number the board actually believes"]
+      ].map(([n, t, d]) => (
+        <div key={t} className="flex gap-4 items-start mb-4 last:mb-0">
+          <span className="text-xl flex-shrink-0">{n}</span>
+          <div>
+            <p className="font-semibold text-sm head">{t}</p>
+            <p className="text-sm muted">{d}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+    <button onClick={onStart} className="btn-accent mt-10 text-base">Set up my loop (3 min) →</button>
+    <p className="mt-4"><button onClick={onSeed} className="text-sm muted hover:ink underline underline-offset-4">or skip — explore with sample data</button></p>
+  </div>
+);
+
+/* ================= SETUP ================= */
+const Setup = ({ onComplete }) => {
+  const [step, setStep] = useState(0); // 0 role, 1 tasks, 2 calibration, 3 name
+  const [role, setRole] = useState(null);
+  const [picked, setPicked] = useState([]);
+  const [answers, setAnswers] = useState({});
+  const [name, setName] = useState("");
+
+  if (step === 0) {
+    return (
+      <div className="max-w-xl mx-auto px-6 py-12 fade-up">
+        <p className="text-xs muted uppercase tracking-widest font-semibold head">Setup · 1 of 4</p>
+        <h2 className="head text-3xl font-bold mt-2">What's your world?</h2>
+        <p className="muted text-sm mt-2">We'll suggest the experiments that pay off fastest in your role.</p>
+        <div className="flex flex-wrap gap-2 mt-7">
+          {ROLES.map(r => (
+            <button key={r} className={`chip ${role === r ? "active" : ""}`} onClick={() => { setRole(r); setTimeout(() => setStep(1), 220); }}>{r}</button>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (step === 1) {
+    const order = ROLE_PREFS[role] || ROLE_PREFS["Other"];
+    const orderedTasks = order.map(id => TASKS.find(t => t.id === id)).filter(Boolean);
+    const toggle = (id) => setPicked(p => p.includes(id) ? p.filter(x => x !== id) : [...p, id]);
+    return (
+      <div className="max-w-2xl mx-auto px-6 py-12 fade-up">
+        <p className="text-xs muted uppercase tracking-widest font-semibold head">Setup · 2 of 4</p>
+        <h2 className="head text-3xl font-bold mt-2">Which of these eat your week?</h2>
+        <p className="muted text-sm mt-2">Ordered for <b>{role}</b>. Pick <b>3 or more</b> — these become your experiments.</p>
+        <div className="grid sm:grid-cols-2 gap-3 mt-7">
+          {orderedTasks.map(t => (
+            <button key={t.id} className={`task-tile ${picked.includes(t.id) ? "active" : ""}`} onClick={() => toggle(t.id)}>
+              <p className="text-2xl">{t.icon}</p>
+              <p className="font-semibold text-sm head mt-1.5">{t.name}</p>
+              <p className="text-xs muted mt-0.5">~{t.typicalMin} min/wk · save ~{t.estSave}</p>
+            </button>
+          ))}
+        </div>
+        <div className="flex justify-between mt-7">
+          <button onClick={() => setStep(0)} className="btn-ghost">← Back</button>
+          <button onClick={() => picked.length >= 3 && setStep(2)} className="btn-accent" disabled={picked.length < 3} style={{opacity: picked.length >= 3 ? 1 : 0.4}}>
+            {picked.length < 3 ? `Pick ${3 - picked.length} more` : "Continue →"}
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (step === 2) {
+    const done = CALIBRATION.every((q, i) => answers[i] != null);
+    return (
+      <div className="max-w-xl mx-auto px-6 py-12 fade-up">
+        <p className="text-xs muted uppercase tracking-widest font-semibold head">Setup · 3 of 4</p>
+        <h2 className="head text-3xl font-bold mt-2">Two questions, honest answers.</h2>
+        <p className="muted text-sm mt-2">This sets your starting AQ — your Adoption Quotient. It only goes up from real work.</p>
+        {CALIBRATION.map((q, qi) => (
+          <div key={qi} className="mt-7">
+            <p className="font-medium text-sm mb-3">{q.q}</p>
+            <div className="flex flex-wrap gap-2">
+              {q.options.map((o, oi) => (
+                <button key={oi} className={`chip ${answers[qi] === oi ? "active" : ""}`} onClick={() => setAnswers(a => ({...a, [qi]: oi}))}>{o.label}</button>
+              ))}
+            </div>
+          </div>
+        ))}
+        <div className="flex justify-between mt-9">
+          <button onClick={() => setStep(1)} className="btn-ghost">← Back</button>
+          <button onClick={() => done && setStep(3)} className="btn-accent" disabled={!done} style={{opacity: done ? 1 : 0.4}}>Continue →</button>
+        </div>
+      </div>
+    );
+  }
+
+  const canGo = name.trim().length > 1;
+  const calib = CALIBRATION.reduce((s, q, i) => s + (answers[i] != null ? q.options[answers[i]].score : 0), 0);
+  const startingAQ = aqScore(calib, []);
+  return (
+    <div className="max-w-xl mx-auto px-6 py-12 fade-up">
+      <p className="text-xs muted uppercase tracking-widest font-semibold head">Setup · 4 of 4</p>
+      <h2 className="head text-3xl font-bold mt-2">Whose loop is this?</h2>
+      <div className="mt-7">
+        <p className="text-xs muted uppercase tracking-widest font-semibold head mb-2">Your name</p>
+        <input type="text" placeholder="e.g. Aisha Verma" value={name} onChange={e => setName(e.target.value)} />
+      </div>
+      <div className="card p-5 mt-6 text-center" style={{background: "var(--accent-tint)"}}>
+        <p className="text-xs muted uppercase tracking-widest font-semibold head">Your starting AQ</p>
+        <p className="head font-bold mt-1" style={{fontSize: 42}}>{startingAQ}</p>
+        <p className="text-xs muted">{aqLevel(startingAQ)} · climbs only through real experiments</p>
+      </div>
+      <div className="flex justify-between mt-9">
+        <button onClick={() => setStep(2)} className="btn-ghost">← Back</button>
+        <button onClick={() => canGo && onComplete({ role, picked, name: name.trim(), calib })}
+          className="btn-accent" disabled={!canGo} style={{opacity: canGo ? 1 : 0.4}}>
+          Start my first experiment →
+        </button>
+      </div>
+    </div>
+  );
+};
+
+/* ================= THIS WEEK ================= */
+const Week = ({ user, picked, experiments, aq, aqDelta, onRun, setScreen }) => {
+  const doneTaskIds = experiments.map(e => e.taskId);
+  const order = ROLE_PREFS[(user && user.role) || "Other"] || ROLE_PREFS["Other"];
+  const candidates = order.filter(id => picked.includes(id) && !doneTaskIds.includes(id));
+  const fallback = order.filter(id => !doneTaskIds.includes(id));
+  const nextTask = TASKS.find(t => t.id === (candidates[0] || fallback[0]));
+  const kept = experiments.filter(e => e.decision === "keep");
+  const weeklySaved = kept.reduce((s, e) => s + Math.max(0, e.baselineMin - e.aiMin), 0);
+  const weekNo = experiments.length + 1;
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
+  const topRecipe = RECIPES.filter(r => !doneTaskIds.includes(r.taskId) && (!nextTask || r.taskId !== nextTask.id))[0];
+
+  return (
+    <div className="max-w-3xl mx-auto px-6 py-12 fade-up">
+      {aqDelta && (
+        <div className="aq-toast card p-4 mb-6 flex items-center justify-between gap-3 flex-wrap" style={{borderColor: "var(--accent)", background: "var(--accent-tint)"}}>
+          <p className="text-sm"><b>AQ {aqDelta.from} → {aqDelta.to}</b>{aqDelta.to > aqDelta.from ? ` (+${aqDelta.to - aqDelta.from})` : ""} · {aqDelta.note}</p>
+          <span className="text-xl">📈</span>
+        </div>
+      )}
+      <p className="muted text-sm">{greeting}{user && user.name ? `, ${user.name.split(" ")[0]}` : ""}.</p>
+      <h2 className="head text-4xl font-bold mt-1 tracking-tight">Turn {weekNo} of your loop</h2>
+      <p className="muted text-sm mt-1">One experiment a week. Each one climbs the loop — and can become a recipe for your team.</p>
+
+      {nextTask ? (
+        <div className="card p-8 mt-7" style={{borderColor: "var(--accent)", borderWidth: 2}}>
+          <div className="flex items-start gap-5">
+            <div className="w-16 h-16 rounded-2xl flex items-center justify-center flex-shrink-0 text-3xl" style={{background: "var(--accent-tint)"}}>{nextTask.icon}</div>
+            <div className="flex-1">
+              <p className="text-xs muted uppercase tracking-widest font-semibold head">Picked for {(user && user.role) || "you"} · est. saving ~{nextTask.estSave} min/wk</p>
+              <h3 className="head text-2xl font-bold mt-1">{nextTask.name}</h3>
+              <p className="text-sm mt-2 leading-relaxed muted">{nextTask.why}</p>
+            </div>
+          </div>
+          <button onClick={() => onRun(nextTask.id, null)} className="btn-accent mt-6 w-full text-center text-base">
+            Run this experiment — next time you do this task →
+          </button>
+          <p className="text-xs muted text-center mt-3">No separate practice time. The task was going to happen anyway.</p>
+        </div>
+      ) : (
+        <div className="card p-8 mt-7 text-center">
+          <p className="text-4xl">🎉</p>
+          <h3 className="head text-2xl font-bold mt-2">Every task tested. Check the Exchange for what teammates kept.</h3>
+          <button onClick={() => setScreen("exchange")} className="btn-primary mt-5">Open the Exchange →</button>
+        </div>
+      )}
+
+      {topRecipe && (
+        <div className="card p-5 mt-4 flex items-center justify-between gap-4 flex-wrap" style={{background: "var(--blue-tint)", borderColor: "var(--blue)"}}>
+          <div className="flex items-center gap-3">
+            <span className="text-2xl">{(TASKS.find(t => t.id === topRecipe.taskId) || {}).icon}</span>
+            <div>
+              <p className="text-sm font-semibold head">Or adopt a teammate's recipe: {(TASKS.find(t => t.id === topRecipe.taskId) || {}).name}</p>
+              <p className="text-xs muted">{topRecipe.by} keeps it · {topRecipe.adopters} adopters · ~{topRecipe.savePerWk} min/wk</p>
+            </div>
+          </div>
+          <button onClick={() => onRun(topRecipe.taskId, topRecipe.by)} className="btn-primary text-sm" style={{padding: "9px 16px"}}>Adopt →</button>
+        </div>
+      )}
+
+      <div className="grid grid-cols-4 gap-3 mt-6">
+        <div className="card p-4 text-center">
+          <p className="head text-2xl font-bold" style={{color: "var(--accent-dark)"}}>{aq}</p>
+          <p className="text-xs muted mt-1">AQ · {aqLevel(aq)}</p>
+        </div>
+        <div className="card p-4 text-center">
+          <p className="head text-2xl font-bold">{weeklySaved > 0 ? `${Math.round(weeklySaved / 60 * 10) / 10}h` : "0h"}</p>
+          <p className="text-xs muted mt-1">banked / week</p>
+        </div>
+        <div className="card p-4 text-center">
+          <p className="head text-2xl font-bold">{experiments.length}</p>
+          <p className="text-xs muted mt-1">experiments</p>
+        </div>
+        <div className="card p-4 text-center">
+          <p className="head text-2xl font-bold">{kept.length}</p>
+          <p className="text-xs muted mt-1">recipes kept</p>
+        </div>
+      </div>
+
+      <div className="card p-5 mt-6">
+        <LoopVisual experiments={experiments} hasSetup={!!user} compact />
+      </div>
+    </div>
+  );
+};
+
+/* ================= RUN ================= */
+const Run = ({ task, user, adoptedFrom, onSave, onBack }) => {
+  const [baseline, setBaseline] = useState(null);
+  const [aiTime, setAiTime] = useState(null);
+  const [decision, setDecision] = useState(null);
+  const [signals, setSignals] = useState([]);
+  const [note, setNote] = useState("");
+  const [copied, setCopied] = useState(false);
+  const toggleSignal = (id) => setSignals(s => s.includes(id) ? s.filter(x => x !== id) : [...s, id]);
+  const copyPrompt = () => { navigator.clipboard && navigator.clipboard.writeText(task.prompt).then(() => { setCopied(true); setTimeout(() => setCopied(false), 1600); }); };
+  const canFinish = baseline != null && aiTime != null && decision != null;
+  const saved = canFinish && aiTime !== 999 ? Math.max(0, baseline - aiTime) : 0;
+
+  return (
+    <div className="max-w-2xl mx-auto px-6 py-10 fade-up">
+      <button onClick={onBack} className="text-sm muted hover:ink">← This week</button>
+      <div className="mt-5 flex items-center gap-4">
+        <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl" style={{background: "var(--accent-tint)"}}>{task.icon}</div>
+        <div>
+          <h2 className="head text-3xl font-bold">{task.name}</h2>
+          <p className="muted text-sm">{adoptedFrom ? `Adopted from ${adoptedFrom}'s recipe` : "Experiment · on your real task"}</p>
+        </div>
+      </div>
+      {adoptedFrom && (
+        <div className="mt-4 px-4 py-3 rounded-xl text-sm" style={{background: "var(--blue-tint)"}}>
+          👥 <b>{adoptedFrom}</b> keeps this workflow. You're testing whether it works for <i>you</i> — keep or kill on your own evidence.
+        </div>
+      )}
+
+      <div className="mt-9">
+        <p className="pill mb-3" style={{background: "var(--blue-tint)", color: "var(--blue)"}}>1 · The old way</p>
+        <p className="text-[15px] font-medium mb-3">How long does this usually take you, per week?</p>
+        <div className="flex flex-wrap gap-2">
+          {TIME_OPTS.map(([label, min]) => (
+            <button key={min} className={`chip ${baseline === min ? "active" : ""}`} onClick={() => setBaseline(min)}>{label}</button>
+          ))}
+        </div>
+      </div>
+
+      <div className="mt-9">
+        <p className="pill mb-3" style={{background: "var(--mint-tint)", color: "#2e8a5e"}}>2 · The new way — do the task now</p>
+        <div className="space-y-2 mb-4">
+          {task.recipe.map((r, i) => (
+            <p key={i} className="flex gap-2 text-[15px]"><b className="head" style={{color: "var(--accent-dark)"}}>{i+1}.</b><span>{r}</span></p>
+          ))}
+        </div>
+        <div className="card p-4" style={{background: "#f7f8f4"}}>
+          <p className="text-sm font-mono leading-relaxed whitespace-pre-wrap">{task.prompt}</p>
+        </div>
+        <div className="flex gap-2 mt-3 flex-wrap">
+          <a href={runUrl("claude", task.prompt, user && user.role)} target="_blank" rel="noopener" className="btn-primary text-sm" style={{padding: "10px 18px", textDecoration: "none"}}>Run in Claude →</a>
+          <a href={runUrl("chatgpt", task.prompt, user && user.role)} target="_blank" rel="noopener" className="btn-ghost text-sm" style={{padding: "10px 18px", textDecoration: "none"}}>Run in ChatGPT →</a>
+          <button onClick={copyPrompt} className="btn-ghost text-sm" style={{padding: "10px 18px"}}>{copied ? "✓ Copied" : "Copy prompt"}</button>
+        </div>
+        <p className="text-xs mt-3 px-3 py-2 rounded-lg" style={{background: "var(--warn-tint)"}}>⚠️ <b>Watch out:</b> {task.watch}</p>
+      </div>
+
+      <div className="mt-9">
+        <p className="pill mb-3" style={{background: "#f3eefa", color: "#7b6baf"}}>3 · The verdict — 20 seconds</p>
+        <p className="text-[15px] font-medium mb-3">How long did it take with AI?</p>
+        <div className="flex flex-wrap gap-2 mb-6">
+          {AI_TIME_OPTS.map(([label, min]) => (
+            <button key={min} className={`chip ${aiTime === min ? "active" : ""}`} onClick={() => setAiTime(min)}>{label}</button>
+          ))}
+        </div>
+        <p className="text-[15px] font-medium mb-3">Keep this workflow, or kill it?</p>
+        <div className="flex gap-3 mb-6">
+          <button onClick={() => setDecision("keep")} className="flex-1 p-4 rounded-xl border-2 text-center transition"
+            style={{borderColor: decision === "keep" ? "var(--accent)" : "var(--line)", background: decision === "keep" ? "var(--accent-tint)" : "white"}}>
+            <p className="text-2xl">✅</p><p className="head font-bold text-sm mt-1">Keep it</p><p className="text-xs muted">becomes a recipe your team can adopt</p>
+          </button>
+          <button onClick={() => setDecision("kill")} className="flex-1 p-4 rounded-xl border-2 text-center transition"
+            style={{borderColor: decision === "kill" ? "var(--warn)" : "var(--line)", background: decision === "kill" ? "var(--warn-tint)" : "white"}}>
+            <p className="text-2xl">🗑️</p><p className="head font-bold text-sm mt-1">Kill it</p><p className="text-xs muted">valid result — saves your team the dead end</p>
+          </button>
+        </div>
+        <p className="text-[15px] font-medium mb-3">What did you notice? <span className="muted font-normal">(tap any)</span></p>
+        <div className="flex flex-wrap gap-2 mb-4">
+          {SIGNALS.map(s => (
+            <button key={s.id} className={`chip text-xs ${signals.includes(s.id) ? "active" : ""}`} onClick={() => toggleSignal(s.id)}>{s.label}</button>
+          ))}
+        </div>
+        <textarea rows="2" placeholder="One line for your teammates — what's the trick, or the trap?" value={note} onChange={e => setNote(e.target.value)} />
+      </div>
+
+      {canFinish && (
+        <div className="card p-5 mt-7 fade-up" style={{background: decision === "keep" ? "var(--accent-tint)" : "var(--warn-tint)", borderColor: decision === "keep" ? "var(--accent)" : "var(--warn)"}}>
+          <p className="head text-lg font-bold">
+            {decision === "keep"
+              ? (aiTime === 999 ? "Kept — worth it despite the time, for now." : `Kept — ~${saved} min banked weekly, and it's now a recipe in your team's Exchange.`)
+              : "Killed — you just saved every teammate from the same dead end. That's a contribution."}
+          </p>
+        </div>
+      )}
+
+      <div className="mt-7 flex items-center justify-between flex-wrap gap-3 pb-6">
+        <p className="text-xs muted">{canFinish ? "Done — log it." : "Fill the three steps above to log this experiment."}</p>
+        <div className="flex gap-3">
+          <button onClick={onBack} className="btn-ghost">Exit without logging</button>
+          <button onClick={() => canFinish && onSave({ taskId: task.id, baselineMin: baseline, aiMin: aiTime === 999 ? baseline + 15 : aiTime, decision, signals, note, adoptedFrom: adoptedFrom || null, at: new Date().toISOString() })}
+            className="btn-accent" disabled={!canFinish} style={{opacity: canFinish ? 1 : 0.4}}>
+            Log experiment ✓
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/* ================= EXCHANGE — the viral engine ================= */
+const Exchange = ({ user, experiments, onAdopt }) => {
+  const myKept = experiments.filter(e => e.decision === "keep");
+  const myKilled = experiments.filter(e => e.decision === "kill");
+  const totalTeamSave = RECIPES.reduce((s, r) => s + r.adopters * r.savePerWk, 0);
+  return (
+    <div className="max-w-3xl mx-auto px-6 py-10 fade-up">
+      <h2 className="head text-4xl font-bold tracking-tight">The Exchange</h2>
+      <p className="muted mt-1">Workflows your teammates proved on real work. Adopt in one click — keep or kill on your own evidence.</p>
+
+      <div className="card p-6 mt-7 text-white" style={{background: "var(--ink)"}}>
+        <div className="grid grid-cols-3 gap-4 text-center">
+          <div><p className="head font-bold" style={{fontSize: 34, color: "var(--accent)"}}>{RECIPES.length + myKept.length}</p><p className="text-xs opacity-80 mt-1">proven recipes</p></div>
+          <div><p className="head font-bold" style={{fontSize: 34}}>{RECIPES.reduce((s, r) => s + r.adopters, 0)}</p><p className="text-xs opacity-80 mt-1">adoptions</p></div>
+          <div><p className="head font-bold" style={{fontSize: 34}}>{Math.round(totalTeamSave / 60)}h</p><p className="text-xs opacity-80 mt-1">saved per week, team-wide</p></div>
+        </div>
+        <p className="text-xs opacity-70 text-center mt-4">Every recipe here lowered the next person's cost to start. This is how adoption compounds.</p>
+      </div>
+
+      {myKept.length > 0 && (
+        <div className="card p-6 mt-6" style={{borderColor: "var(--accent)"}}>
+          <p className="text-xs muted uppercase tracking-widest font-semibold head mb-3">Your recipes — live in the Exchange</p>
+          <div className="space-y-2">
+            {myKept.map((e, i) => {
+              const t = TASKS.find(x => x.id === e.taskId);
+              return (
+                <div key={i} className="flex items-center justify-between gap-3 p-3 rounded-xl flex-wrap" style={{background: "var(--accent-tint)"}}>
+                  <p className="text-sm"><span className="text-lg mr-1">{t ? t.icon : "🧪"}</span><b>{t ? t.name : e.taskId}</b>{e.note ? ` · "${e.note}"` : ""}</p>
+                  <span className="pill" style={{background: "var(--accent)", color: "var(--ink)"}}>~{Math.max(0, e.baselineMin - e.aiMin)} min/wk · shared</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      <div className="mt-6 space-y-3">
+        <p className="text-xs muted uppercase tracking-widest font-semibold head">Team recipes · sample data</p>
+        {RECIPES.map((r, i) => {
+          const t = TASKS.find(x => x.id === r.taskId);
+          const alreadyRun = experiments.some(e => e.taskId === r.taskId);
+          return (
+            <div key={i} className="card p-5 flex items-start gap-4">
+              <span className="text-2xl flex-shrink-0">{t ? t.icon : "🧪"}</span>
+              <div className="flex-1">
+                <div className="flex justify-between items-start gap-3 flex-wrap">
+                  <div>
+                    <p className="font-semibold text-sm head">{t ? t.name : r.taskId}</p>
+                    <p className="text-xs muted mt-0.5">{r.by} · {r.role}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-xs font-bold" style={{color: "var(--accent-dark)"}}>~{r.savePerWk} min/wk</p>
+                    <p className="text-xs muted">{r.adopters} adopters</p>
+                  </div>
+                </div>
+                <p className="text-sm italic mt-2 muted">"{r.quote}"</p>
+                <div className="mt-3">
+                  {alreadyRun
+                    ? <span className="text-xs muted">✓ You've already run this task</span>
+                    : <button onClick={() => onAdopt(r.taskId, r.by)} className="btn-primary text-xs" style={{padding: "8px 16px"}}>Adopt this workflow →</button>}
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {myKilled.length > 0 && (
+        <div className="card p-5 mt-6" style={{background: "#f7f8f4"}}>
+          <p className="text-xs muted uppercase tracking-widest font-semibold head mb-2">Dead ends you've flagged (equally valuable)</p>
+          {myKilled.map((e, i) => {
+            const t = TASKS.find(x => x.id === e.taskId);
+            return <p key={i} className="text-sm">🗑️ <b>{t ? t.name : e.taskId}</b>{e.note ? ` — "${e.note}"` : ""} <span className="muted">· saves teammates the same detour</span></p>;
+          })}
+        </div>
+      )}
+    </div>
+  );
+};
+
+/* ================= LEDGER ================= */
+const Ledger = ({ user, experiments, aq, onRerun }) => {
+  const kept = experiments.filter(e => e.decision === "keep");
+  const weeklySaved = kept.reduce((s, e) => s + Math.max(0, e.baselineMin - e.aiMin), 0);
+  const yearly = Math.round(weeklySaved * 46 / 60);
+  const counts = capCountsFrom(experiments);
+  const untouched = CAPS.filter(c => !(counts[c.id] > 0));
+  const suggestion = untouched.length > 0
+    ? TASKS.find(t => t.caps.some(c => untouched.map(u => u.id).includes(c)) && !experiments.some(e => e.taskId === t.id))
+    : null;
+  const exportJSON = () => {
+    const blob = new Blob([JSON.stringify({ user, experiments, aq, exportedAt: new Date().toISOString() }, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = `loop-v3-ledger-${((user && user.name) || "anon").replace(/\s+/g, "_")}.json`; a.click();
+  };
+
+  return (
+    <div className="max-w-3xl mx-auto px-6 py-10 fade-up">
+      <h2 className="head text-4xl font-bold tracking-tight">My ledger</h2>
+      <p className="muted mt-1">Proof, not badges.</p>
+
+      <div className="card p-7 mt-7 text-white" style={{background: "var(--ink)"}}>
+        <div className="grid grid-cols-4 gap-3 text-center">
+          <div><p className="head font-bold" style={{fontSize: 34, color: "var(--accent)"}}>{aq}</p><p className="text-xs opacity-80 mt-1">AQ · {aqLevel(aq)}</p></div>
+          <div><p className="head font-bold" style={{fontSize: 34}}>{Math.round(weeklySaved / 60 * 10) / 10}h</p><p className="text-xs opacity-80 mt-1">banked / week</p></div>
+          <div><p className="head font-bold" style={{fontSize: 34}}>{yearly > 0 ? `${yearly}h` : "—"}</p><p className="text-xs opacity-80 mt-1">≈ / year</p></div>
+          <div><p className="head font-bold" style={{fontSize: 34}}>{experiments.length ? Math.round(kept.length / experiments.length * 100) : 0}%</p><p className="text-xs opacity-80 mt-1">keep rate</p></div>
+        </div>
+      </div>
+
+      <div className="card p-6 mt-6">
+        <p className="text-xs muted uppercase tracking-widest font-semibold head mb-1">Your loop</p>
+        <p className="text-xs muted mb-2">Climbed by experiments, not lessons. Cover all seven capabilities to close it.</p>
+        <LoopVisual experiments={experiments} hasSetup={!!user} />
+        {untouched.length === 0 && (
+          <div className="mt-2 mb-2 p-4 rounded-xl text-center" style={{background: "linear-gradient(90deg, var(--blue-tint), var(--accent-tint))"}}>
+            <p className="head text-lg font-bold">✨ Loop closed — you're operating as a 10x human.</p>
+            <p className="text-xs muted mt-1">All seven capabilities exercised on real work, with the hours to prove it.</p>
+          </div>
+        )}
+        {suggestion && (
+          <div className="mt-2 p-3 rounded-xl flex items-center justify-between gap-3 flex-wrap" style={{background: "var(--blue-tint)"}}>
+            <p className="text-sm">🧭 Untouched: <b>{untouched.map(u => u.name).join(", ")}</b>. Next best turn: <b>{suggestion.name}</b></p>
+            <button onClick={() => onRerun(suggestion.id)} className="btn-primary text-xs" style={{padding: "8px 14px"}}>Run it →</button>
+          </div>
+        )}
+      </div>
+
+      <div className="card p-6 mt-6">
+        <p className="text-xs muted uppercase tracking-widest font-semibold head mb-4">Experiments ({experiments.length})</p>
+        {experiments.length === 0 ? <p className="muted text-sm">None yet — run your first from This Week.</p> : (
+          <div className="space-y-3">
+            {experiments.slice().reverse().map((e, i) => {
+              const t = TASKS.find(x => x.id === e.taskId);
+              const saved = Math.max(0, e.baselineMin - e.aiMin);
+              return (
+                <div key={i} className="p-4 rounded-xl border flex items-start gap-3" style={{borderColor: e.decision === "keep" ? "var(--accent)" : "var(--line)", background: e.decision === "keep" ? "var(--accent-tint)" : "white"}}>
+                  <span className="text-xl">{t ? t.icon : "🧪"}</span>
+                  <div className="flex-1">
+                    <div className="flex justify-between items-start flex-wrap gap-2">
+                      <p className="font-semibold text-sm head">{t ? t.name : e.taskId}{e.adoptedFrom ? <span className="muted font-normal text-xs"> · adopted from {e.adoptedFrom}</span> : ""}</p>
+                      <span className="text-xs font-bold px-2 py-0.5 rounded-full" style={{background: e.decision === "keep" ? "var(--accent)" : "var(--warn-tint)", color: e.decision === "keep" ? "var(--ink)" : "var(--warn)"}}>
+                        {e.decision === "keep" ? `KEPT · ${saved} min/wk` : "KILLED"}
+                      </span>
+                    </div>
+                    <p className="text-xs muted mt-1">{e.baselineMin} min → {e.aiMin} min{e.signals && e.signals.length ? " · " + e.signals.map(s => { const sig = SIGNALS.find(x => x.id === s); return sig ? sig.label : s; }).join(" · ") : ""}</p>
+                    {e.note && <p className="text-xs mt-1 italic">"{e.note}"</p>}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      <div className="flex justify-center mt-6">
+        <button onClick={exportJSON} className="btn-ghost text-sm">Export my data (JSON)</button>
+      </div>
+    </div>
+  );
+};
+
+/* ================= ORG (sample) — the buyer's money view ================= */
+const ORG = {
+  name: "Sample Co.", employees: 1247, orgAQ: 54, benchmark: 48,
+  hoursPerWeek: 638, costPerHour: 1200,
+  aqDist: [{ b: "0–20", n: 96 }, { b: "21–40", n: 289 }, { b: "41–60", n: 471 }, { b: "61–80", n: 302 }, { b: "81–100", n: 89 }],
+  adoptionCurve: [3, 9, 21, 40, 74, 118, 171, 236],
+  functions: [
+    { name: "Engineering", staff: 188, aq: 71 }, { name: "Marketing", staff: 142, aq: 62 },
+    { name: "HR & L&D", staff: 64, aq: 56 }, { name: "Customer Support", staff: 227, aq: 53 },
+    { name: "Sales", staff: 218, aq: 49 }, { name: "Operations", staff: 312, aq: 46 }, { name: "Finance", staff: 96, aq: 41 }
+  ]
+};
+
+const Org = () => {
+  const weeklyValue = ORG.hoursPerWeek * ORG.costPerHour;
+  const yearlyCr = Math.round(weeklyValue * 46 / 10000000 * 10) / 10;
+  const maxDist = Math.max(...ORG.aqDist.map(d => d.n));
+  const maxCurve = Math.max(...ORG.adoptionCurve);
+  const fnColor = (aq) => aq >= 60 ? "#53bc86" : aq >= 48 ? "#4198d3" : "#c05e3d";
+  return (
+    <div className="max-w-4xl mx-auto px-6 py-10 fade-up">
+      <p className="pill" style={{background: "var(--blue-tint)", color: "var(--blue)"}}>Org view · illustrative sample data</p>
+      <h2 className="head text-4xl font-bold mt-3">{ORG.name}</h2>
+      <p className="muted">{ORG.employees.toLocaleString()} employees · what the CHRO and the board see</p>
+
+      <div className="mt-10 mb-4">
+        <p className="text-xs uppercase tracking-widest font-bold head" style={{color: "var(--blue)"}}>01 · The number the board believes</p>
+        <h3 className="head text-2xl font-bold mt-1 leading-snug">AI adoption is banking {ORG.hoursPerWeek} hours a week — every hour traced to a named experiment.</h3>
+      </div>
+      <div className="card p-7 text-white" style={{background: "var(--ink)"}}>
+        <div className="grid grid-cols-3 gap-4 text-center">
+          <div><p className="head font-bold" style={{fontSize: 40, color: "var(--accent)"}}>{ORG.hoursPerWeek}h</p><p className="text-xs opacity-80 mt-1">banked per week, org-wide</p></div>
+          <div><p className="head font-bold" style={{fontSize: 40}}>₹{yearlyCr} Cr</p><p className="text-xs opacity-80 mt-1">≈ annual value at loaded cost</p></div>
+          <div><p className="head font-bold" style={{fontSize: 40}}>236</p><p className="text-xs opacity-80 mt-1">workflows adopted from the Exchange</p></div>
+        </div>
+        <p className="text-xs opacity-70 text-center mt-4">Not survey estimates — the sum of kept experiments, each with a measured before/after.</p>
+      </div>
+
+      <div className="mt-12 mb-4">
+        <p className="text-xs uppercase tracking-widest font-bold head" style={{color: "var(--blue)"}}>02 · The AQ index</p>
+        <h3 className="head text-2xl font-bold mt-1 leading-snug">Org AQ: 54 — six points above the industry benchmark, and climbing.</h3>
+      </div>
+      <div className="card p-6">
+        <div className="flex items-end gap-6 flex-wrap mb-6">
+          <div>
+            <p className="head font-bold" style={{fontSize: 46, color: "var(--accent-dark)"}}>{ORG.orgAQ}</p>
+            <p className="text-xs muted">your organisation</p>
+          </div>
+          <div className="opacity-60">
+            <p className="head font-bold" style={{fontSize: 34}}>{ORG.benchmark}</p>
+            <p className="text-xs muted">industry benchmark (illustrative)</p>
+          </div>
+        </div>
+        <p className="text-xs muted uppercase tracking-widest font-semibold head mb-3">AQ distribution · {ORG.employees.toLocaleString()} employees</p>
+        <div className="grid grid-cols-5 gap-3 items-end" style={{height: 130}}>
+          {ORG.aqDist.map(d => (
+            <div key={d.b} className="flex flex-col items-center justify-end h-full">
+              <p className="text-xs font-semibold mb-1">{d.n}</p>
+              <div style={{width: "100%", height: (d.n / maxDist) * 92, background: "var(--blue)", opacity: 0.85, borderRadius: "6px 6px 2px 2px"}}/>
+              <p className="text-[10px] muted mt-1.5">{d.b}</p>
+            </div>
+          ))}
+        </div>
+        <p className="text-xs mt-4 px-3 py-2 rounded-lg" style={{background: "var(--accent-tint)"}}>📈 <b>The lever:</b> moving the 289 people in the 21–40 band into 41–60 is worth an estimated 190 additional hours/week. That's next quarter's programme.</p>
+      </div>
+
+      <div className="mt-12 mb-4">
+        <p className="text-xs uppercase tracking-widest font-bold head" style={{color: "var(--blue)"}}>03 · The compounding effect</p>
+        <h3 className="head text-2xl font-bold mt-1 leading-snug">Adoption accelerates because every kept workflow lowers the next person's cost to start.</h3>
+      </div>
+      <div className="card p-6">
+        <p className="text-xs muted uppercase tracking-widest font-semibold head mb-3">Recipes adopted from the Exchange · cumulative by week</p>
+        <div className="grid grid-cols-8 gap-2 items-end" style={{height: 130}}>
+          {ORG.adoptionCurve.map((n, i) => (
+            <div key={i} className="flex flex-col items-center justify-end h-full">
+              <p className="text-xs font-semibold mb-1">{n}</p>
+              <div style={{width: "100%", height: (n / maxCurve) * 92, background: "linear-gradient(180deg, var(--mint), var(--accent))", borderRadius: "6px 6px 2px 2px"}}/>
+              <p className="text-[10px] muted mt-1.5">wk {i+1}</p>
+            </div>
+          ))}
+        </div>
+        <p className="text-xs muted mt-4">This curve is the difference between a training product and a network. Training decays after the event; a workflow exchange compounds.</p>
+      </div>
+
+      <div className="mt-12 mb-4">
+        <p className="text-xs uppercase tracking-widest font-bold head" style={{color: "var(--blue)"}}>04 · Where to act</p>
+        <h3 className="head text-2xl font-bold mt-1 leading-snug">Function-level AQ shows exactly where next month's effort goes.</h3>
+      </div>
+      <div className="card p-6">
+        <div className="space-y-4">
+          {ORG.functions.map(f => (
+            <div key={f.name}>
+              <div className="flex justify-between items-center text-sm mb-1">
+                <span className="font-medium">{f.name} <span className="muted text-xs">· {f.staff} people</span></span>
+                <b>{f.aq}</b>
+              </div>
+              <div style={{height: 8, background: "#eef0ea", borderRadius: 999, overflow: "hidden"}}>
+                <div style={{width: `${f.aq}%`, height: "100%", background: fnColor(f.aq), borderRadius: 999}}/>
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="mt-6 pt-5 space-y-3" style={{borderTop: "1px solid var(--line)"}}>
+          <p className="text-xs muted uppercase tracking-widest font-semibold head">This month's three moves</p>
+          {[
+            ["🟢", "Engineering (AQ 71) is your recipe factory.", "Their kept workflows seed the Exchange for everyone else."],
+            ["🔵", "Sales (49) is one nudge from tipping.", "Push the meeting-prep recipe — it's their highest-fit workflow with 6 adopters already."],
+            ["🔴", "Finance (41) needs a human unlock, not more software.", "One 90-minute clinic on AI for analysis; their spreadsheet recipe adoption will follow."]
+          ].map(([dot, signal, action], i) => (
+            <div key={i} className="flex gap-3 text-sm">
+              <span>{dot}</span>
+              <p><b>{signal}</b> <span className="muted">{action}</span></p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="card p-7 mt-12 text-white" style={{background: "var(--ink)"}}>
+        <div className="flex justify-between items-center flex-wrap gap-4">
+          <div>
+            <p className="text-xs uppercase tracking-widest font-bold head" style={{color: "var(--accent)"}}>See it with your data</p>
+            <p className="head text-2xl font-bold mt-1">60-day pilot · one function · success metrics agreed in writing.</p>
+            <p className="opacity-80 text-sm mt-1">Baseline AQ on day one, the Exchange seeded from your first bootcamp, this dashboard with your numbers by day 60.</p>
+          </div>
+          <button className="btn-accent">Talk to AI&amp;Beyond</button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/* ================= FEEDBACK ================= */
+const FeedbackButton = ({ onClick }) => (
+  <button onClick={onClick} className="fixed bottom-6 right-6 z-50 text-white rounded-full px-4 py-3 shadow-lg text-sm font-semibold head hover:scale-105 transition-transform" style={{background: "#141b4d"}}>
+    💬 Note to Anuj
+  </button>
+);
+
+const FeedbackModal = ({ user, currentScreen, onSave, onClose }) => {
+  const [note, setNote] = useState("");
+  const [sentiment, setSentiment] = useState(null);
+  const [sent, setSent] = useState(false);
+  const submit = () => {
+    if (note.trim().length < 3) return;
+    onSave({ note, sentiment, screen: currentScreen, user: (user && user.name) || "Anonymous", timestamp: new Date().toISOString() });
+    setSent(true); setTimeout(onClose, 1400);
+  };
+  const mailto = () => {
+    window.location.href = `mailto:${CONFIG.feedbackEmail}?subject=${encodeURIComponent(`[10x Loop v3] ${(user && user.name) || "Reviewer"} · ${currentScreen}`)}&body=${encodeURIComponent(`Screen: ${currentScreen}\nSentiment: ${sentiment || "—"}\n\n${note}`)}`;
+  };
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal fade-up" onClick={e => e.stopPropagation()}>
+        {sent ? (
+          <div className="text-center py-6"><p className="text-5xl">✅</p><p className="head text-2xl font-bold mt-3">Saved.</p></div>
+        ) : (
+          <div>
+            <h2 className="head text-2xl font-bold">What stood out — or didn't?</h2>
+            <p className="muted text-xs mt-1">v3 north star · screen: <b>{currentScreen}</b></p>
+            <div className="flex gap-2 mt-4 flex-wrap">
+              {[["love", "💚 Loved it"], ["meh", "🤔 Meh"], ["confusing", "😕 Confusing"], ["prev", "↩️ v1/v2 did this better"]].map(([k, v]) => (
+                <button key={k} className={`chip text-xs ${sentiment === k ? "active" : ""}`} onClick={() => setSentiment(k)}>{v}</button>
+              ))}
+            </div>
+            <textarea rows="4" className="mt-4" placeholder="Compare across versions freely — that's the point." value={note} onChange={e => setNote(e.target.value)} />
+            <div className="flex gap-2 mt-5 justify-end flex-wrap">
+              <button onClick={onClose} className="btn-ghost text-sm">Cancel</button>
+              <button onClick={mailto} className="btn-ghost text-sm" disabled={note.length < 3} style={{opacity: note.length >= 3 ? 1 : 0.4}}>Email it</button>
+              <button onClick={submit} className="btn-accent text-sm" disabled={note.length < 3} style={{opacity: note.length >= 3 ? 1 : 0.4}}>Save →</button>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+/* ================= CONCEPT NOTES ================= */
+const ConceptNotes = () => (
+  <div className="max-w-3xl mx-auto px-6 pb-6">
+    <div className="card p-6 mt-10" style={{background: "#f7f8f4"}}>
+      <p className="text-xs muted uppercase tracking-widest font-semibold head mb-3">Why v3 is designed to compound (vs v1 and v2)</p>
+      <div className="space-y-2 text-sm">
+        <p><b>v2's core, kept:</b> experiments on real work, keep/kill verdicts, the ledger, the Loop climbed by doing.</p>
+        <p><b>New — the Exchange:</b> every kept workflow becomes a one-click recipe for teammates. Each user's success lowers the next user's cost to start. That's the internal viral engine no training product has.</p>
+        <p><b>New — the AQ score:</b> a single number that moves with every experiment, rolls up to team and org, and benchmarks against industry. The employee's scoreboard, the manager's radar, and the buyer's board number are the same metric.</p>
+        <p><b>New — the money view:</b> hours banked × loaded cost = ₹ value, every rupee traced to a named experiment. ROI stops being a survey and becomes a ledger.</p>
+        <p><b>Role-aware from minute one:</b> onboarding starts with your role, and the first experiment is chosen for the fastest payoff in your world.</p>
+      </div>
+    </div>
+  </div>
+);
+
+/* ================= APP ================= */
+const App = () => {
+  const [screen, setScreen] = useState("welcome");
+  const [user, setUser] = useState(null);
+  const [picked, setPicked] = useState([]);
+  const [experiments, setExperiments] = useState([]);
+  const [feedbacks, setFeedbacks] = useState([]);
+  const [runningTask, setRunningTask] = useState(null);
+  const [adoptedFrom, setAdoptedFrom] = useState(null);
+  const [aqDelta, setAqDelta] = useState(null);
+  const [showFeedback, setShowFeedback] = useState(false);
+  const [hydrated, setHydrated] = useState(false);
+
+  useEffect(() => {
+    let s = null;
+    try { const raw = localStorage.getItem(STORAGE_KEY); if (raw) s = JSON.parse(raw); } catch (e) {}
+    if (s) {
+      if (s.user) setUser(s.user);
+      if (s.picked) setPicked(s.picked);
+      if (s.experiments) setExperiments(s.experiments);
+      if (s.feedbacks) setFeedbacks(s.feedbacks);
+      if (s.user) setScreen("week");
+    }
+    setHydrated(true);
+  }, []);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ user, picked, experiments, feedbacks })); } catch (e) {}
+  }, [hydrated, user, picked, experiments, feedbacks]);
+
+  const aq = aqScore(user ? user.calib : 0, experiments);
+
+  const seed = () => {
+    const daysAgo = (n) => { const d = new Date(); d.setDate(d.getDate() - n); return d.toISOString(); };
+    setUser({ name: "Aisha Verma", role: "Marketing", calib: 4 });
+    setPicked(["status", "minutes", "deck", "research", "sheet"]);
+    setExperiments([
+      { taskId: "status", baselineMin: 60, aiMin: 15, decision: "keep", signals: ["faster", "trust"], note: "Bullets on my commute, AI assembles, I edit 5 min.", adoptedFrom: null, at: daysAgo(21) },
+      { taskId: "minutes", baselineMin: 30, aiMin: 8, decision: "keep", signals: ["faster", "better"], note: "", adoptedFrom: "Rohan M.", at: daysAgo(14) },
+      { taskId: "research", baselineMin: 90, aiMin: 70, decision: "kill", signals: ["unsure", "redid"], note: "Facts were stale — verification took longer than researching myself.", adoptedFrom: null, at: daysAgo(7) },
+      { taskId: "sheet", baselineMin: 60, aiMin: 20, decision: "keep", signals: ["faster"], note: "Spot-check five rows. Always.", adoptedFrom: "Dev P.", at: daysAgo(2) }
+    ]);
+    setScreen("week");
+  };
+
+  const resetSession = () => {
+    if (!confirm("Clear all v3 data and start fresh?")) return;
+    localStorage.removeItem(STORAGE_KEY);
+    window.location.href = window.location.pathname;
+  };
+
+  const startRun = (taskId, from) => { setRunningTask(taskId); setAdoptedFrom(from || null); setScreen("run"); };
+
+  const task = TASKS.find(t => t.id === runningTask);
+  if (!hydrated) return <div/>;
+
+  return (
+    <div className="min-h-screen flex flex-col">
+      <div className="brand-strip"/>
+      {screen !== "welcome" && screen !== "setup" && (
+        <Header screen={screen} setScreen={setScreen} userName={user && user.name} onReset={resetSession} />
+      )}
+      <div className="flex-1">
+        {screen === "welcome" && <Welcome onStart={() => setScreen("setup")} onSeed={seed} />}
+        {screen === "setup" && <Setup onComplete={(v) => { setUser({ name: v.name, role: v.role, calib: v.calib }); setPicked(v.picked); setScreen("week"); }} />}
+        {screen === "week" && user && (
+          <Week user={user} picked={picked} experiments={experiments} aq={aq} aqDelta={aqDelta}
+            onRun={startRun} setScreen={setScreen} />
+        )}
+        {screen === "week" && !user && <Welcome onStart={() => setScreen("setup")} onSeed={seed} />}
+        {screen === "run" && task && (
+          <Run task={task} user={user} adoptedFrom={adoptedFrom}
+            onSave={(exp) => {
+              const before = aq;
+              const after = aqScore(user ? user.calib : 0, [...experiments, exp]);
+              setExperiments(e => [...e, exp]);
+              setAqDelta({ from: before, to: after, note: exp.decision === "keep" ? "workflow kept — it's in your Exchange now" : "dead end flagged — calibration counts too" });
+              setRunningTask(null); setAdoptedFrom(null); setScreen("week");
+            }}
+            onBack={() => { setRunningTask(null); setAdoptedFrom(null); setScreen("week"); }} />
+        )}
+        {screen === "exchange" && <Exchange user={user} experiments={experiments} onAdopt={startRun} />}
+        {screen === "ledger" && <Ledger user={user} experiments={experiments} aq={aq} onRerun={(id) => startRun(id, null)} />}
+        {screen === "org" && <Org />}
+      </div>
+
+      {screen !== "welcome" && screen !== "setup" && <ConceptNotes />}
+      {screen !== "welcome" && screen !== "setup" && <FeedbackButton onClick={() => setShowFeedback(true)} />}
+      {showFeedback && (
+        <FeedbackModal user={user} currentScreen={screen} onSave={(p) => setFeedbacks(f => [...f, p])} onClose={() => setShowFeedback(false)} />
+      )}
+
+      <footer className="text-xs muted text-center py-8 border-t mt-6" style={{borderColor: "var(--line)"}}>
+        <p>10x Loop · Compounding Loop concept v3 · an AI&amp;Beyond exploration · <a href="../" className="underline">v1</a> · <a href="../v2/" className="underline">v2</a></p>
+      </footer>
+    </div>
+  );
+};
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>
